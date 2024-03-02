@@ -56,6 +56,6 @@ export default defineConfig({
 
   server: {
     // must be same as proxyURLStr in runServerDev
-    port: 3025,
+    port: 3035,
   },
 });

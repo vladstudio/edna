@@ -165,7 +165,7 @@ func main() {
 	loadSecrets()
 
 	if flgRunDev {
-		// runServerDev()
+		runServerDev()
 		return
 	}
 

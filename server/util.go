@@ -68,6 +68,20 @@ func copyFilesRecurMust(srcDir, dstDir string) {
 	logf("copied %d files\n", nCopied)
 }
 
+func startLoggedInDir(dir string, exe string, args ...string) (func(), error) {
+	cmd := exec.Command(exe, args...)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Start()
+	if err != nil {
+		return nil, err
+	}
+	return func() {
+		cmd.Process.Kill()
+	}, nil
+}
+
 func push[S ~[]E, E any](s *S, els ...E) {
 	*s = append(*s, els...)
 }
