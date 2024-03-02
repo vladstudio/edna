@@ -161,8 +161,9 @@ func rebuildFrontend() {
 	} else if u.IsWindows() {
 		u.RunLoggedInDirMust(".", "yarn")
 		u.RunLoggedInDirMust(".", "yarn", "webapp:build")
-	
-	co
+	}
+	// copy files from webapp\dist => server\dist
+	copyFilesRecurMust(filepath.Join("webapp", "dist"), frontEndBuildDir)
 }
 
 // get date and hash of current git checkin
