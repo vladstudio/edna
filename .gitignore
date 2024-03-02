@@ -10,3 +10,4 @@ release
 /playwright/.cache/
 yarn.lock
 secrets.env
+edna-*

@@ -53,15 +53,19 @@ func getCallstack(skip int) string {
 }
 
 func copyFilesRecurMust(srcDir, dstDir string) {
+	logf("copyFilesRecurMust('%s', '%s')\n", srcDir, dstDir)
 	srcDirLen := len(srcDir)
+	nCopied := 0
 	onFile := func(path string, de fs.DirEntry) (bool, error) {
 		dstPath := filepath.Join(dstDir, path[srcDirLen:])
-		err := u.CopyFile(path, dstPath)
+		err := u.CopyFile(dstPath, path)
 		panicIfErr(err)
-		logf("copied '%s' to '%s'\n", path, dstPath)
+		//logf("copied '%s' to '%s'\n", path, dstPath)
+		nCopied++
 		return false, nil
 	}
 	u.IterDir(srcDir, onFile)
+	logf("copied %d files\n", nCopied)
 }
 
 func push[S ~[]E, E any](s *S, els ...E) {
