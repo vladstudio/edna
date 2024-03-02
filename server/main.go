@@ -170,12 +170,12 @@ func main() {
 	}
 
 	if flgRunProd {
-		// runServerProd()
+		runServerProd()
 		return
 	}
 
 	if flgRunProdLocal {
-		// runServerProdLocal()
+		runServerProdLocal()
 		return
 	}
 

@@ -227,3 +227,40 @@ func runServerDev() {
 	waitFn := serverListenAndWait(httpSrv)
 	waitFn()
 }
+
+func runServerProd() {
+	checkHasEmbeddedFiles()
+
+	fsys := mkFsysEmbedded()
+	serveOpts := mkServeFileOptions(fsys)
+	httpSrv := makeHTTPServer(serveOpts, nil)
+	logf("runServerProd(): starting on 'http://%s', dev: %v, prod: %v, prod local: %v\n", httpSrv.Addr, flgRunDev, flgRunProd, flgRunProdLocal)
+	if isWinOrMac() {
+		time.Sleep(time.Second * 2)
+		u.OpenBrowser("http://" + httpSrv.Addr)
+	}
+	waitFn := serverListenAndWait(httpSrv)
+	waitFn()
+}
+
+func runServerProdLocal() {
+	var fsys fs.FS
+	if countFilesInFS(wwwFS) > 5 {
+		fsys = mkFsysEmbedded()
+	} else {
+		rebuildFrontend()
+		fsys = mkFsysDirDist()
+	}
+	GitCommitHash, _ = getGitHashDateMust()
+
+	serveOpts := mkServeFileOptions(fsys)
+	httpSrv := makeHTTPServer(serveOpts, nil)
+	logf("runServerProdLocal(): starting on 'http://%s', dev: %v, prod: %v, prod local: %v\n", httpSrv.Addr, flgRunDev, flgRunProd, flgRunProdLocal)
+	if isWinOrMac() {
+		time.Sleep(time.Second * 2)
+		u.OpenBrowser("http://" + httpSrv.Addr)
+	}
+	waitFn := serverListenAndWait(httpSrv)
+	waitFn()
+	emptyFrontEndBuildDir()
+}
