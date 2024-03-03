@@ -8,7 +8,8 @@
     export default {
         props: [
             "line", 
-            "column", 
+            "column",
+            "docSize",
             "selectionSize",
             "language", 
             "languageAuto",
@@ -54,6 +55,11 @@
                 return `Format Block Content (Alt + Shift + F)`
             },
 
+            formatSize() {
+                // let n = this.docSize;
+                    return `${this.docSize} bytes`
+            },
+
             changeLanguageTitle() {
                 return `Change language for current block (${this.cmdKey} + L)`
             },
@@ -74,6 +80,7 @@
                 Sel <span class="num">{{ selectionSize }}</span>
             </template>
         </div>
+        <div class="status-block doc-size">{{  formatSize  }}</div>
         <div class="spacer"></div>
         <div 
             @click="$emit('openLanguageSelector')"

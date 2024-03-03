@@ -1,5 +1,5 @@
 <script>
-    import { HeynoteEditor, LANGUAGE_SELECTOR_EVENT } from '../editor/editor.js'
+    import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT } from '../editor/editor.js'
     import { syntaxTree } from "@codemirror/language"
 
     export default {
@@ -41,7 +41,7 @@
 
         mounted() {
             this.$refs.editor.addEventListener("selectionChange", (e) => {
-                //console.log("selectionChange:", e)
+                // console.log("selectionChange:", e)
                 this.$emit("cursorChange", {
                     cursorLine: e.cursorLine,
                     selectionSize: e.selectionSize,
@@ -52,6 +52,9 @@
 
             this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
                 this.$emit("openLanguageSelector")
+            })
+            this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
+                this.$emit("docChanged")
             })
 
             // load buffer content and create editor
@@ -84,6 +87,7 @@
                     diskContent = content
                     this.editor.setContent(content)
                 })
+                this.$emit("docChanged")
             })
             // set up window close handler that will save the buffer and quit
             window.heynote.onWindowClose(() => {
@@ -169,6 +173,10 @@
             focus() {
                 this.editor.focus()
             },
+
+            getContent() {
+                return this.editor.getContent()
+            }
         },
     }
 </script>

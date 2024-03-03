@@ -18,6 +18,7 @@
             return {
                 line: 1,
                 column: 1,
+                docSize: 0,
                 selectionSize: 0,
                 language: "plaintext",
                 languageAuto: true,
@@ -92,6 +93,12 @@
                 this.showLanguageSelector = true
             },
 
+            docChanged() {
+                let c = this.$refs.editor.getContent() || ""
+                // TODO: this should be utf8-encoded size
+                this.docSize = c.length;
+            },
+
             closeLanguageSelector() {
                 this.showLanguageSelector = false
                 this.$refs.editor.focus()
@@ -128,10 +135,12 @@
             class="editor"
             ref="editor"
             @openLanguageSelector="openLanguageSelector"
+            @docChanged="docChanged"
         />
-        <StatusBar 
+        <StatusBar
             :line="line" 
-            :column="column" 
+            :column="column"
+            :docSize="docSize"
             :selectionSize="selectionSize"
             :language="language" 
             :languageAuto="languageAuto"

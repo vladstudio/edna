@@ -23,6 +23,7 @@ import { todoCheckboxPlugin} from "./todo-checkbox.ts"
 import { links } from "./links.js"
 
 export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector"
+export const DOC_CHANGED_EVENT = "docChanged"
 
 function getKeymapExtensions(editor, keymap) {
     if (keymap === "emacs") {
@@ -60,9 +61,17 @@ export class HeynoteEditor {
         this.emacsMetaKey = emacsMetaKey
         this.fontTheme = new Compartment
 
+        let updateListenerExtension = EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              // Handle the event here
+              console.log("docChanged:", update)
+              this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT))
+            }
+          });
         const state = EditorState.create({
             doc: content || "",
             extensions: [
+                updateListenerExtension,
                 this.keymapCompartment.of(getKeymapExtensions(this, keymap)),
                 heynoteCopyCut(this),
 
