@@ -60,6 +60,16 @@ class IpcRenderer {
 
 const ipcRenderer = new IpcRenderer()
 
+document.addEventListener('keydown', (e) => {
+    // Prevent the default Save dialog from opening.
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        // console.log('CTRL + S pressed');
+    }
+});
+
+const scratchNotePath = "note:scratch";
+
 // get initial settings
 let settingsData = localStorage.getItem("settings")
 let initialSettings = {
@@ -68,41 +78,96 @@ let initialSettings = {
     showLineNumberGutter: true,
     showFoldGutter: true,
     bracketClosing: false,
+    currentNotePath: scratchNotePath,
 }
 if (settingsData !== null) {
     initialSettings = Object.assign(initialSettings, JSON.parse(settingsData))
 }
 
+// migrate "buffer" => "note:scratch"
+function migrateDefaultNote() {
+    const d = localStorage.getItem("buffer")
+    if (d !== null) {
+        localStorage.setItem(scratchNotePath, d)
+        localStorage.removeItem("buffer")
+        console.log("migrated default note from buffer to note:scratch")
+    }
+}
+migrateDefaultNote()
+function loadNotePaths() {
+    const res = [];
+    let nKeys = localStorage.length
+    for (let i = 0; i < nKeys; i++) {
+        const key = localStorage.key(i)
+        if (key.startsWith("note:")) {
+            res.push(key)
+        }
+    }
+    return res;
+}
+
+let currentNotePath = initialSettings.currentNotePath;
+
+// make sure currentNotePath points to a valid note
+if (!currentNotePath.startsWith("note:")) {
+    // shouldn't happen but jic
+    currentNotePath = scratchNotePath;
+}
+
+// TODO: add keyboard bindings here
+const initialScratchContent = `
+∞∞∞text-a
+Welcome to Edna - a scratchpad for quickly taking notes
+`;
+
+if (localStorage.getItem(scratchNotePath) === null) {
+    localStorage.setItem(scratchNotePath, initialScratchContent)
+}
+
+let notePaths = loadNotePaths()
+if (!notePaths.includes(currentNotePath)) {
+    currentNotePath = scratchNotePath
+}
+initialSettings.currentNotePath = currentNotePath
+console.log("currentNotePath:", currentNotePath)
 
 const Heynote = {
+
     platform: platform,
-    defaultFontFamily: "Hack", 
+    defaultFontFamily: "Hack",
     defaultFontSize: isMobileDevice ? 16 : 12,
+
+    settings: initialSettings,
 
     buffer: {
         async load() {
-            const content = localStorage.getItem("buffer")
+            let self = Heynote;
+            // console.log("Heynote:", self.settings);
+            const notePath = self.settings.currentNotePath;
+            console.log("Heynote.buffer.load: loading from ", notePath)
+            const content = localStorage.getItem(notePath)
             return content === null ? "\n∞∞∞text-a\n" : content
         },
 
         async save(content) {
-            localStorage.setItem("buffer", content)
+            let self = Heynote;
+            const notePath = self.settings.currentNotePath
+            console.log("Heynote.buffer.save: saving to ", notePath)
+            localStorage.setItem(notePath, content)
         },
 
         async saveAndQuit(content) {
-            
+
         },
 
         onChangeCallback(callback) {
-            
+
         },
     },
 
     onWindowClose(callback) {
         //ipcRenderer.on(WINDOW_CLOSE_EVENT, callback)
     },
-
-    settings: initialSettings,
 
     onOpenSettings(callback) {
         ipcRenderer.on(OPEN_SETTINGS_EVENT, callback)
