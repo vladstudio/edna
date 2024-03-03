@@ -16,9 +16,6 @@ export const keyHelpStr = (platform: string) => {
         [`${altChar} + Shift + F`, "Format block content (works for JSON, JavaScript, HTML, CSS and Markdown)"],
     ]
 
-    if (platform === "win32" || platform === "linux") {
-        keyHelp.push([altChar, "Show menu"])
-    }
     const keyMaxLength = keyHelp.map(([key]) => key.length).reduce((a, b) => Math.max(a, b))
 
     return keyHelp.map(([key, help]) => `${key.padEnd(keyMaxLength)}   ${help}`).join("\n")

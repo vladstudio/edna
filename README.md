@@ -1,14 +1,10 @@
-# Heynote
+# Edna
 
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/heyman/heynote)](https://github.com/heyman/heynote/releases)
-[![Build Status](https://github.com/heyman/heynote/workflows/Tests/badge.svg)](https://github.com/heyman/heynote/actions?query=workflow%3ATests)
+[Edna](https://edna.arslexis.io) is a scratchpad for developers. It's a large persistent text buffer where you can write down anything you like. Works great for that Slack message you don't want to accidentally send, a JSON response from an API you're working with, notes from a meeting, daily to-do list, etc.
 
+The Edna buffer is divided into blocks, and each block can have its own Language set (e.g. JavaScript, JSON, Markdown, etc.). This gives you syntax highlighting and lets you auto-format that JSON response.
 
-Heynote is a dedicated scratchpad for developers. It functions as a large persistent text buffer where you can write down anything you like. Works great for that Slack message you don't want to accidentally send, a JSON response from an API you're working with, notes from a meeting, your daily to-do list, etc. 
-
-The Heynote buffer is divided into blocks, and each block can have its own Language set (e.g. JavaScript, JSON, Markdown, etc.). This gives you syntax highlighting and lets you auto-format that JSON response.
-
-Available for Mac, Windows, and Linux.
+Available on the web under https://edna.arslexis.io
 
 ## Features
 
@@ -17,38 +13,22 @@ Available for Mac, Windows, and Linux.
 -   Syntax highlighting:
 
     C++, C#, Clojure, CSS, Erlang, Go, Groovy, HTML, Java, JavaScript, JSX, Kotlin, TypeScript, TOML, TSX, JSON, Lezer, Markdown, PHP, Python, Ruby, Rust, Shell, SQL, Swift, XML, YAML
-    
+
 -   Language auto-detection
 -   Auto-formatting
 -   Math/Calculator mode
 -   Currency conversion
 -   Multi-cursor editing
 -   Dark & Light themes
--   Option to set a global hotkey to show/hide the app
 -   Default or Emacs-like key bindings
 
 
-## Installation
-
-Download the appropriate (Mac, Windows or Linux) version from the latest Github release (or from [heynote.com](https://heynote.com)). The Windows build is not signed, so you might see some scary warning (I can not justify paying a yearly fee for a certificate just to get rid of that).
-
-### Notes on Linux installation
-
-It's been reported [(#48)](https://github.com/heyman/heynote/issues/48) that ChromeOS's Debian VM need the following packages installed to run the Heynote AppImage:
-
-```
-libfuse2
-libnss3
-libnspr4
-```
-
 ## Development
 
-To develop Heynote you need Node.js and you should (hopefully) just need to check out the code and then run:
+To develop Edna you need Go, Node.js. Check out the code and then run:
 
 ```
-> npm install
-> npm run dev
+go run ./server/ -run-dev
 ```
 
 ### Run Tests
@@ -65,14 +45,13 @@ To run the tests in the Playwright UI:
 > npm run test:ui
 ```
 
-
 ### Contributions
 
-I'm happy to merge contributions that fit my vision for the app. Bug fixes are always welcome. 
+I'm happy to merge contributions that fit my vision for the app. Bug fixes are always welcome.
 
 ## Math Blocks
 
-Heynote's Math blocks are powered by [Math.js expressions](https://mathjs.org/docs/expressions). Checkout their [documentation](https://mathjs.org/docs/) to see what [syntax](https://mathjs.org/docs/expressions/syntax.html), [functions](https://mathjs.org/docs/reference/functions.html), and [constants](https://mathjs.org/docs/reference/constants.html) are available.
+Edna's Math blocks are powered by [Math.js expressions](https://mathjs.org/docs/expressions). Checkout their [documentation](https://mathjs.org/docs/) to see what [syntax](https://mathjs.org/docs/expressions/syntax.html), [functions](https://mathjs.org/docs/reference/functions.html), and [constants](https://mathjs.org/docs/reference/constants.html) are available.
 
 ### Accessing the previous result
 
@@ -94,30 +73,7 @@ format(x) = _format(x, {notation:"exponential"})
 
 See the [Math.js format()](https://mathjs.org/docs/reference/functions/format.html) function for more info on what's supported.
 
-
-## FAQ
-
-### Where is the buffer data stored?
-
-The default paths for the buffer data for the respective OS are:
-
--   Mac: `~/Library/Application Support/Heynote/buffer.txt`
--   Windows: `%APPDATA%\Heynote\buffer.txt`
--   Linux: `~/.config/Heynote/buffer.txt`
-
-From version >=1.5.0, symlinks will be supported and you'll be able to configure the path where `buffer.txt` is stored.
-
-### Can you make a mobile app?
-
-No, at the moment this is out of scope, sorry.
-
-### Can you add a feature for naming blocks and/or adding tags? [(#44)](https://github.com/heyman/heynote/issues/44)
-
-Currently, I'm not planning on adding this. The main reason is that it goes against the scratchpadness of the program.
-
-I can totally see the usefulness of such a feature, and it's definitely something that I would expect from a more traditional Notes app. However a large part of Heynote's appeal is it's simplicity, and if that is to remain so, I'm going to have to say no to a lot of actually useful features.
-
-### What are the default keyboard shortcuts?
+### Default keyboard shortcuts?
 
 **On Mac**
 
@@ -149,10 +105,17 @@ Ctrl + Up              Goto previous block
 Ctrl + A               Select all text in a note block. Press again to select the whole buffer
 Ctrl + Alt + Up/Down   Add additional cursor above/below
 Alt + Shift + F        Format block content (works for JSON, JavaScript, HTML, CSS and Markdown)
-Alt                    Show menu
 ```
 
 ## Thanks!
 
-Heynote is built upon [CodeMirror](https://codemirror.net/), [Vue](https://vuejs.org/), [Electron](https://www.electronjs.org/), [Math.js](https://mathjs.org/), [Prettier](https://prettier.io/) and other great open-source projects.
+Edna is a for of [Heynote](https://github.com/heyman/heynote) with the following differences:
+* web first (no desktop apps)
+* multiple files
+* 2 ways of sharing notes between computers:
+  * store files on disk in DropBox/OneDrive/etc. folder
+  * login with GitHub and store as encrypted Gist (each note is a separate gist)
+* not opposed to adding lots of features (while still preserving the character of the app)
+
+Edna is built upon [CodeMirror](https://codemirror.net/), [Vue](https://vuejs.org/), [Math.js](https://mathjs.org/), [Prettier](https://prettier.io/) and other great open-source projects.
 
