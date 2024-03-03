@@ -1,4 +1,7 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
+import { getInitialContent } from "./initial-content";
+
+const isDev = location.host.startsWith("localhost")
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
 let themeCallback = null
@@ -35,7 +38,7 @@ if (uaPlatform.indexOf("Win") !== -1) {
     }
 }
 platform.isWebApp = true
-
+const platformString = platform.isMac ? "darwin" : platform.isWindows ? "windows" : "linux"
 
 class IpcRenderer {
     constructor() {
@@ -114,14 +117,12 @@ if (!currentNotePath.startsWith("note:")) {
     currentNotePath = scratchNotePath;
 }
 
-// TODO: add keyboard bindings here
-const initialScratchContent = `
-∞∞∞text-a
-Welcome to Edna - a scratchpad for quickly taking notes
-`;
-
 if (localStorage.getItem(scratchNotePath) === null) {
-    localStorage.setItem(scratchNotePath, initialScratchContent)
+    const { initialContent, initialDevContent } = getInitialContent(platformString)
+    console.log("initialContent:", initialContent)
+    console.log("initialDevContent:", initialDevContent)
+    const s = isDev ? initialDevContent : initialContent;
+    localStorage.setItem(scratchNotePath, s)
 }
 
 let notePaths = loadNotePaths()
