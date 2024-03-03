@@ -1,0 +1,13 @@
+{
+  "cSpell.words": [
+    "topnav"
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    }
+  },
+  "sort-imports.on-save": false,
+}

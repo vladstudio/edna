@@ -1,4 +1,5 @@
 <script>
+    import TopNav from './TopNav.vue'
     import StatusBar from './StatusBar.vue'
     import Editor from './Editor.vue'
     import LanguageSelector from './LanguageSelector.vue'
@@ -6,6 +7,7 @@
 
     export default {
         components: {
+            TopNav,
             Editor,
             StatusBar,
             LanguageSelector,
@@ -110,6 +112,7 @@
 
 <template>
     <div class="container">
+        <TopNav />
         <Editor 
             @cursorChange="onCursorChange"
             :theme="theme"
@@ -163,7 +166,7 @@
         height: 100%
         position: relative
         .editor
-            height: calc(100% - 21px)
+            height: calc(100% - 21px - 21px)
         .status
             position: absolute
             bottom: 0
