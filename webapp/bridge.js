@@ -1,6 +1,6 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
 import { platform } from "../shared-utils/utils"
-import { scratchNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "./notes";
+import { scratchNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "../src/notes";
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
 let themeCallback = null

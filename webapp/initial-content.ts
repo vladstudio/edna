@@ -10,10 +10,6 @@ Keyboard shortcuts:
 
 ${keyHelpStr(platformName)}
 
-Edna is private and secure. Your notes are stored in the browser.
-
-If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.
-
 Edna is optimized for speed of note taking.
 
 Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.
@@ -36,6 +32,10 @@ You can delete it if you don't want to use it but the idea is that it's for keep
 By convention each block represents a day, and we recommend to put date in 'YYYY-MM-DD' format as the first line.
 
 We automatically create a new block for each day when you open 'daily journal' note.
+
+Edna is private and secure. Your notes are stored in the browser.
+
+If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.
 
 TODO: add more help here about math blocks.
 

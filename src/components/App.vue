@@ -117,10 +117,23 @@
                 console.log("closeNoteSelector")
             },
 
-            onSelectNote(name) {
+            onSelectNote(notePath) {
                 this.showNoteSelector = false
                 console.log("NYI: onSelectNote", name)
                 // this.$refs.editor.setNoteName(name)
+            },
+
+            onCreateNote(name) {
+                this.showNoteSelector = false
+                // TODO: do I need to sanitize name for localStorage keys?
+                const notePath = "note:" + name
+                if (localStorage.getItem(notePath) == null) {
+                    localStorage.setItem(notePath, "")
+                    console.log("created note", name)
+                } else {
+                    console.log("note already exists", name)
+                }
+                this.onSelectNote(notePath)
             },
 
             docChanged() {
@@ -185,6 +198,7 @@
             <NoteSelector
                 v-if="showNoteSelector"
                 @selectNote="onSelectNote"
+                @createNote="onCreateNote"
                 @close="closeNoteSelector"
             />
             <Settings

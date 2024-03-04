@@ -1,15 +1,17 @@
 <script>
-    import { LANGUAGES } from '../editor/languages.js'
+    import { loadNotePaths } from '../notes'
 
-    const items = LANGUAGES.map(l => {
+    const notePaths = loadNotePaths()
+
+    const items = notePaths.map(path => {
+        let name = path.split(":")[1]
         return {
-            "token": l.token, 
-            "name": l.name
+            "token": path,
+            "name": name
         }
     }).sort((a, b) => {
         return a.name.localeCompare(b.name)
     })
-    items.unshift({token: "auto", name:"Auto-detect"})
 
     export default {
         data() {
@@ -52,6 +54,10 @@
                         this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
                     }
                 } else if (event.key === "Enter") {
+                    if (event.ctrlKey && this.filter.length > 0) {
+                        this.createNote(this.filter)
+                        return;
+                    }
                     this.selectItem(this.filteredItems[this.selected].token)
                     event.preventDefault()
                 } else if (event.key === "Escape") {
@@ -62,6 +68,11 @@
 
             selectItem(token) {
                 this.$emit("selectNote", token)
+            },
+
+            createNote(name) {
+                console.log("create note", name)
+                this.$emit("createNote", name)
             },
 
             onInput(event) {
@@ -81,9 +92,9 @@
 
 <template>
     <div class="scroller">
-        <form class="language-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
+        <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
             <input 
-                type="text" 
+                type="text"
                 ref="input"
                 @keydown="onKeydown"
                 @input="onInput"
@@ -100,11 +111,12 @@
                     {{ item.name }}
                 </li>
             </ul>
+            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create a note</span> <span class="bold">{{ filter }}</span></div>
         </form>
     </div>
 </template>
 
-<style scoped lang="sass">    
+<style scoped lang="sass">
     .scroller
         overflow: auto
         position: fixed
@@ -112,7 +124,7 @@
         left: 0
         bottom: 0
         right: 0
-    .language-selector
+    .note-selector
         font-size: 13px
         padding: 10px
         //background: #48b57e
@@ -150,7 +162,6 @@
             +webapp-mobile
                 font-size: 16px
                 max-width: 100%
-        
         .items
             > li
                 border-radius: 3px
@@ -168,4 +179,14 @@
                     &.selected
                         background: #1b6540
                         color: rgba(255,255,255, 0.87)
+        .create-help
+            padding: 4px 4px
+            +dark-mode
+                    color: rgba(255,255,255, 0.53)
+        .dim
+            color: gray
+        .tt
+            font-family: monospace
+        .bold
+            font-weight: bold
 </style>

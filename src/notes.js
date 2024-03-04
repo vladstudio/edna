@@ -1,4 +1,4 @@
-import { getInitialContent } from "./initial-content";
+import { getInitialContent } from "../webapp/initial-content";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
