@@ -1,5 +1,6 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
 import { getInitialContent } from "./initial-content";
+import { platform } from "../shared-utils/utils"
 
 const isDev = location.host.startsWith("localhost")
 
@@ -15,30 +16,6 @@ const isMobileDevice = window.matchMedia("(max-width: 600px)").matches
 
 let autoUpdateCallbacks = null
 let currencyData = null
-
-let platform
-const uaPlatform = window.navigator?.userAgentData?.platform || window.navigator.platform
-if (uaPlatform.indexOf("Win") !== -1) {
-    platform = {
-        isMac: false,
-        isWindows: true,
-        isLinux: false,
-    }
-}  else if (uaPlatform.indexOf("Linux") !== -1) {
-    platform = {
-        isMac: false,
-        isWindows: false,
-        isLinux: true,
-    }
-} else {
-    platform = {
-        isMac: true,
-        isWindows: false,
-        isLinux: false,
-    }
-}
-platform.isWebApp = true
-const platformString = platform.isMac ? "darwin" : platform.isWindows ? "windows" : "linux"
 
 class IpcRenderer {
     constructor() {
@@ -118,7 +95,7 @@ if (!currentNotePath.startsWith("note:")) {
 }
 
 if (localStorage.getItem(scratchNotePath) === null) {
-    const { initialContent, initialDevContent } = getInitialContent(platformString)
+    const { initialContent, initialDevContent } = getInitialContent()
     console.log("initialContent:", initialContent)
     console.log("initialDevContent:", initialDevContent)
     const s = isDev ? initialDevContent : initialContent;

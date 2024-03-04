@@ -1,11 +1,49 @@
 import { keyHelpStr } from "../shared-utils/key-helper";
+import { platformName } from "../shared-utils/utils"
 
-export function getInitialContent(platform: string) {
+export function getHelp() {
+  const help = `
+∞∞∞markdown
+Welcome to Edna - a scratchpad for quickly taking notes.
+
+Keyboard shortcuts:
+
+${keyHelpStr(platformName)}
+
+Edna is private and secure. Your notes are stored in the browser.
+
+If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with your password.
+
+You can create multiple notes:
+* default, always available note is 'scratch'. Press 'Alt-1' to quickly switch to it
+* press 'Alt-0' to switch to another note or create a new note
+* or click on the note name in the bottom left corner
+
+Each note consists of multiple blocks. It's up to you to decide if you want to put your note as block or in a separate note.
+
+By default we also create a 'daily journal' note.
+
+You can delete it if you don't want to use it but the idea is that it's for keeping track of what you did.
+
+By convention each block represents a day, and we recommend to put date in 'YYYY-MM-DD' format as the first line.
+
+We automatically create a new block for each day when you open 'daily journal' note.
+
+TODO: add more help here about math blocks.
+
+You can find by software by me on https://arslexis.io
+
+Edna is open source: https://github.com/kjk/edna
+`
+  return help;
+}
+
+export function getInitialContent() {
   const initialContent = `
 ∞∞∞markdown
 Welcome to Edna - a scratchpad for quickly taking notes.
 
-${keyHelpStr(platform)}
+${keyHelpStr(platformName)}
 ∞∞∞math
 This is a Math block. Here, rows are evaluated as math expressions.
 
@@ -114,6 +152,5 @@ Shopping list:
 - Bread
 - Cheese`
 
-  console.log("getInitialContent", platform);
   return {initialContent, initialDevContent}
 }
