@@ -46,6 +46,7 @@
                 systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
                 defaultFontSize: defaultFontSize,
                 appVersion: "",
+                currentNotePath: this.initialSettings.currentNotePath,
             }
         },
 
@@ -89,6 +90,7 @@
                     bufferPath: this.bufferPath,
                     fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
                     fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
+                    currentNotePath: this.currentNotePath,
                 })
                 if (!this.showInDock) {
                     this.showInMenu = true

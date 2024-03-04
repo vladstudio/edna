@@ -52,6 +52,7 @@
             onThemeChange(window.heynote.themeMode.initial)
             window.heynote.themeMode.onChange(onThemeChange)
             window.heynote.onSettingsChange((settings) => {
+                console.log("onSettingsChange callback")
                 this.settings = settings
             })
             window.heynote.onOpenSettings(() => {
@@ -119,8 +120,8 @@
 
             onOpenNote(notePath) {
                 this.showNoteSelector = false
-                console.log("NYI: onOpenNote", name)
-                // this.$refs.editor.setNoteName(name)
+                console.log("onOpenNote", notePath)
+                this.$refs.editor.openNote(notePath)
             },
 
             onCreateNote(name) {

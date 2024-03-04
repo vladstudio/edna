@@ -100,10 +100,19 @@ const Heynote = {
             return content === null ? "\n∞∞∞text-a\n" : content
         },
 
+        async openNote(notePath) {
+            console.log("Heynote.buffer.openNote:", notePath)
+            let self = Heynote;
+            const content = localStorage.getItem(notePath)
+            self.settings.currentNotePath = notePath
+            // TODO: save settings?
+            return content === null ? "\n∞∞∞text-a\n" : content
+        },
+
         async save(content) {
             let self = Heynote;
             const notePath = self.settings.currentNotePath
-            console.log("Heynote.buffer.save: saving to ", notePath)
+            console.log("Heynote.buffer.save:", notePath)
             localStorage.setItem(notePath, content)
         },
 
@@ -125,6 +134,7 @@ const Heynote = {
     },
 
     onSettingsChange(callback) {
+        console.log("onSettingsChange")
         ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) => callback(settings))
     },
 
@@ -161,7 +171,7 @@ const Heynote = {
             return currencyData
         }
         const response = await fetch("https://currencies.heynote.com/rates.json", {cache: "no-cache"})
-        currencyData = JSON.parse(await response.text())
+        currencyData = JSON.parse(await response.text()) // TODO: response.json()?
         return currencyData
     },
 

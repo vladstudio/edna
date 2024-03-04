@@ -121,7 +121,6 @@
                     event.preventDefault()
                 } else if (this.isCtrlDelete(event)) {
                     const selected = this.filteredItems[this.selected]
-                    console.log("Ctrl+Delete, selected:", selected)
                     if (selected) {
                         this.deleteNote(selected.path)
                     } else {
@@ -129,8 +128,9 @@
                     }
                     event.preventDefault()
                 } else if (event.key === "Escape") {
+                    // TODO: we also call onFocusOut() and emit "close" event twice
                     this.$emit("close")
-                    // event.preventDefault()
+                    event.preventDefault()
                 }
             },
 

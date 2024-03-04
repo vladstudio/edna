@@ -10,7 +10,7 @@
     }).sort((a, b) => {
         return a.name.localeCompare(b.name)
     })
-    items.unshift({token: "auto", name:"Auto-detect"})
+    items.unshift({token: "auto", name:"Auto-detect", nameLC:"auto-detect"})
 
     export default {
         data() {
@@ -29,7 +29,7 @@
             filteredItems() {
                 const filterLC = this.filter.toLowerCase()
                 return items.filter((lang) => {
-                    return lang.nameLC().indexOf(filterLC) !== -1
+                    return lang.nameLC.indexOf(filterLC) !== -1
                 })
             },
         },

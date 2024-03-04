@@ -179,6 +179,16 @@
 
             getContent() {
                 return this.editor.getContent()
+            },
+
+            openNote(notePath) {
+                console.log("openNote:", notePath)
+                window.heynote.buffer.openNote(notePath).then((content) => {
+                    this.editor.setContent(content)
+                    // TODO: change selection
+                    this.$emit("docChanged")
+                    this.focus()
+                })
             }
         },
     }
