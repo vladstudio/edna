@@ -5,6 +5,7 @@
     import LanguageSelector from './LanguageSelector.vue'
     import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
+    import { stringSizeInUtf8Bytes } from '../../shared-utils/utils'
 
     export default {
         components: {
@@ -123,9 +124,8 @@
             },
 
             docChanged() {
-                let c = this.$refs.editor.getContent() || ""
-                // TODO: this should be utf8-encoded size
-                this.docSize = c.length;
+                const c = this.$refs.editor.getContent() || ""
+                this.docSize = stringSizeInUtf8Bytes(c);
             },
 
             formatCurrentBlock() {
