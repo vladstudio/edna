@@ -64,6 +64,9 @@
             },
             canCreate() {
                 let filter = this.filter.trim()
+                if (filter.length === 0) {
+                    return false
+                }
                 for (let noteInfo of this.items) {
                     if (noteInfo.name === filter) {
                         return false
@@ -167,9 +170,23 @@
                 </li>
             </ul>
             <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
-            <div v-if="canOpenSelected" class="kbd-help"><span class="dim"><span class="kbd">Enter</span> to open </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
-            <div v-if="canCreate" class="kbd-help"><span class="dim"><span class="kbd">Ctrl + Enter</span> to create note</span> <span class="bold">{{ trunc(filter) }}</span></div>
-            <div v-if="canDeleteSelected" class="kbd-help"><span class="dim"><span class="kbd">Ctrl + Delete</span> to delete </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
+            <div class="kbd-grid">
+                <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
+                <div v-if="canOpenSelected">to open</div>
+                <div v-if="canOpenSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+
+                <div v-if="canCreate"><span class="kbd">Ctrl + Enter</span></div>
+                <div v-if="canCreate">to create</div>
+                <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
+
+                <div v-if="canDeleteSelected"><span class="kbd">Ctrl + Delete</span></div>
+                <div v-if="canDeleteSelected" class="red">to delete</div>
+                <div v-if="canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+
+                <div><span class="kbd">Esc</span></div>
+                <div>to close</div>
+                <div></div>
+            </div>
         </form>
     </div>
 </template>
@@ -237,19 +254,23 @@
                     &.selected
                         background: #1b6540
                         color: rgba(255,255,255, 0.87)
-        .kbd-help
-            margin-top: 4px
-            padding: 4px 0px
+        .kbd-grid
+            display: grid
+            grid-template-columns: auto auto 1fr
+            grid-column-gap: 1em
+            grid-row-gap: 1em
+            margin-top: 1em
+            color: gray
             +dark-mode
                     color: rgba(255,255,255, 0.53)
-        .dim
-            color: gray
         .kbd
             font-family: monospace
-            font-size: 12px
+            font-size: 11px
             border: 1px solid #ccc
             border-radius: 4px
             padding: 3px 5px
         .bold
             font-weight: bold
+        .red
+            color: red
 </style>
