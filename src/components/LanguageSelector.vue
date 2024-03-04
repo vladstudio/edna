@@ -4,7 +4,8 @@
     const items = LANGUAGES.map(l => {
         return {
             "token": l.token, 
-            "name": l.name
+            "name": l.name,
+            "nameLC": l.name.toLowerCase(),
         }
     }).sort((a, b) => {
         return a.name.localeCompare(b.name)
@@ -26,8 +27,9 @@
 
         computed: {
             filteredItems() {
+                const filterLC = this.filter.toLowerCase()
                 return items.filter((lang) => {
-                    return lang.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
+                    return lang.nameLC().indexOf(filterLC) !== -1
                 })
             },
         },
