@@ -3,11 +3,11 @@
 
     function rebuildNotesInfo() {
         const notePaths = loadNotePaths()
-        console.log("rebuildNotesInfo", notePaths)
+        console.log("rebuildNotesInfo, notes", notePaths.length)
         let res = notePaths.map(path => {
             let name = path.split(":")[1]
             return {
-                "token": path,
+                "path": path,
                 "name": name,
                 "nameLC": name.toLowerCase(),
             }
@@ -19,7 +19,6 @@
 
     export default {
         data() {
-            console.log("data NoteSelector")
             return {
                 items: rebuildNotesInfo(),
                 selected: 0,
@@ -28,8 +27,6 @@
         },
 
         mounted() {
-            // console.log("mounted NoteSelector")
-            // items = rebuildNotesInfo();
             this.$refs.container.focus()
             this.$refs.input.focus()
         },
@@ -85,6 +82,10 @@
                 return name
             },
 
+            isCtrlDelete(event) {
+                return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
+            },
+
             onKeydown(event) {
                 if (event.key === "ArrowDown") {
                     this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
@@ -113,24 +114,38 @@
                     }
                     const selected = this.filteredItems[this.selected]
                     if (selected) {
-                        this.selectItem(selected.token)
+                        this.openNote(selected.path)
+                    } else {
+                        this.$emit("close")
+                    }
+                    event.preventDefault()
+                } else if (this.isCtrlDelete(event)) {
+                    const selected = this.filteredItems[this.selected]
+                    console.log("Ctrl+Delete, selected:", selected)
+                    if (selected) {
+                        this.deleteNote(selected.path)
                     } else {
                         this.$emit("close")
                     }
                     event.preventDefault()
                 } else if (event.key === "Escape") {
                     this.$emit("close")
-                    event.preventDefault()
+                    // event.preventDefault()
                 }
             },
 
-            selectItem(token) {
-                this.$emit("selectNote", token)
+            openNote(path) {
+                this.$emit("openNote", path)
             },
 
             createNote(name) {
                 console.log("create note", name)
                 this.$emit("createNote", name)
+            },
+
+            deleteNote(notePath) {
+                console.log("deleteNote", notePath)
+                this.$emit("deleteNote", notePath)
             },
 
             onInput(event) {
@@ -161,9 +176,9 @@
             <ul class="items">
                 <li
                     v-for="item, idx in filteredItems"
-                    :key="item.token"
+                    :key="item.path"
                     :class="idx === selected ? 'selected' : ''"
-                    @click="selectItem(item.token)"
+                    @click="openNote(item.path)"
                     ref="item"
                 >
                     {{ item.name }}
@@ -172,19 +187,19 @@
             <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
             <div class="kbd-grid">
                 <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
-                <div v-if="canOpenSelected">to open</div>
+                <div v-if="canOpenSelected">open note</div>
                 <div v-if="canOpenSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
 
                 <div v-if="canCreate"><span class="kbd">Ctrl + Enter</span></div>
-                <div v-if="canCreate">to create</div>
+                <div v-if="canCreate">create note</div>
                 <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
 
                 <div v-if="canDeleteSelected"><span class="kbd">Ctrl + Delete</span></div>
-                <div v-if="canDeleteSelected" class="red">to delete</div>
+                <div v-if="canDeleteSelected" class="red">delete note</div>
                 <div v-if="canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
 
                 <div><span class="kbd">Esc</span></div>
-                <div>to close</div>
+                <div>dismiss</div>
                 <div></div>
             </div>
         </form>
@@ -269,6 +284,7 @@
             border: 1px solid #ccc
             border-radius: 4px
             padding: 3px 5px
+            background-color: white
         .bold
             font-weight: bold
         .red

@@ -117,9 +117,9 @@
                 console.log("closeNoteSelector")
             },
 
-            onSelectNote(notePath) {
+            onOpenNote(notePath) {
                 this.showNoteSelector = false
-                console.log("NYI: onSelectNote", name)
+                console.log("NYI: onOpenNote", name)
                 // this.$refs.editor.setNoteName(name)
             },
 
@@ -133,7 +133,14 @@
                 } else {
                     console.log("note already exists", name)
                 }
-                this.onSelectNote(notePath)
+                this.onOpenNote(notePath)
+            },
+
+            onDeleteNote(path) {
+                this.showNoteSelector = false
+                localStorage.removeItem(path)
+                console.log("deleted note", path)
+                // TODO: if the current note is deleted, open a new note
             },
 
             docChanged() {
@@ -197,8 +204,9 @@
             />
             <NoteSelector
                 v-if="showNoteSelector"
-                @selectNote="onSelectNote"
+                @openNote="onOpenNote"
                 @createNote="onCreateNote"
+                @deleteNote="onDeleteNote"
                 @close="closeNoteSelector"
             />
             <Settings
