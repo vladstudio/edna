@@ -1,8 +1,6 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
-import { getInitialContent } from "./initial-content";
 import { platform } from "../shared-utils/utils"
-
-const isDev = location.host.startsWith("localhost")
+import { scratchNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "./notes";
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
 let themeCallback = null
@@ -14,7 +12,6 @@ mediaMatch.addEventListener("change", async (event) => {
 
 const isMobileDevice = window.matchMedia("(max-width: 600px)").matches
 
-let autoUpdateCallbacks = null
 let currencyData = null
 
 class IpcRenderer {
@@ -48,8 +45,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-const scratchNotePath = "note:scratch";
-
 // get initial settings
 let settingsData = localStorage.getItem("settings")
 let initialSettings = {
@@ -64,44 +59,13 @@ if (settingsData !== null) {
     initialSettings = Object.assign(initialSettings, JSON.parse(settingsData))
 }
 
-// migrate "buffer" => "note:scratch"
-function migrateDefaultNote() {
-    const d = localStorage.getItem("buffer")
-    if (d !== null) {
-        localStorage.setItem(scratchNotePath, d)
-        localStorage.removeItem("buffer")
-        console.log("migrated default note from buffer to note:scratch")
-    }
-}
+
 migrateDefaultNote()
-function loadNotePaths() {
-    const res = [];
-    let nKeys = localStorage.length
-    for (let i = 0; i < nKeys; i++) {
-        const key = localStorage.key(i)
-        if (key.startsWith("note:")) {
-            res.push(key)
-        }
-    }
-    return res;
-}
+createDefaultNotes()
 
 let currentNotePath = initialSettings.currentNotePath;
 
 // make sure currentNotePath points to a valid note
-if (!currentNotePath.startsWith("note:")) {
-    // shouldn't happen but jic
-    currentNotePath = scratchNotePath;
-}
-
-if (localStorage.getItem(scratchNotePath) === null) {
-    const { initialContent, initialDevContent } = getInitialContent()
-    console.log("initialContent:", initialContent)
-    console.log("initialDevContent:", initialDevContent)
-    const s = isDev ? initialDevContent : initialContent;
-    localStorage.setItem(scratchNotePath, s)
-}
-
 let notePaths = loadNotePaths()
 if (!notePaths.includes(currentNotePath)) {
     currentNotePath = scratchNotePath
