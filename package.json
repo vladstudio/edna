@@ -1,6 +1,6 @@
 {
-  "name": "Heynote",
-  "version": "1.7.0",
+  "name": "Edna",
+  "version": "1.8.0",
   "main": "dist-electron/main/index.js",
   "description": "A dedicated scratch pad",
   "author": "Jonatan Heyman (https://heyman.info)",
@@ -13,7 +13,7 @@
     }
   },
   "build": {
-    "appId": "com.heynote.app",
+    "appId": "com.edna.app",
     "generateUpdatesFilesForAllChannels": true,
     "directories": {
       "buildResources": "resources"

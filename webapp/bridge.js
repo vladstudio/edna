@@ -1,6 +1,7 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
 import { platform } from "../shared-utils/utils"
 import { scratchNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "../src/notes";
+import cachedCurrencies from "./currencies-cached"
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
 let themeCallback = null
@@ -170,8 +171,11 @@ const Heynote = {
         if (currencyData !== null) {
             return currencyData
         }
-        const response = await fetch("https://currencies.heynote.com/rates.json", {cache: "no-cache"})
-        currencyData = JSON.parse(await response.text()) // TODO: response.json()?
+        // TODO: implement in my server
+        currencyData = JSON.parse(cachedCurrencies)
+        // console.log("currencyData:", currencyData)
+        // const response = await fetch("https://currencies.heynote.com/rates.json", {cache: "no-cache"})
+        // currencyData = JSON.parse(await response.text()) // TODO: response.json()?
         return currencyData
     },
 
