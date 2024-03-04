@@ -1,6 +1,7 @@
 <script>
     import UpdateStatusItem from './UpdateStatusItem.vue'
     import { LANGUAGES } from '../editor/languages.js'
+    import { fmtSize} from '../../shared-utils/utils'
     
     const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
     const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
@@ -26,7 +27,7 @@
 
         data() {
             return {
-                
+
             }
         },
 
@@ -57,9 +58,7 @@
             },
 
             formatSize() {
-                // TODO: pretty print the number
-                let n = this.docSize;
-                return `${n} bytes`
+                return fmtSize(this.docSize);
             },
 
             changeLanguageTitle() {
