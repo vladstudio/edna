@@ -2,8 +2,8 @@
     import { loadNotePaths } from '../notes'
 
     function rebuildNotesInfo() {
-        console.log("rebuildNotesInfo")
         const notePaths = loadNotePaths()
+        console.log("rebuildNotesInfo", notePaths)
         let res = notePaths.map(path => {
             let name = path.split(":")[1]
             return {
@@ -16,20 +16,20 @@
             })
         return res
     }
-    let items = rebuildNotesInfo();
 
     export default {
         data() {
             console.log("data NoteSelector")
             return {
+                items: rebuildNotesInfo(),
                 selected: 0,
                 filter: "",
             }
         },
 
         mounted() {
-            console.log("mounted NoteSelector")
-            items = rebuildNotesInfo();
+            // console.log("mounted NoteSelector")
+            // items = rebuildNotesInfo();
             this.$refs.container.focus()
             this.$refs.input.focus()
         },
@@ -37,13 +37,35 @@
         computed: {
             filteredItems() {
                 const filterLC = this.filter.toLowerCase()
-                return items.filter((noteInfo) => {
+                return this.items.filter((noteInfo) => {
                     return noteInfo.nameLC.indexOf(filterLC) !== -1
                 })
+            },
+            canDeleteSelected() {
+                if (this.filteredItems.length === 0) {
+                    return false
+                }
+                if (this.selected < 0) {
+                    return false
+                }
+                const noteInfo = this.filteredItems[this.selected]
+                // can't delete scratch note
+                if (noteInfo.name === "scratch") {
+                    return false
+                }
+                return true
             },
         },
 
         methods: {
+            trunc(name) {
+                const maxLen = 24
+                if (name.length > maxLen) {
+                    return name.substring(0, maxLen) + "..."
+                }
+                return name
+            },
+
             onKeydown(event) {
                 if (event.key === "ArrowDown") {
                     this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
@@ -103,6 +125,7 @@
                     this.$emit("close")
                 }
             },
+
         }
     }
 </script>
@@ -110,7 +133,7 @@
 <template>
     <div class="scroller">
         <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
-            <input 
+            <input
                 type="text"
                 ref="input"
                 @keydown="onKeydown"
@@ -128,7 +151,8 @@
                     {{ item.name }}
                 </li>
             </ul>
-            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create note</span> <span class="bold">{{ filter }}</span></div>
+            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create note</span> <span class="bold">{{ trunc(filter) }}</span></div>
+            <div v-if="canDeleteSelected" class="delete-help"><span class="dim"><span class="tt">Ctrl + Delete</span> to delete </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
         </form>
     </div>
 </template>
@@ -197,7 +221,13 @@
                         background: #1b6540
                         color: rgba(255,255,255, 0.87)
         .create-help
-            padding: 4px 4px
+            margin-top: 4px
+            padding: 4px 12px
+            +dark-mode
+                    color: rgba(255,255,255, 0.53)
+        .delete-help
+            margin-top: 4px
+            padding: 4px 12px
             +dark-mode
                     color: rgba(255,255,255, 0.53)
         .dim
