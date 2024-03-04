@@ -3,6 +3,7 @@ export const keyHelpStr = (platform: string) => {
     const altChar = platform === "darwin" ? "⌥" : "Alt"
 
     const keyHelp = [
+        [`${modChar}`, "Switch to another note or create a new note"],
         [`${modChar} + Enter`, "Add new block below the current block"],
         [`${altChar} + Enter`, "Add new block before the current block"],
         [`${modChar} + Shift + Enter`, "Add new block at the end of the buffer"],

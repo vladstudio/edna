@@ -1,20 +1,26 @@
 <script>
     import { loadNotePaths } from '../notes'
 
-    const notePaths = loadNotePaths()
-
-    const items = notePaths.map(path => {
-        let name = path.split(":")[1]
-        return {
-            "token": path,
-            "name": name
-        }
-    }).sort((a, b) => {
-        return a.name.localeCompare(b.name)
-    })
+    function rebuildNotesInfo() {
+        console.log("rebuildNotesInfo")
+        const notePaths = loadNotePaths()
+        let res = notePaths.map(path => {
+            let name = path.split(":")[1]
+            return {
+                "token": path,
+                "name": name,
+                "nameLC": name.toLowerCase(),
+            }
+            }).sort((a, b) => {
+                return a.name.localeCompare(b.name)
+            })
+        return res
+    }
+    let items = rebuildNotesInfo();
 
     export default {
         data() {
+            console.log("data NoteSelector")
             return {
                 selected: 0,
                 filter: "",
@@ -22,14 +28,17 @@
         },
 
         mounted() {
+            console.log("mounted NoteSelector")
+            items = rebuildNotesInfo();
             this.$refs.container.focus()
             this.$refs.input.focus()
         },
 
         computed: {
             filteredItems() {
-                return items.filter((lang) => {
-                    return lang.name.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1
+                const filterLC = this.filter.toLowerCase()
+                return items.filter((noteInfo) => {
+                    return noteInfo.nameLC.indexOf(filterLC) !== -1
                 })
             },
         },
@@ -54,11 +63,19 @@
                         this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
                     }
                 } else if (event.key === "Enter") {
-                    if (event.ctrlKey && this.filter.length > 0) {
-                        this.createNote(this.filter)
+                    if (event.ctrlKey) {
+                        console.log("Ctrl+Enter, filter:", this.filter)
+                        if (this.filter.length > 0) {
+                            this.createNote(this.filter)
+                        }
                         return;
                     }
-                    this.selectItem(this.filteredItems[this.selected].token)
+                    const selected = this.filteredItems[this.selected]
+                    if (selected) {
+                        this.selectItem(selected.token)
+                    } else {
+                        this.$emit("close")
+                    }
                     event.preventDefault()
                 } else if (event.key === "Escape") {
                     this.$emit("close")
@@ -111,7 +128,7 @@
                     {{ item.name }}
                 </li>
             </ul>
-            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create a note</span> <span class="bold">{{ filter }}</span></div>
+            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create note</span> <span class="bold">{{ filter }}</span></div>
         </form>
     </div>
 </template>
