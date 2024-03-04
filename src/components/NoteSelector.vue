@@ -292,18 +292,24 @@
             grid-column-gap: 1em
             grid-row-gap: 1em
             margin-top: 1em
+            font-size: 11px
             color: gray
             +dark-mode
                     color: rgba(255,255,255, 0.53)
         .kbd
             font-family: monospace
-            font-size: 11px
+            font-size: 10px
             border: 1px solid #ccc
             border-radius: 4px
             padding: 3px 5px
             background-color: white
+            +dark-mode
+                background-color: #3b3b3b
+                color: rgba(255,255,255, 0.9)
         .bold
             font-weight: bold
         .red
             color: red
+            +dark-mode
+                color: #ff7b72
 </style>
