@@ -1,6 +1,6 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
 import { platform } from "../shared-utils/utils"
-import { scratchNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "../src/notes";
+import { fixUpNote, scratchNotePath, journalNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "../src/notes";
 import cachedCurrencies from "./currencies-cached"
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
@@ -74,14 +74,14 @@ if (!notePaths.includes(currentNotePath)) {
 initialSettings.currentNotePath = currentNotePath
 console.log("currentNotePath:", currentNotePath)
 
-function getNoteName(notePath) {
-    if (notePath.startsWith("note:")) {
-        return notePath.substring(5)
-    }
-    return notePath;
+function getDateYYYYMMDD() {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
+    let day = ("0" + date.getDate()).slice(-2);
+    let formattedDate = `${year}-${month}-${day}`;
+    return formattedDate
 }
-// TODO: make it a function? Not sure when this would update the status bar
-initialSettings.currentNoteName = getNoteName(currentNotePath)
 
 const Heynote = {
 
@@ -98,16 +98,30 @@ const Heynote = {
             const notePath = self.settings.currentNotePath;
             console.log("Heynote.buffer.load: loading from ", notePath)
             const content = localStorage.getItem(notePath)
-            return content === null ? "\n∞∞∞text-a\n" : content
+            return fixUpNote(content)
         },
 
         async openNote(notePath) {
             console.log("Heynote.buffer.openNote:", notePath)
             let self = Heynote;
-            const content = localStorage.getItem(notePath)
-            self.settings.currentNotePath = notePath
-            // TODO: save settings?
-            return content === null ? "\n∞∞∞text-a\n" : content
+            let content = localStorage.getItem(notePath);
+            self.setOneSetting("currentNotePath", notePath)
+            if (notePath === journalNotePath) {
+                console.log("Heynote.buffer.openNote:")
+                // create block for a current day
+                const dt = getDateYYYYMMDD();
+                console.log("Heynote.buffer.openNote: dt:", dt)
+                if (content === null) {
+                    content = "\n∞∞∞text-a\n" + dt + "\n";
+                    console.log("Heynote.buffer.openNote: content:", content)
+                } else {
+                    if (!content.includes(dt)) {
+                        content = "\n∞∞∞text-a\n" + dt + "\n" + content
+                        console.log("Heynote.buffer.openNote: content:", content)
+                    }
+                }
+            }
+            return fixUpNote(content)
         },
 
         async save(content) {
@@ -139,8 +153,18 @@ const Heynote = {
         ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) => callback(settings))
     },
 
+    setOneSetting(key, value) {
+        console.log("setOneSetting:", key, value)
+        let currSettings = JSON.parse(localStorage.getItem("settings"))
+        currSettings[key] = value
+        this.setSettings(currSettings)
+    },
+
     setSettings(settings) {
+        let self = Heynote;
+        console.log("setSettings:", settings)
         localStorage.setItem("settings", JSON.stringify(settings))
+        self.settings = settings
         ipcRenderer.send(SETTINGS_CHANGE_EVENT, settings)
     },
 

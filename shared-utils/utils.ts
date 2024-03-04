@@ -1,6 +1,7 @@
 
 export let platform
 export let platformName : string
+// @ts-ignore
 const uaPlatform : string = window.navigator?.userAgentData?.platform || window.navigator.platform
 if (uaPlatform.indexOf("Win") !== -1) {
     platform = {

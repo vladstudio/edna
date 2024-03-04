@@ -6,6 +6,7 @@
     import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
     import { stringSizeInUtf8Bytes } from '../../shared-utils/utils'
+    import { fixUpNote, getNoteName } from '../notes'
 
     export default {
         components: {
@@ -19,6 +20,7 @@
 
         data() {
             return {
+                noteName: getNoteName(window.heynote.settings.currentNotePath),
                 line: 1,
                 column: 1,
                 docSize: 0,
@@ -52,8 +54,10 @@
             onThemeChange(window.heynote.themeMode.initial)
             window.heynote.themeMode.onChange(onThemeChange)
             window.heynote.onSettingsChange((settings) => {
-                console.log("onSettingsChange callback")
+                console.log("onSettingsChange callback", settings)
                 this.settings = settings
+                this.noteName = getNoteName(settings.currentNotePath)
+                console.log("noteName", this.noteName)
             })
             window.heynote.onOpenSettings(() => {
                 this.showSettings = true
@@ -129,7 +133,7 @@
                 // TODO: do I need to sanitize name for localStorage keys?
                 const notePath = "note:" + name
                 if (localStorage.getItem(notePath) == null) {
-                    localStorage.setItem(notePath, "")
+                    localStorage.setItem(notePath, fixUpNote(null))
                     console.log("created note", name)
                 } else {
                     console.log("note already exists", name)
@@ -179,7 +183,7 @@
             @docChanged="docChanged"
         />
         <StatusBar
-            :name="settings.currentNoteName"
+            :noteName="noteName"
             :line="line"
             :column="column"
             :docSize="docSize"

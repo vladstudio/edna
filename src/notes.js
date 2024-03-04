@@ -38,3 +38,23 @@ export function loadNotePaths() {
   }
   return res;
 }
+
+export function fixUpNote(content) {
+  // console.log("fixUpNote:", content)
+  if (content === null) {
+      // console.log("fixUpNote: null content")
+      return "\n∞∞∞text-a\n";
+  }
+  if (!content.startsWith("\n∞∞∞")) {
+      content = "\n∞∞∞text-a\n" + content;
+      // console.log('fixUpNote: added block to content', content)
+  }
+  return content
+}
+
+export function getNoteName(notePath) {
+  if (notePath.startsWith("note:")) {
+      return notePath.substring(5)
+  }
+  return notePath;
+}

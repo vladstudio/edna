@@ -8,7 +8,7 @@
 
     export default {
         props: [
-            "name",
+            "noteName",
             "line", 
             "column",
             "docSize",
@@ -77,7 +77,7 @@
         <div class="status-block clickable"
             @click="$emit('openNoteSelector')"
             title="Change or create new note"
-        >{{ name }}</div>
+        >{{ noteName }}</div>
         <div class="status-block line-number">
             Ln <span class="num">{{ line }}</span>
             Col <span class="num">{{ column }}</span>
