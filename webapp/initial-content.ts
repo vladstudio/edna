@@ -94,15 +94,26 @@ time = 3900 seconds to minutes
 time * 2
 
 1 EUR in USD
+
 ∞∞∞javascript
 // this is a javascript block
 let x = 5
 console.log("x is", x)
 
 ∞∞∞markdown
+# How I use Edna
+
+- I use \`scratch\` note for temporary notes
+- I use \`daily journal\` for keeping track of what I do
+- I have \`todo\` note for keeping track of short term todos
+- I have a note for each project I work on
+- I have a note for each programming language / technology I use. I keep code snippets and notes about it
+- I have \`ideas\` note for jotting down ideas
+
+∞∞∞markdown
 # More info
 
-You can find more software by me on https://arslexis.io
+You can find more software by [me](https://blog.kowalczyk.info/) on https://arslexis.io
 
 Edna is open source: https://github.com/kjk/edna
 `
