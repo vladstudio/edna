@@ -1,6 +1,6 @@
 import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constants";
 import { platform } from "../shared-utils/utils"
-import { fixUpNote, scratchNotePath, journalNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths } from "../src/notes";
+import { fixUpNote, scratchNotePath, journalNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths, isSystemNote, getSystemNoteContent } from "../src/notes";
 import cachedCurrencies from "./currencies-cached"
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
@@ -104,6 +104,10 @@ const Heynote = {
         async openNote(notePath) {
             console.log("Heynote.buffer.openNote:", notePath)
             let self = Heynote;
+            if (isSystemNote(notePath)) {
+                self.setOneSetting("currentNotePath", notePath)
+                return getSystemNoteContent(notePath)
+            }
             let content = localStorage.getItem(notePath);
             self.setOneSetting("currentNotePath", notePath)
             if (notePath === journalNotePath) {
@@ -112,11 +116,11 @@ const Heynote = {
                 const dt = getDateYYYYMMDD();
                 console.log("Heynote.buffer.openNote: dt:", dt)
                 if (content === null) {
-                    content = "\n∞∞∞text-a\n" + dt + "\n";
+                    content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
                     console.log("Heynote.buffer.openNote: content:", content)
                 } else {
                     if (!content.includes(dt)) {
-                        content = "\n∞∞∞text-a\n" + dt + "\n" + content
+                        content = "\n∞∞∞markdown\n" + "# " + dt + "\n" + content
                         console.log("Heynote.buffer.openNote: content:", content)
                     }
                 }
@@ -128,15 +132,17 @@ const Heynote = {
             let self = Heynote;
             const notePath = self.settings.currentNotePath
             console.log("Heynote.buffer.save:", notePath)
+            if (isSystemNote(notePath)) {
+                console.log("skipped saving system note")
+                return
+            }
             localStorage.setItem(notePath, content)
         },
 
         async saveAndQuit(content) {
-
         },
 
         onChangeCallback(callback) {
-
         },
     },
 

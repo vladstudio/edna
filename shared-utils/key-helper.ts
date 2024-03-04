@@ -1,9 +1,14 @@
+import { platform } from "./utils"
+
+export const modChar = platform === "darwin" ? "⌘" : "Ctrl"
+export const altChar = platform === "darwin" ? "⌥" : "Alt"
+
 export const keyHelpStr = (platform: string) => {
     const modChar = platform === "darwin" ? "⌘" : "Ctrl"
     const altChar = platform === "darwin" ? "⌥" : "Alt"
 
     const keyHelp = [
-        [`${modChar}`, "Switch to another note or create a new note"],
+        [`${modChar} + O`, "Open, create or delete a note"],
         [`${modChar} + Enter`, "Add new block below the current block"],
         [`${altChar} + Enter`, "Add new block before the current block"],
         [`${modChar} + Shift + Enter`, "Add new block at the end of the buffer"],
@@ -15,6 +20,7 @@ export const keyHelpStr = (platform: string) => {
         [`${modChar} + A`, "Select all text in a note block. Press again to select the whole buffer"],
         [`${modChar} + ${altChar} + Up/Down`, "Add additional cursor above/below"],
         [`${altChar} + Shift + F`, "Format block content (works for JSON, JavaScript, HTML, CSS and Markdown)"],
+        [`${modChar} + F`, "Search / replace within a note"],
     ]
 
     const keyMaxLength = keyHelp.map(([key]) => key.length).reduce((a, b) => Math.max(a, b))

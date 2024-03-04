@@ -1,4 +1,4 @@
-import { getInitialContent } from "../webapp/initial-content";
+import { getInitialContent, getHelp } from "../webapp/initial-content";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
@@ -52,9 +52,30 @@ export function fixUpNote(content) {
   return content
 }
 
+export function splitNotePath(notePath) {
+  const i = notePath.indexOf(":")
+  return [notePath.substring(0, i), notePath.substring(i+1)]
+}
+
 export function getNoteName(notePath) {
-  if (notePath.startsWith("note:")) {
-      return notePath.substring(5)
+  console.log("getNoteName:", notePath)
+  const i = notePath.indexOf(":")
+  return notePath.substring(i+1)
+}
+
+export function isSystemNote(notePath) {
+  console.log("isSystemNote:", notePath)
+  return notePath.startsWith("system:")
+}
+
+export function getSystemNotes() {
+  return ["system:help"]
+}
+
+export function getSystemNoteContent(notePath) {
+  console.log("getSystemNoteContent:", notePath)
+  if (notePath === "system:help") {
+      return getHelp()
   }
-  return notePath;
+  return "\n∞∞∞text-a\n" + "error: unknown system note:" + notePath + "\n"
 }

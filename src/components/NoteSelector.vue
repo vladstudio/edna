@@ -1,19 +1,29 @@
 <script>
-    import { loadNotePaths } from '../notes'
+    import { loadNotePaths, splitNotePath, getSystemNotes } from '../notes'
+
+    function mkNoteInfo(path) {
+        let [_, name] = splitNotePath(path)
+        return {
+            "path": path,
+            "name": name,
+            "nameLC": name.toLowerCase(),
+        }
+    }
 
     function rebuildNotesInfo() {
         const notePaths = loadNotePaths()
         console.log("rebuildNotesInfo, notes", notePaths.length)
-        let res = notePaths.map(path => {
-            let name = path.split(":")[1]
-            return {
-                "path": path,
-                "name": name,
-                "nameLC": name.toLowerCase(),
-            }
-            }).sort((a, b) => {
-                return a.name.localeCompare(b.name)
-            })
+        let res = [];
+        for (let path of notePaths) {
+            res.push(mkNoteInfo(path))
+        }
+        res.sort((a, b) => {
+            return a.name.localeCompare(b.name)
+        })
+        const systemNotes = getSystemNotes()
+        for (let path of systemNotes) {
+            res.push(mkNoteInfo(path))
+        }
         return res
     }
 
@@ -57,7 +67,13 @@
                 if (noteInfo.name === "scratch") {
                     return false
                 }
+                if (noteInfo.path.startsWith("system:")) {
+                    return false
+                }
                 return true
+            },
+            showDelete() {
+                return this.canOpenSelected
             },
             canCreate() {
                 let filter = this.filter.trim()
@@ -194,9 +210,10 @@
                 <div v-if="canCreate">create note</div>
                 <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
 
-                <div v-if="canDeleteSelected"><span class="kbd">Ctrl + Delete</span></div>
-                <div v-if="canDeleteSelected" class="red">delete note</div>
-                <div v-if="canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+                <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
+                <div v-if="showDelete" class="red">delete note</div>
+                <div v-if="showDelete && canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+                <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
 
                 <div><span class="kbd">Esc</span></div>
                 <div>dismiss</div>

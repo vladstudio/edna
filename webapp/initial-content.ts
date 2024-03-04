@@ -1,16 +1,29 @@
-import { keyHelpStr } from "../shared-utils/key-helper";
+import { keyHelpStr, modChar } from "../shared-utils/key-helper";
 import { platformName } from "../shared-utils/utils"
 
 export function getHelp() {
   const help = `
 ∞∞∞markdown
-Welcome to Edna - a scratchpad for quickly taking notes.
+# Welcome to Edna
 
-Keyboard shortcuts:
+Edna is a scratchpad for quickly taking notes.
+
+∞∞∞markdown
+# Keyboard shortcuts
 
 ${keyHelpStr(platformName)}
 
+∞∞∞markdown
+# Why Edna?
+
 Edna is optimized for speed of note taking.
+
+We have keyboard shortcuts for quickly navigating between blocks and notes.
+
+We have syntax highlighting for markdown and multiple programming languages.
+
+∞∞∞markdown
+# Blocks and notes
 
 Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.
 
@@ -18,28 +31,78 @@ Each block has its own type for syntax highlighting.
 
 You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.
 
+∞∞∞markdown
+# Multiple notes
+
 You can create multiple notes:
-* default, always available note is 'scratch'. Press 'Alt-1' to quickly switch to it
-* press 'Alt-0' to switch to another note or create a new note
-* or click on the note name in the bottom left corner
+- default, always available note is 'scratch'. Press \`Alt-1\` to quickly switch to it
+- press \'${modChar} + O\' to switch to another note or create / delete a note
+- or click on the note name in the bottom left corner
 
-It's up to you to decide if you want to put your text as new block in current note or in a separate note.
+It's up to you to how to divide your writing into blocks and notes.
 
-By default we also create a 'daily journal' note.
+A \`scratch\` note is always available and cannot be deleted.
 
-You can delete it if you don't want to use it but the idea is that it's for keeping track of what you did.
+∞∞∞markdown
+# Daily journal
 
-By convention each block represents a day, and we recommend to put date in 'YYYY-MM-DD' format as the first line.
+By default we create a 'daily journal' note.
 
-We automatically create a new block for each day when you open 'daily journal' note.
+Daily journal is for keeping track of what you do daily.
 
-Edna is private and secure. Your notes are stored in the browser.
+By convention each block represents a day.
 
-If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.
+We recommend that first line is date in the format: \`#YYYY-MM-DD <day of week>\`.
 
-TODO: add more help here about math blocks.
+We automatically create a new block for each day when you open journal note.
 
-You can find by software by me on https://arslexis.io
+You can delete it if you don't want to use it.
+
+∞∞∞markdown
+# Accessing notes on multiple devices
+
+You can login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.
+
+∞∞∞markdown
+# Privacy and security
+
+Your notes are private and secure.
+
+Your notes are stored:
+- locally in the browser if you don't login with GitHub
+- encrypted with a password if you login with GitHub. The password is only stored in the browser.
+
+The code is [open source]() so you can audit it.
+
+∞∞∞markdown
+In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:
+
+- [ ] Try out Edna
+- [ ] Do laundry
+
+∞∞∞math
+This is a Math block. Here, rows are evaluated as math expressions.
+
+radius = 5
+area = radius^2 * PI
+sqrt(9)
+
+It also supports some basic unit conversions, including currencies:
+
+13 inches in cm
+time = 3900 seconds to minutes
+time * 2
+
+1 EUR in USD
+∞∞∞javascript
+// this is a javascript block
+let x = 5
+console.log("x is", x)
+
+∞∞∞markdown
+# More info
+
+You can find more software by me on https://arslexis.io
 
 Edna is open source: https://github.com/kjk/edna
 `
@@ -69,8 +132,8 @@ time * 2
 ∞∞∞markdown
 In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:
 
-- [x] Download Heynote
-- [ ] Try out Heynote
+- [ ] Try out Edna
+- [ ] Do laundry
 ∞∞∞text-a
 `
 
