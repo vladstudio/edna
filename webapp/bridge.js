@@ -132,6 +132,15 @@ if (!notePaths.includes(currentNotePath)) {
 initialSettings.currentNotePath = currentNotePath
 console.log("currentNotePath:", currentNotePath)
 
+function getNoteName(notePath) {
+    if (notePath.startsWith("note:")) {
+        return notePath.substring(5)
+    }
+    return notePath;
+}
+// TODO: make it a function? Not sure when this would update the status bar
+initialSettings.currentNoteName = getNoteName(currentNotePath)
+
 const Heynote = {
 
     platform: platform,

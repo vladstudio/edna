@@ -23,6 +23,7 @@ import { todoCheckboxPlugin} from "./todo-checkbox.ts"
 import { links } from "./links.js"
 
 export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector"
+export const NOTE_SELECTOR_EVENT = "openNoteSelector"
 export const DOC_CHANGED_EVENT = "docChanged"
 
 function getKeymapExtensions(editor, keymap) {
@@ -63,9 +64,8 @@ export class HeynoteEditor {
 
         let updateListenerExtension = EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              // Handle the event here
-              console.log("docChanged:", update)
-              this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT))
+                // console.log("docChanged:", update)
+                this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT))
             }
           });
         const state = EditorState.create({
@@ -191,6 +191,10 @@ export class HeynoteEditor {
 
     openLanguageSelector() {
         this.element.dispatchEvent(new Event(LANGUAGE_SELECTOR_EVENT))
+    }
+
+    openNoteSelector() {
+        this.element.dispatchEvent(new Event(NOTE_SELECTOR_EVENT))
     }
 
     setCurrentLanguage(lang, auto=false) {

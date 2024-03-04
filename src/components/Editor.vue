@@ -1,5 +1,5 @@
 <script>
-    import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT } from '../editor/editor.js'
+    import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
     import { syntaxTree } from "@codemirror/language"
 
     export default {
@@ -52,6 +52,9 @@
 
             this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
                 this.$emit("openLanguageSelector")
+            })
+            this.$refs.editor.addEventListener(NOTE_SELECTOR_EVENT, (e) => {
+                this.$emit("openNoteSelector")
             })
             this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
                 this.$emit("docChanged")

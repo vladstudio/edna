@@ -7,6 +7,7 @@
 
     export default {
         props: [
+            "name",
             "line", 
             "column",
             "docSize",
@@ -56,8 +57,9 @@
             },
 
             formatSize() {
-                // let n = this.docSize;
-                    return `${this.docSize} bytes`
+                // TODO: pretty print the number
+                let n = this.docSize;
+                return `${n} bytes`
             },
 
             changeLanguageTitle() {
@@ -73,6 +75,10 @@
 
 <template>
     <div :class="className">
+        <div class="status-block clickable"
+            @click="$emit('openNoteSelector')"
+            title="Change or create new note"
+        >{{ name }}</div>
         <div class="status-block line-number">
             Ln <span class="num">{{ line }}</span>
             Col <span class="num">{{ column }}</span>
@@ -82,15 +88,15 @@
         </div>
         <div class="status-block doc-size">{{  formatSize  }}</div>
         <div class="spacer"></div>
-        <div 
+        <div
             @click="$emit('openLanguageSelector')"
             class="status-block lang clickable"
             :title="changeLanguageTitle"
         >
-            {{ languageName }} 
+            {{ languageName }}
             <span v-if="languageAuto" class="auto">(auto)</span>
         </div>
-        <div 
+        <div
             v-if="supportsFormat"
             @click="$emit('formatCurrentBlock')"
             class="status-block format clickable"
@@ -98,15 +104,15 @@
         >
             <span class="icon icon-format"></span>
         </div>
-        <UpdateStatusItem 
-            v-if="updatesEnabled" 
+        <UpdateStatusItem
+            v-if="updatesEnabled"
             :autoUpdate="autoUpdate"
             :allowBetaVersions="allowBetaVersions"
         />
         <div class="status-block theme clickable" @click="$emit('toggleTheme')" title="Toggle dark/light mode">
             <span :class="'icon ' + themeSetting"></span>
         </div>
-        <div 
+        <div
             @click="$emit('openSettings')"
             class="status-block settings clickable"
             title="Settings"

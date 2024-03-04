@@ -57,6 +57,7 @@ export function heynoteKeymap(editor) {
         ["Alt-ArrowUp", moveLineUp],
         ["Alt-ArrowDown", moveLineDown],
         ["Mod-l", () => editor.openLanguageSelector()],
+        ["Alt-0", () => editor.openNoteSelector()],
         ["Alt-Shift-f", formatBlockContent],
         ["Mod-Alt-ArrowDown", newCursorBelow],
         ["Mod-Alt-ArrowUp", newCursorAbove],

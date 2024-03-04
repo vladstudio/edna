@@ -3,6 +3,7 @@
     import StatusBar from './StatusBar.vue'
     import Editor from './Editor.vue'
     import LanguageSelector from './LanguageSelector.vue'
+    import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
 
     export default {
@@ -11,6 +12,7 @@
             Editor,
             StatusBar,
             LanguageSelector,
+            NoteSelector,
             Settings,
         },
 
@@ -27,6 +29,7 @@
                 themeSetting: 'system',
                 development: window.location.href.indexOf("dev=1") !== -1,
                 showLanguageSelector: false,
+                showNoteSelector: false,
                 showSettings: false,
                 settings: window.heynote.settings,
             }
@@ -93,12 +96,6 @@
                 this.showLanguageSelector = true
             },
 
-            docChanged() {
-                let c = this.$refs.editor.getContent() || ""
-                // TODO: this should be utf8-encoded size
-                this.docSize = c.length;
-            },
-
             closeLanguageSelector() {
                 this.showLanguageSelector = false
                 this.$refs.editor.focus()
@@ -107,6 +104,28 @@
             onSelectLanguage(language) {
                 this.showLanguageSelector = false
                 this.$refs.editor.setLanguage(language)
+            },
+
+            openNoteSelector() {
+                this.showNoteSelector = true
+            },
+
+            closeNoteSelector() {
+                this.showNoteSelector = false
+                this.$refs.editor.focus()
+                console.log("closeNoteSelector")
+            },
+
+            onSelectNote(name) {
+                this.showNoteSelector = false
+                console.log("NYI: onSelectNote", name)
+                // this.$refs.editor.setNoteName(name)
+            },
+
+            docChanged() {
+                let c = this.$refs.editor.getContent() || ""
+                // TODO: this should be utf8-encoded size
+                this.docSize = c.length;
             },
 
             formatCurrentBlock() {
@@ -119,7 +138,7 @@
 
 <template>
     <div class="container">
-        <TopNav />
+        <!-- <TopNav /> -->
         <Editor 
             @cursorChange="onCursorChange"
             :theme="theme"
@@ -135,14 +154,16 @@
             class="editor"
             ref="editor"
             @openLanguageSelector="openLanguageSelector"
+            @openNoteSelector="openNoteSelector"
             @docChanged="docChanged"
         />
         <StatusBar
-            :line="line" 
+            :name="settings.currentNoteName"
+            :line="line"
             :column="column"
             :docSize="docSize"
             :selectionSize="selectionSize"
-            :language="language" 
+            :language="language"
             :languageAuto="languageAuto"
             :theme="theme"
             :themeSetting="themeSetting"
@@ -150,17 +171,23 @@
             :allowBetaVersions="settings.allowBetaVersions"
             @toggleTheme="toggleTheme"
             @openLanguageSelector="openLanguageSelector"
+            @openNoteSelector="openNoteSelector"
             @formatCurrentBlock="formatCurrentBlock"
             @openSettings="showSettings = true"
             class="status" 
         />
         <div class="overlay">
-            <LanguageSelector 
-                v-if="showLanguageSelector" 
+            <LanguageSelector
+                v-if="showLanguageSelector"
                 @selectLanguage="onSelectLanguage"
                 @close="closeLanguageSelector"
             />
-            <Settings 
+            <NoteSelector
+                v-if="showNoteSelector"
+                @selectNote="onSelectNote"
+                @close="closeNoteSelector"
+            />
+            <Settings
                 v-if="showSettings"
                 :initialSettings="settings"
                 @closeSettings="closeSettings"
