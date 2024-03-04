@@ -12,14 +12,22 @@ ${keyHelpStr(platformName)}
 
 Edna is private and secure. Your notes are stored in the browser.
 
-If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with your password.
+If you want to access your notes on multiple devices, login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.
+
+Edna is optimized for speed of note taking.
+
+Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.
+
+Each block has its own type for syntax highlighting.
+
+You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.
 
 You can create multiple notes:
 * default, always available note is 'scratch'. Press 'Alt-1' to quickly switch to it
 * press 'Alt-0' to switch to another note or create a new note
 * or click on the note name in the bottom left corner
 
-Each note consists of multiple blocks. It's up to you to decide if you want to put your note as block or in a separate note.
+It's up to you to decide if you want to put your text as new block in current note or in a separate note.
 
 By default we also create a 'daily journal' note.
 
