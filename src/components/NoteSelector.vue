@@ -41,11 +41,18 @@
                     return noteInfo.nameLC.indexOf(filterLC) !== -1
                 })
             },
-            canDeleteSelected() {
+            canOpenSelected() {
                 if (this.filteredItems.length === 0) {
                     return false
                 }
                 if (this.selected < 0) {
+                    return false
+                }
+                return true
+            },
+            // TODO: filter help note
+            canDeleteSelected() {
+                if (!this.canOpenSelected) {
                     return false
                 }
                 const noteInfo = this.filteredItems[this.selected]
@@ -55,6 +62,15 @@
                 }
                 return true
             },
+            canCreate() {
+                let filter = this.filter.trim()
+                for (let noteInfo of this.items) {
+                    if (noteInfo.name === filter) {
+                        return false
+                    }
+                }
+                return true
+            }
         },
 
         methods: {
@@ -125,7 +141,6 @@
                     this.$emit("close")
                 }
             },
-
         }
     }
 </script>
@@ -151,8 +166,10 @@
                     {{ item.name }}
                 </li>
             </ul>
-            <div v-if="filter.length > 0" class="create-help"><span class="dim"><span class="tt">Ctrl + Enter</span> to create note</span> <span class="bold">{{ trunc(filter) }}</span></div>
-            <div v-if="canDeleteSelected" class="delete-help"><span class="dim"><span class="tt">Ctrl + Delete</span> to delete </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
+            <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
+            <div v-if="canOpenSelected" class="kbd-help"><span class="dim"><span class="kbd">Enter</span> to open </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
+            <div v-if="canCreate" class="kbd-help"><span class="dim"><span class="kbd">Ctrl + Enter</span> to create note</span> <span class="bold">{{ trunc(filter) }}</span></div>
+            <div v-if="canDeleteSelected" class="kbd-help"><span class="dim"><span class="kbd">Ctrl + Delete</span> to delete </span><span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
         </form>
     </div>
 </template>
@@ -220,20 +237,19 @@
                     &.selected
                         background: #1b6540
                         color: rgba(255,255,255, 0.87)
-        .create-help
+        .kbd-help
             margin-top: 4px
-            padding: 4px 12px
-            +dark-mode
-                    color: rgba(255,255,255, 0.53)
-        .delete-help
-            margin-top: 4px
-            padding: 4px 12px
+            padding: 4px 0px
             +dark-mode
                     color: rgba(255,255,255, 0.53)
         .dim
             color: gray
-        .tt
+        .kbd
             font-family: monospace
+            font-size: 12px
+            border: 1px solid #ccc
+            border-radius: 4px
+            padding: 3px 5px
         .bold
             font-weight: bold
 </style>
