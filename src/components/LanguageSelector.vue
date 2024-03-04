@@ -52,7 +52,12 @@
                         this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
                     }
                 } else if (event.key === "Enter") {
-                    this.selectItem(this.filteredItems[this.selected].token)
+                    const selected = this.filteredItems[this.selected]
+                    if (selected) {
+                        this.selectItem(selected.token)
+                    } else {
+                        this.$emit("close")
+                    }
                     event.preventDefault()
                 } else if (event.key === "Escape") {
                     this.$emit("close")
