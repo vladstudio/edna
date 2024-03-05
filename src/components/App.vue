@@ -5,7 +5,7 @@
     import LanguageSelector from './LanguageSelector.vue'
     import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
-    import { stringSizeInUtf8Bytes } from '../../shared-utils/utils'
+    import { stringSizeInUtf8Bytes } from '../utils'
     import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
 
     export default {

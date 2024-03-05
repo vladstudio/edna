@@ -1,8 +1,8 @@
 <script>
     import UpdateStatusItem from './UpdateStatusItem.vue'
     import { LANGUAGES } from '../editor/languages.js'
-    import { fmtSize} from '../../shared-utils/utils'
-    
+    import { fmtSize} from '../utils'
+
     const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
     const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
 

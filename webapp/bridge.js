@@ -2,6 +2,8 @@ import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constant
 import { platform } from "../shared-utils/utils"
 import { fixUpNote, scratchNotePath, journalNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths, isSystemNote, getSystemNoteContent } from "../src/notes";
 import cachedCurrencies from "./currencies-cached"
+import { getGitHubToken } from "../src/githubapi";
+import { getDateYYYYMMDDDay } from "../src/utils"
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
 let themeCallback = null
@@ -12,6 +14,9 @@ mediaMatch.addEventListener("change", async (event) => {
 })
 
 const isMobileDevice = window.matchMedia("(max-width: 600px)").matches
+
+let ghToken = getGitHubToken()
+console.log("ghToken:", ghToken)
 
 let currencyData = null
 
@@ -75,28 +80,6 @@ console.log("currentNotePath:", currentNotePath)
 // settings might not have existed or we might have added new setting from initialSettings
 // so re-save to make sure they're always there
 localStorage.setItem("settings", JSON.stringify(initialSettings))
-
-function getDateYYYYMMDD() {
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
-    let day = ("0" + date.getDate()).slice(-2);
-    let formattedDate = `${year}-${month}-${day}`;
-    return formattedDate
-}
-
-const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-function getDateYYYYMMDDDay() {
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
-    let day = ("0" + date.getDate()).slice(-2);
-    let dayOfWeek = date.getDay();
-    let dayName = daysOfWeek[dayOfWeek];
-    let formattedDate = `${year}-${month}-${day} ${dayName}`;
-    return formattedDate
-}
 
 const Heynote = {
 
