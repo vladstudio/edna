@@ -85,6 +85,19 @@ function getDateYYYYMMDD() {
     return formattedDate
 }
 
+const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function getDateYYYYMMDDDay() {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
+    let day = ("0" + date.getDate()).slice(-2);
+    let dayOfWeek = date.getDay();
+    let dayName = daysOfWeek[dayOfWeek];
+    let formattedDate = `${year}-${month}-${day} ${dayName}`;
+    return formattedDate
+}
+
 const Heynote = {
 
     platform: platform,
@@ -115,7 +128,7 @@ const Heynote = {
             if (notePath === journalNotePath) {
                 console.log("Heynote.buffer.openNote:")
                 // create block for a current day
-                const dt = getDateYYYYMMDD();
+                const dt = getDateYYYYMMDDDay();
                 console.log("Heynote.buffer.openNote: dt:", dt)
                 if (content === null) {
                     content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
