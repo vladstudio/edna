@@ -79,7 +79,7 @@
 
             toggleTheme() {
                 let newTheme
-                // when the "system" theme is used, make sure that the first click always results in amn actual theme change
+                // when the "system" theme is used, make sure that the first click always results in an actual theme change
                 if (this.initialTheme === "light") {
                     newTheme = this.themeSetting === "system" ? "dark" : (this.themeSetting === "dark" ? "light" : "system")
                 } else {
@@ -119,7 +119,7 @@
             closeNoteSelector() {
                 this.showNoteSelector = false
                 this.$refs.editor.focus()
-                console.log("closeNoteSelector")
+                // console.log("closeNoteSelector")
             },
 
             onOpenNote(notePath) {

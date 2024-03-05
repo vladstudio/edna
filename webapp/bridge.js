@@ -193,7 +193,7 @@ const Heynote = {
         set: (mode) => {
             localStorage.setItem("theme", mode)
             themeCallback(mode)
-            console.log("set theme to", mode)
+            // console.log("set theme to", mode)
         },
         get: async () => {
             const theme = localStorage.getItem("theme") || "system"

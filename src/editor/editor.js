@@ -165,7 +165,7 @@ export class HeynoteEditor {
     }
 
     focus() {
-      console.log("focus");
+        // console.log("focus");
         focusEditorView(this.view)
         //this.view.focus()
     }

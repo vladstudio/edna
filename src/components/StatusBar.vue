@@ -64,6 +64,10 @@
             updatesEnabled() {
                 return !!window.heynote.autoUpdate
             },
+
+            changeThemeTitle() {
+                return`Toggle system/light/dark theme. Current: ${this.themeSetting}`
+            }
         },
     }
 </script>
@@ -104,7 +108,7 @@
             :autoUpdate="autoUpdate"
             :allowBetaVersions="allowBetaVersions"
         />
-        <div class="status-block theme clickable" @click="$emit('toggleTheme')" title="Toggle dark/light mode">
+        <div class="status-block theme clickable" @click="$emit('toggleTheme')" :title="changeThemeTitle">
             <span :class="'icon ' + themeSetting"></span>
         </div>
         <div
