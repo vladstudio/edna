@@ -6,7 +6,7 @@
     import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
     import { stringSizeInUtf8Bytes } from '../../shared-utils/utils'
-    import { fixUpNote, getNoteName, scratchNotePath } from '../notes'
+    import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
 
     export default {
         components: {
@@ -127,6 +127,10 @@
                 this.$refs.editor.openNote(notePath)
             },
 
+            openHelp() {
+                this.$refs.editor.openNote(helpNotePath)
+            },
+
             onCreateNote(name) {
                 this.showNoteSelector = false
                 // TODO: do I need to sanitize name for localStorage keys?
@@ -201,6 +205,7 @@
             @openNoteSelector="openNoteSelector"
             @formatCurrentBlock="formatCurrentBlock"
             @openSettings="showSettings = true"
+            @openHelp="openHelp"
             class="status" 
         />
         <div class="overlay">

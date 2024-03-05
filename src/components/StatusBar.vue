@@ -40,10 +40,6 @@
                 return LANGUAGE_NAMES[this.language] || this.language
             },
 
-            className() {
-                return `status`
-            },
-
             supportsFormat() {
                 const lang = LANGUAGE_MAP[this.language]
                 return !!lang ? lang.supportsFormat : false
@@ -73,7 +69,7 @@
 </script>
 
 <template>
-    <div :class="className">
+    <div class="status">
         <div class="status-block clickable"
             @click="$emit('openNoteSelector')"
             title="Change or create new note"
@@ -118,6 +114,11 @@
         >
             <span class="icon icon-format"></span>
         </div>
+        <div
+            @click="$emit('openHelp')"
+            class="status-block clickable"
+            title="Help"
+        >?</div>
     </div>
 </template>
 
@@ -142,7 +143,6 @@
         
         .status-block
             box-sizing: border-box
-            height: 22px
             padding: 4px 10px
             cursor: default
             &:first-child

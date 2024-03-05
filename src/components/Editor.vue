@@ -1,6 +1,8 @@
 <script>
     import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
     import { syntaxTree } from "@codemirror/language"
+    import { EditorState, EditorSelection } from "@codemirror/state"
+import { scratchNotePath } from '../notes.js'
 
     export default {
         props: {
@@ -174,7 +176,7 @@
             },
 
             focus() {
-                this.editor.focus()
+                this.editor.focus();
             },
 
             getContent() {
@@ -188,8 +190,18 @@
                 // the debounce is still in progress, I think
                 this.editor.saveFunction(this.editor.getContent())
                 window.heynote.buffer.openNote(notePath).then((content) => {
-                    this.editor.setContent(content)
-                    // TODO: change selection
+                    let newState = this.editor.createState(content)
+                    this.editor.view.setState(newState);
+                    // a bit magic: sometimes we open at the beginning, sometimes at the end
+                    // TODO: remember selection in memory so that we can restore during a session
+                    let pos = 0;
+                    if (notePath === scratchNotePath) {
+                        pos = content.length
+                    }
+                    this.editor.view.dispatch({
+                        selection: {anchor: pos, head: pos},
+                        scrollIntoView: true,
+                    })
                     this.$emit("docChanged")
                     this.focus()
                 })

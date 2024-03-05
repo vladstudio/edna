@@ -2,6 +2,7 @@ import { getInitialContent, getHelp } from "../webapp/initial-content";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
+export const helpNotePath = "system:help";
 
 export const isDev = location.host.startsWith("localhost")
 

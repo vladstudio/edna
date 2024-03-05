@@ -1,4 +1,4 @@
-import { Annotation, EditorState, Compartment } from "@codemirror/state"
+import { Annotation, EditorState, Compartment, EditorSelection } from "@codemirror/state"
 import { EditorView, keymap, drawSelection, ViewPlugin, lineNumbers } from "@codemirror/view"
 import { indentUnit, forceParsing, foldGutter } from "@codemirror/language"
 import { markdown } from "@codemirror/lang-markdown"
@@ -21,6 +21,7 @@ import { languageDetection } from "./language-detection/autodetect.js"
 import { autoSaveContent } from "./save.js"
 import { todoCheckboxPlugin} from "./todo-checkbox.ts"
 import { links } from "./links.js"
+import { focusEditorView } from "../cmutils.js"
 
 export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector"
 export const NOTE_SELECTOR_EVENT = "openNoteSelector"
@@ -33,7 +34,6 @@ function getKeymapExtensions(editor, keymap) {
         return heynoteKeymap(editor)
     }
 }
-
 
 export class HeynoteEditor {
     constructor({
@@ -69,48 +69,52 @@ export class HeynoteEditor {
                 this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT))
             }
           });
-        const state = EditorState.create({
-            doc: content || "",
-            extensions: [
-                updateListenerExtension,
-                this.keymapCompartment.of(getKeymapExtensions(this, keymap)),
-                heynoteCopyCut(this),
+          this.createState = (content) => {
+            const state = EditorState.create({
+              doc: content || "",
+              extensions: [
+                  updateListenerExtension,
+                  this.keymapCompartment.of(getKeymapExtensions(this, keymap)),
+                  heynoteCopyCut(this),
 
-                //minimalSetup,
-                this.lineNumberCompartment.of(showLineNumberGutter ? [lineNumbers(), blockLineNumbers] : []),
-                customSetup, 
-                this.foldGutterCompartment.of(showFoldGutter ? [foldGutter()] : []),
+                  //minimalSetup,
+                  this.lineNumberCompartment.of(showLineNumberGutter ? [lineNumbers(), blockLineNumbers] : []),
+                  customSetup,
+                  this.foldGutterCompartment.of(showFoldGutter ? [foldGutter()] : []),
 
-                this.closeBracketsCompartment.of(bracketClosing ? [closeBrackets()] : []),
+                  this.closeBracketsCompartment.of(bracketClosing ? [closeBrackets()] : []),
 
-                this.readOnlyCompartment.of([]),
-                
-                this.themeCompartment.of(theme === "dark" ? heynoteDark : heynoteLight),
-                heynoteBase,
-                this.fontTheme.of(getFontTheme(fontFamily, fontSize)),
-                indentUnit.of("    "),
-                EditorView.scrollMargins.of(f => {
-                    return {top: 80, bottom: 80}
-                }),
-                heynoteLang(),
-                noteBlockExtension(this),
-                languageDetection(() => this.view),
-                
-                // set cursor blink rate to 1 second
-                drawSelection({cursorBlinkRate:1000}),
+                  this.readOnlyCompartment.of([]),
 
-                // add CSS class depending on dark/light theme
-                EditorView.editorAttributes.of((view) => {
-                    return {class: view.state.facet(EditorView.darkTheme) ? "dark-theme" : "light-theme"}
-                }),
+                  this.themeCompartment.of(theme === "dark" ? heynoteDark : heynoteLight),
+                  heynoteBase,
+                  this.fontTheme.of(getFontTheme(fontFamily, fontSize)),
+                  indentUnit.of("    "),
+                  EditorView.scrollMargins.of(f => {
+                      return {top: 80, bottom: 80}
+                  }),
+                  heynoteLang(),
+                  noteBlockExtension(this),
+                  languageDetection(() => this.view),
 
-                saveFunction ? autoSaveContent(saveFunction, 2000) : [],
+                  // set cursor blink rate to 1 second
+                  drawSelection({cursorBlinkRate:1000}),
 
-                todoCheckboxPlugin,
-                markdown(),
-                links,
-            ],
-        })
+                  // add CSS class depending on dark/light theme
+                  EditorView.editorAttributes.of((view) => {
+                      return {class: view.state.facet(EditorView.darkTheme) ? "dark-theme" : "light-theme"}
+                  }),
+
+                  saveFunction ? autoSaveContent(saveFunction, 2000) : [],
+
+                  todoCheckboxPlugin,
+                  markdown(),
+                  links,
+              ],
+            })
+            return state
+          }
+        const state = this.createState(content)
 
         // make sure saveFunction is called when page is unloaded
         if (saveFunction) {
@@ -161,7 +165,9 @@ export class HeynoteEditor {
     }
 
     focus() {
-        this.view.focus()
+      console.log("focus");
+        focusEditorView(this.view)
+        //this.view.focus()
     }
 
     setReadOnly(readOnly) {
@@ -231,8 +237,6 @@ export class HeynoteEditor {
         triggerCurrenciesLoaded(this.view.state, this.view.dispatch)
     }
 }
-
-
 
 /*// set initial data
 editor.update([
