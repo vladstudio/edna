@@ -12,6 +12,7 @@ import { cppLanguage } from "@codemirror/lang-cpp"
 import { xmlLanguage } from "@codemirror/lang-xml"
 import { rustLanguage } from "@codemirror/lang-rust"
 import { csharpLanguage } from "@replit/codemirror-lang-csharp"
+import { svelteLanguage } from "@replit/codemirror-lang-svelte"
 
 import { StreamLanguage } from "@codemirror/language"
 import { ruby } from "@codemirror/legacy-modes/mode/ruby"
@@ -151,6 +152,12 @@ export const LANGUAGES = [
         name: "C#",
         parser: csharpLanguage.parser,
         guesslang: "cs",
+    }),
+    new Language({
+        token: "svelte",
+        name: "Svelte",
+        parser: svelteLanguage.parser,
+        guesslang: null,
     }),
     new Language({
         token: "ruby",
