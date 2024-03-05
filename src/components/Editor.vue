@@ -183,6 +183,10 @@
 
             openNote(notePath) {
                 console.log("openNote:", notePath)
+                // saving is debounced so ensure we save before opening a new note
+                // TODO: we'll have a spurious save if there was a debounce, because
+                // the debounce is still in progress, I think
+                this.editor.saveFunction(this.editor.getContent())
                 window.heynote.buffer.openNote(notePath).then((content) => {
                     this.editor.setContent(content)
                     // TODO: change selection

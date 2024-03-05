@@ -6,7 +6,7 @@
     import NoteSelector from './NoteSelector.vue'
     import Settings from './settings/Settings.vue'
     import { stringSizeInUtf8Bytes } from '../../shared-utils/utils'
-    import { fixUpNote, getNoteName } from '../notes'
+    import { fixUpNote, getNoteName, scratchNotePath } from '../notes'
 
     export default {
         components: {
@@ -124,7 +124,6 @@
 
             onOpenNote(notePath) {
                 this.showNoteSelector = false
-                console.log("onOpenNote", notePath)
                 this.$refs.editor.openNote(notePath)
             },
 
@@ -141,11 +140,14 @@
                 this.onOpenNote(notePath)
             },
 
-            onDeleteNote(path) {
+            onDeleteNote(notePath) {
                 this.showNoteSelector = false
-                localStorage.removeItem(path)
-                console.log("deleted note", path)
-                // TODO: if the current note is deleted, open a new note
+                localStorage.removeItem(notePath)
+                console.log("deleted note", notePath)
+                if (notePath === this.settings.currentNotePath) {
+                    console.log("deleted current note, opening scratch note")
+                    this.$refs.editor.openNote(scratchNotePath)
+                }
             },
 
             docChanged() {

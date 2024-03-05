@@ -38,10 +38,10 @@ function getKeymapExtensions(editor, keymap) {
 export class HeynoteEditor {
     constructor({
         element, 
-        content, 
+        content,
         focus=true, 
         theme="light", 
-        saveFunction=null, 
+        saveFunction=null,
         keymap="default", 
         emacsMetaKey,
         showLineNumberGutter=true, 
@@ -61,6 +61,7 @@ export class HeynoteEditor {
         this.deselectOnCopy = keymap === "emacs"
         this.emacsMetaKey = emacsMetaKey
         this.fontTheme = new Compartment
+        this.saveFunction = saveFunction
 
         let updateListenerExtension = EditorView.updateListener.of((update) => {
             if (update.docChanged) {
