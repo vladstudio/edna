@@ -2,7 +2,6 @@ import { SETTINGS_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../electron/constant
 import { platform } from "../shared-utils/utils"
 import { fixUpNote, scratchNotePath, journalNotePath, migrateDefaultNote, createDefaultNotes, loadNotePaths, isSystemNote, getSystemNoteContent } from "../src/notes";
 import cachedCurrencies from "./currencies-cached"
-import { getGitHubToken } from "../src/githubapi";
 import { getDateYYYYMMDDDay } from "../src/utils"
 
 const mediaMatch = window.matchMedia('(prefers-color-scheme: dark)')
@@ -14,9 +13,7 @@ mediaMatch.addEventListener("change", async (event) => {
 })
 
 const isMobileDevice = window.matchMedia("(max-width: 600px)").matches
-
-let ghToken = getGitHubToken()
-console.log("ghToken:", ghToken)
+console.log("platform:", platform)
 
 let currencyData = null
 

@@ -13,9 +13,6 @@ app.mount('#app').$nextTick(() => {
 })
 
 
-
-
 // load math.js currencies
 loadCurrencies()
 setInterval(loadCurrencies, 1000 * 3600 * 4)
-
