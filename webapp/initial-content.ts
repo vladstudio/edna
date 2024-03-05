@@ -8,6 +8,8 @@ export function getHelp() {
 
 Edna is a scratchpad for quickly taking notes.
 
+This is a help note. To switch to a different note, press \`${modChar} + O\`.
+
 ∞∞∞markdown
 # Keyboard shortcuts
 
@@ -116,6 +118,20 @@ console.log("x is", x)
 You can find more software by [me](https://blog.kowalczyk.info/) on https://arslexis.io
 
 Edna is open source: https://github.com/kjk/edna
+
+To report a bug or request a feature, please use https://github.com/kjk/edna
+
+∞∞∞markdown
+# Credits
+
+Edna is a for of [Heynote](https://github.com/heyman/heynote) with the following differences:
+* web first (no desktop apps)
+* multiple notes
+* ability to access notes on multiple devices by storing them in GitHub Gists
+
+There's a spirit of Notational Velocity and Simplenote in Edna in how it allows quickly switching between notes.
+
+Edna is built upon [CodeMirror](https://codemirror.net/), [Vue](https://vuejs.org/), [Math.js](https://mathjs.org/), [Prettier](https://prettier.io/) and other great open-source projects.
 `
   return help;
 }
