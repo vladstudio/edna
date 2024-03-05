@@ -107,6 +107,10 @@ const darkTheme = EditorView.theme({
         color: lineNumberColor,
         border: 'none',
     },
+    '.cm-foldGutter .cm-gutterElement': {
+        // color: "white",
+        color: 'rgba(255,255,255, 0.6)'
+    },
     '.cm-activeLineGutter': {
         backgroundColor: "transparent",
         color: 'rgba(255,255,255, 0.6)'

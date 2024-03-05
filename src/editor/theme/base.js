@@ -66,12 +66,12 @@ export const heynoteBase = EditorView.theme({
         marginLeft: '0px',
     },
     '.cm-foldGutter .cm-gutterElement': {
-        opacity: 0,
-        transition: "opacity 400ms",
+        // opacity: 0,
+        // transition: "opacity 400ms",
     },
-    '.cm-gutters:hover .cm-gutterElement': {
-        opacity: 1,
-    },
+    // '.cm-gutters:hover .cm-gutterElement': {
+    //     opacity: 1,
+    // },
     '.cm-cursor, .cm-dropCursor': {
         borderLeftWidth:'2px', 
         paddingTop: '4px',

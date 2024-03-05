@@ -36,6 +36,10 @@ const lightTheme = EditorView.theme({
         border: "none",
         borderRight: "1px solid rgba(0,0,0, 0.05)",
     },
+    '.cm-foldGutter .cm-gutterElement': {
+        // color: "black",
+        color: "rgba(0,0,0, 0.6)"
+    },
     ".cm-activeLineGutter": {
         backgroundColor: "transparent",
         color: "rgba(0,0,0, 0.6)"
