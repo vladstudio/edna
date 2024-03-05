@@ -21,4 +21,7 @@ if (false && ghToken) {
     const gists = await apiGetPaginateAll("/gists?per_page=100")
     console.log("gists:", gists)
     console.log(`getting gists took ${durFn()} ms to get info about ${gists.length} gists`)
+    const s = JSON.stringify(gists, null, 0)
+    //console.log("gists:", s)
+    console.log("gists response size as json:", s.length, "bytes")
 }
