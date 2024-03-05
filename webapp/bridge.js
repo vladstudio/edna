@@ -60,19 +60,21 @@ if (settingsData !== null) {
     initialSettings = Object.assign(initialSettings, JSON.parse(settingsData))
 }
 
-
 migrateDefaultNote()
 createDefaultNotes()
 
-let currentNotePath = initialSettings.currentNotePath;
-
 // make sure currentNotePath points to a valid note
+let currentNotePath = initialSettings.currentNotePath;
 let notePaths = loadNotePaths()
 if (!notePaths.includes(currentNotePath)) {
     currentNotePath = scratchNotePath
+    initialSettings.currentNotePath = currentNotePath
 }
-initialSettings.currentNotePath = currentNotePath
 console.log("currentNotePath:", currentNotePath)
+
+// settings might not have existed or we might have added new setting from initialSettings
+// so re-save to make sure they're always there
+localStorage.setItem("settings", JSON.stringify(initialSettings))
 
 function getDateYYYYMMDD() {
     let date = new Date();
