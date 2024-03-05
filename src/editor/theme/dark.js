@@ -64,8 +64,10 @@ const darkTheme = EditorView.theme({
         color: "#fff",
     },
     '.cm-panels .cm-textfield:focus': {
-        border: "1px solid #48b57e",
-        outline: "1px solid #48b57e",
+        // border: "1px solid #48b57e",
+        border: "1px solid #487eb5",
+        // outline: "1px solid #48b57e",
+        outline: "1px solid #487eb5",
     },
     '.cm-panels .cm-button': {
         background: "#5f5f5f",

@@ -20,8 +20,10 @@ const lightTheme = EditorView.theme({
         background: "#8b928e"
     },
     '.cm-panels .cm-textfield:focus': {
-        border: "1px solid #48b57e",
-        outline: "1px solid #48b57e",
+        // border: "1px solid #48b57e",
+        border: "1px solid #487eb5",
+        // outline: "1px solid #48b57e",
+        outline: "1px solid #487eb5",
     },
     ".cm-panel.cm-search [name=close]" : {
         color: "rgba(0,0,0, 0.8)",
@@ -62,7 +64,8 @@ const lightTheme = EditorView.theme({
         borderTop: "1px solid #dfdfdf",
     },
     ".heynote-blocks-layer .block-odd": {
-        background: "#f4f8f4",
+        // background: "#f4f8f4",
+        background: "#f4f4f8",
         borderTop: "1px solid #dfdfdf",
     },
 })

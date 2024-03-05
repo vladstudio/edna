@@ -25,7 +25,8 @@
             +dark-mode
                 background: #292929
         &.active
-            background: #48b57e
+            // background: #48b57e
+            background: #487eb5
             color: #fff
             cursor: default
             +dark-mode

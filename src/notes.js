@@ -65,7 +65,7 @@ export function getNoteName(notePath) {
 }
 
 export function isSystemNote(notePath) {
-  console.log("isSystemNote:", notePath)
+  // console.log("isSystemNote:", notePath)
   return notePath.startsWith("system:")
 }
 
