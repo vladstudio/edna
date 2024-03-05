@@ -10,6 +10,7 @@ import { phpLanguage } from "@codemirror/lang-php"
 import { cssLanguage } from "@codemirror/lang-css"
 import { cppLanguage } from "@codemirror/lang-cpp"
 import { xmlLanguage } from "@codemirror/lang-xml"
+import { vueLanguage } from "@codemirror/lang-vue"
 import { rustLanguage } from "@codemirror/lang-rust"
 import { csharpLanguage } from "@replit/codemirror-lang-csharp"
 import { svelteLanguage } from "@replit/codemirror-lang-svelte"
@@ -134,6 +135,12 @@ export const LANGUAGES = [
         name: "XML",
         parser: xmlLanguage.parser,
         guesslang: "xml",
+    }),
+    new Language({
+        token: "vue",
+        name: "Vue",
+        parser: vueLanguage.parser,
+        guesslang: null,
     }),
     new Language({
         token: "cpp",
