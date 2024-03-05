@@ -13,7 +13,6 @@ mediaMatch.addEventListener("change", async (event) => {
 })
 
 const isMobileDevice = window.matchMedia("(max-width: 600px)").matches
-console.log("platform:", platform)
 
 let currencyData = null
 
