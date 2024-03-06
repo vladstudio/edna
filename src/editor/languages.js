@@ -60,6 +60,13 @@ class Language {
         }
         return !!this.prettier
     }
+
+    get supportsRun() {
+        if (this.token == "golang") {
+            return true
+        }
+        return false
+    }
 }
 
 export const LANGUAGES = [

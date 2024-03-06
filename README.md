@@ -82,13 +82,14 @@ See the [Math.js format()](https://mathjs.org/docs/reference/functions/format.ht
 ⌥ + Enter           Add new block before the current block
 ⌘ + Shift + Enter   Add new block at the end of the buffer
 ⌥ + Shift + Enter   Add new block at the start of the buffer
-⌘ + ⌥ + Enter       Split the current block at cursor position
+⌘ + ⌥ + Enter      Split the current block at cursor position
 ⌘ + L               Change block language
 ⌘ + Down            Goto next block
 ⌘ + Up              Goto previous block
 ⌘ + A               Select all text in a note block. Press again to select the whole buffer
-⌘ + ⌥ + Up/Down     Add additional cursor above/below
-⌥ + Shift + F       Format block content (works for JSON, JavaScript, HTML, CSS and Markdown)
+⌘ + ⌥ + Up/Down    Add additional cursor above/below
+⌥ + Shift + F       Format block content (works for Go, JSON, JavaScript, HTML, CSS and Markdown)
+⌥ + Shift + R       Execute block code (works for Go)
 ```
 
 **On Windows and Linux**
@@ -104,7 +105,8 @@ Ctrl + Down            Goto next block
 Ctrl + Up              Goto previous block
 Ctrl + A               Select all text in a note block. Press again to select the whole buffer
 Ctrl + Alt + Up/Down   Add additional cursor above/below
-Alt + Shift + F        Format block content (works for JSON, JavaScript, HTML, CSS and Markdown)
+Alt + Shift + F        Format block content (works for Go, JSON, JavaScript, HTML, CSS and Markdown)
+Alt + Shift + R        Execute block code (works for Go)
 ```
 
 ## Thanks!

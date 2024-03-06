@@ -45,12 +45,21 @@
                 return !!lang ? lang.supportsFormat : false
             },
 
+            supportsRun() {
+                const lang = LANGUAGE_MAP[this.language]
+                return !!lang ? lang.supportsRun : false
+            },
+
             cmdKey() {
                 return window.heynote.platform.isMac ? "⌘" : "Ctrl"
             },
 
             formatBlockTitle() {
                 return `Format Block Content (Alt + Shift + F)`
+            },
+
+            runBlockTitle() {
+                return `Run Block Code (Alt + Shift + R)`
             },
 
             formatSize() {
@@ -94,6 +103,14 @@
         >
             {{ languageName }}
             <span v-if="languageAuto" class="auto">(auto)</span>
+        </div>
+        <div
+            v-if="supportsRun"
+            @click="$emit('runCurrentBlock')"
+            class="status-block run clickable"
+            :title="runBlockTitle"
+        >
+            Run
         </div>
         <div
             v-if="supportsFormat"

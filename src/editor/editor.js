@@ -13,7 +13,7 @@ import { heynoteLang } from "./lang-heynote/heynote.js"
 import { noteBlockExtension, blockLineNumbers, blockState } from "./block/block.js"
 import { heynoteEvent, SET_CONTENT } from "./annotation.js";
 import { changeCurrentBlockLanguage, triggerCurrenciesLoaded } from "./block/commands.js"
-import { formatBlockContent } from "./block/format-code.js"
+import { formatBlockContent, runBlockContent } from "./block/format-code.js"
 import { heynoteKeymap } from "./keymap.js"
 import { emacsKeymap } from "./emacs.js"
 import { heynoteCopyCut } from "./copy-paste"
@@ -228,6 +228,10 @@ export class HeynoteEditor {
 
     formatCurrentBlock() {
         formatBlockContent(this.view)
+    }
+
+    runCurrentBlock() {
+        runBlockContent(this.view)
     }
 
     currenciesLoaded() {

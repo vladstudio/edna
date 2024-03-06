@@ -162,6 +162,10 @@
             formatCurrentBlock() {
                 this.$refs.editor.formatCurrentBlock()
             },
+
+            runCurrentBlock() {
+                this.$refs.editor.runCurrentBlock()
+            }
         },
     }
 
@@ -204,6 +208,7 @@
             @openLanguageSelector="openLanguageSelector"
             @openNoteSelector="openNoteSelector"
             @formatCurrentBlock="formatCurrentBlock"
+            @runCurrentBlock="runCurrentBlock"
             @openSettings="showSettings = true"
             @openHelp="openHelp"
             class="status" 

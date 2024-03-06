@@ -14,11 +14,11 @@ import {
     selectNextBlock, selectPreviousBlock,
     gotoPreviousParagraph, gotoNextParagraph, 
     selectNextParagraph, selectPreviousParagraph,
-    newCursorBelow, newCursorAbove,
+    newCursorBelow, newCursorAbove
 } from "./block/commands.js"
 import { pasteCommand, copyCommand, cutCommand } from "./copy-paste.js"
 
-import { formatBlockContent } from "./block/format-code.js"
+import { formatBlockContent, runBlockContent } from "./block/format-code.js"
 import { deleteLine } from "./block/delete-line.js"
 
 
@@ -60,6 +60,7 @@ export function heynoteKeymap(editor) {
         ["Alt-0", () => editor.openNoteSelector()],
         ["Mod-o", () => editor.openNoteSelector()],
         ["Alt-Shift-f", formatBlockContent],
+        ["Alt-Shift-r", runBlockContent],
         ["Mod-Alt-ArrowDown", newCursorBelow],
         ["Mod-Alt-ArrowUp", newCursorAbove],
         ["Mod-Shift-k", deleteLine],

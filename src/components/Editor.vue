@@ -171,6 +171,11 @@ import { scratchNotePath } from '../notes.js'
                 this.editor.focus()
             },
 
+            runCurrentBlock() {
+                this.editor.runCurrentBlock()
+                this.editor.focus()
+            },
+
             onCurrenciesLoaded() {
                 this.editor.currenciesLoaded()
             },
