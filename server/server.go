@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io"
 	"io/fs"
 	"net/http"
 	"net/http/httputil"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -139,6 +141,53 @@ func handleGithubCallback(w http.ResponseWriter, r *http.Request) {
 	logLogin(ctx, r, token)
 }
 
+var (
+	cachedCurrencyRatesJSON []byte
+	currencyRatesURL        = "https://currencies.heynote.com/rates.json"
+	currencyRatesLastUpdate time.Time
+	muCurrency              sync.Mutex
+)
+
+// TODO: implement without using https://currencies.heynote.com/rates.json
+func serverApiCurrencyRates(w http.ResponseWriter, r *http.Request) {
+	logf("serverCurrencyRates\n")
+	muCurrency.Lock()
+	defer muCurrency.Unlock()
+
+	if cachedCurrencyRatesJSON != nil {
+		if time.Since(currencyRatesLastUpdate) > time.Hour {
+			logf("serverCurrencyRates: using cached data\n")
+			serveJSON(w, []byte(cachedCurrencyRatesJSON))
+		}
+	}
+
+	getCurrencyRates := func() ([]byte, error) {
+		rsp, err := http.Get(currencyRatesURL)
+		if err != nil {
+			return nil, err
+		}
+		defer rsp.Body.Close()
+		if rsp.StatusCode != 200 {
+			return nil, e("failed to get currency rates")
+		}
+		return io.ReadAll(rsp.Body)
+	}
+	d, err := getCurrencyRates()
+	if err != nil {
+		logf("serverCurrencyRates: getCurrencyRates() failed with: '%s'\n", err)
+		if cachedCurrencyRatesJSON != nil {
+			serveJSON(w, []byte(cachedCurrencyRatesJSON))
+			return
+		}
+		serveInternalError(w, err)
+		return
+	}
+	logf("serverCurrencyRates: got data:\n")
+	cachedCurrencyRatesJSON = d
+	currencyRatesLastUpdate = time.Now()
+	serveJSON(w, d)
+}
+
 // in dev, proxyHandler redirects assets to vite web server
 // in prod, assets must be pre-built in frontend/dist directory
 func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.ReverseProxy) *http.Server {
@@ -152,6 +201,9 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 		case "/ping", "/ping.txt":
 			content := bytes.NewReader([]byte("pong"))
 			http.ServeContent(w, r, "foo.txt", time.Time{}, content)
+			return
+		case "/api/currency_rates.json":
+			serverApiCurrencyRates(w, r)
 			return
 			// case "/auth/ghlogin":
 			// 	handleLoginGitHub(w, r)

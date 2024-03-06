@@ -195,11 +195,11 @@ const Heynote = {
         if (currencyData !== null) {
             return currencyData
         }
-        // TODO: implement in my server
-        currencyData = JSON.parse(cachedCurrencies)
+        // currencyData = JSON.parse(cachedCurrencies)
         // console.log("currencyData:", currencyData)
-        // const response = await fetch("https://currencies.heynote.com/rates.json", {cache: "no-cache"})
-        // currencyData = JSON.parse(await response.text()) // TODO: response.json()?
+        const response = await fetch("/api/currency_rates.json", {cache: "no-cache"})
+        currencyData = JSON.parse(await response.text()) // TODO: await response.json()?
+        console.log("currencyData:", currencyData)
         return currencyData
     },
 
