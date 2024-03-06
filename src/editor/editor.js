@@ -227,10 +227,7 @@ export class HeynoteEditor {
     }
 
     formatCurrentBlock() {
-        formatBlockContent({
-            state: this.view.state, 
-            dispatch: this.view.dispatch,
-        })
+        formatBlockContent(this.view)
     }
 
     currenciesLoaded() {

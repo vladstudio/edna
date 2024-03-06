@@ -55,10 +55,8 @@ class Language {
     }
 
     get supportsFormat() {
-        // TODO: disabled until I figure out why formatBlockContent() fails
-        // when we call await formatGo()
         if (this.token == "golang") {
-            return false
+            return true
         }
         return !!this.prettier
     }

@@ -1,6 +1,12 @@
 let currenciesLoaded = false
 export async function loadCurrencies() {
-    const data = await window.heynote.getCurrencyData()
+    let data;
+    try {
+        data = await window.heynote.getCurrencyData()
+    } catch(e) {
+        console.log("error getting currency data:", e)
+        return;
+    }
     if (!currenciesLoaded)
         math.createUnit(data.base, {override:currenciesLoaded, aliases:[data.base.toLowerCase()]})
     Object.keys(data.rates)

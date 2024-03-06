@@ -28,7 +28,8 @@ async function formatGo(s) {
     return res.Body;
   }
 
-export const formatBlockContent = async ({ state, dispatch }) => {
+export async function formatBlockContent(view) {
+    const {state, dispatch} = view
     if (state.readOnly)
         return false
     const block = getActiveNoteBlock(state)
@@ -50,10 +51,13 @@ export const formatBlockContent = async ({ state, dispatch }) => {
         console.log("formatting go")
         let s;
         try {
+            window._heynote_editor.setReadOnly(true)
             s = await formatGo(content)
         } catch(e) {
             console.log("error formatting go:", e)
             return false
+        } finally {
+            window._heynote_editor.setReadOnly(false)
         }
 
         if (!s) {
@@ -64,10 +68,10 @@ export const formatBlockContent = async ({ state, dispatch }) => {
         console.log("block:", block)
         let cursorOffset = cursorPos - block.content.from
         console.log("cursorOffset:", cursorOffset)
-        // TODO: the weirdest thing
-        // this fails if we call await formatGo()
-        // doesn't fail if we just set s to some value
-        dispatch(state.update({
+        // TODO: this probably might fail. For some reason during formatGo()
+        // view.state is changed so we might be updating incorrect part
+        // would have to disable
+        const tr = view.state.update({
             changes: {
                 from: block.content.from,
                 to: block.content.to,
@@ -77,7 +81,10 @@ export const formatBlockContent = async ({ state, dispatch }) => {
         }, {
             userEvent: "input",
             scrollIntoView: true,
-        }))
+        });
+        console.log("state == view.state:", state == view.state)
+        console.log("state == tr.startState:", state == tr.startState)
+        view.dispatch(tr)
         return true
     }
 
