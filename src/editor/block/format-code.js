@@ -65,7 +65,7 @@ export const formatBlockContent = async ({ state, dispatch }) => {
         let cursorOffset = cursorPos - block.content.from
         console.log("cursorOffset:", cursorOffset)
         // TODO: the weirdest thing
-        // this fails if we call awai formatGo()
+        // this fails if we call await formatGo()
         // doesn't fail if we just set s to some value
         dispatch(state.update({
             changes: {
