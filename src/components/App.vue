@@ -39,6 +39,7 @@
                 showNoteSelector: false,
                 showSettings: false,
                 settings: window.heynote.settings,
+                showingMenu: false,
             }
         },
 
@@ -72,6 +73,14 @@
             window.heynote.themeMode.removeListener()
         },
 
+        computed: {
+            mcStyle() {
+                return {
+                    display: this.showingMenu ? "block" : "none"
+                }
+            }
+        },
+
         methods: {
             onContextMenu(e) {
                 // console.log("onContextMenu")
@@ -83,52 +92,59 @@
                 }
                 let editor = this.$refs.editor;
                 e.preventDefault();
+                this.showingMenu = true
                 ContextMenu.showContextMenu({
                     x: e.x,
                     y: e.y,
                     theme: menuTheme,
+                    preserveIconWidth: false,
+                    keyboardControl: true,
+                    zIndex: 40,
+                    getContainer: () => {
+                        const o = this.$refs.menuContainer;
+                        // const o = document.body;
+                        console.log("getContainer:", o)
+                        return o
+                    },
+                    onClose: (lastClicked) => {
+                        // console.log("onClose: lastClicked:", lastClicked)
+                        this.showingMenu = false
+                    },
                     items: [
                         {
                             label: "Open note",
                             onClick: () => { this.openNoteSelector() },
                             shortcut: `${modChar} + O`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "And block after current",
                             onClick: () => { editor.addNewBlockAfterCurrent() },
                             shortcut: `${modChar} + Enter`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "Add block before current",
                             onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
                             shortcut: `${altChar} + Enter`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "Add block at end",
                             onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
                             shortcut: `${modChar} + Shift + Enter`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "Add block at start",
                             onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
                             shortcut: `${altChar} + Shift + Enter`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "Split block at cursor position",
                             onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
                             shortcut: `${modChar} + ${altChar} + Enter`,
-                            preserveIconWidth: false,
                         },
                         {
                             label: "Change block language",
                             onClick: () => { this.openLanguageSelector() },
                             shortcut: `${modChar} + L`,
-                            preserveIconWidth: false,
                         },
                         // TODO: format if supports format
                         // TODO: run  if supports run
@@ -147,7 +163,6 @@
                             label: "Select all text in block",
                             onClick: () => { this.$refs.editor.selectAll() },
                             shortcut: `${modChar} + A`,
-                            preserveIconWidth: false,
                         },
                         // {
                         //     label: "Format",
@@ -167,6 +182,7 @@
                         // },
                     ]
                 });
+                this.$refs.menuContainer.focus()
             },
 
             openSettings() {
@@ -311,7 +327,7 @@
             @runCurrentBlock="runCurrentBlock"
             @openSettings="showSettings = true"
             @openHelp="openHelp"
-            class="status" 
+            class="status"
         />
         <div class="overlay">
             <LanguageSelector
@@ -333,9 +349,26 @@
             />
         </div>
     </div>
+    <div style="mcStyle" class="menu-overlay">
+        <form class="menu-container" ref="menuContainer" tabIndex="-1"></form>
+    </div>
 </template>
 
 <style scoped lang="sass">
+    .menu-overlay
+        position: fixed
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        z-index: 40
+        pointer-events: none
+        .menu-container
+            position: relative
+            width: 100%
+            height: 100%
+            pointer-events: none
+            z-index: 45
     .container
         width: 100%
         height: 100%
