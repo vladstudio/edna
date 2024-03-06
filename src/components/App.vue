@@ -4,10 +4,12 @@
     import Editor from './Editor.vue'
     import LanguageSelector from './LanguageSelector.vue'
     import NoteSelector from './NoteSelector.vue'
-    import ContextMenu from './ContextMenu.vue'
     import Settings from './settings/Settings.vue'
     import { stringSizeInUtf8Bytes } from '../utils'
     import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
+    import { modChar, altChar } from "../../shared-utils/key-helper"
+    import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
+    import ContextMenu from '@imengyu/vue3-context-menu'
 
     export default {
         components: {
@@ -37,23 +39,10 @@
                 showNoteSelector: false,
                 showSettings: false,
                 settings: window.heynote.settings,
-                showContextMenu: false,
-                contextMenuX: 0,
-                contextMenuY: 0,
             }
         },
 
         mounted() {
-            document.addEventListener("contextmenu", (e) => {
-                if (false) {
-                    console.log("contextmenu:", e)
-                    this.contextMenuX = e.pageX || e.clientX
-                    this.contextMenuY = e.pageY || e.clientY
-                    this.showContextMenu = true
-                    e.preventDefault()
-                }
-            })
-
             window.heynote.themeMode.get().then((mode) => {
                 this.theme = mode.computed
                 this.themeSetting = mode.theme
@@ -84,6 +73,102 @@
         },
 
         methods: {
+            onContextMenu(e) {
+                // console.log("onContextMenu")
+                let theme = document.documentElement.getAttribute("theme")
+                console.log("theme:", theme)
+                let menuTheme = "default"
+                if (theme == "dark") {
+                    menuTheme = "default dark"
+                }
+                let editor = this.$refs.editor;
+                e.preventDefault();
+                ContextMenu.showContextMenu({
+                    x: e.x,
+                    y: e.y,
+                    theme: menuTheme,
+                    items: [
+                        {
+                            label: "Open note",
+                            onClick: () => { this.openNoteSelector() },
+                            shortcut: `${modChar} + O`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "And block after current",
+                            onClick: () => { editor.addNewBlockAfterCurrent() },
+                            shortcut: `${modChar} + Enter`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "Add block before current",
+                            onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
+                            shortcut: `${altChar} + Enter`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "Add block at end",
+                            onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
+                            shortcut: `${modChar} + Shift + Enter`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "Add block at start",
+                            onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
+                            shortcut: `${altChar} + Shift + Enter`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "Split block at cursor position",
+                            onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
+                            shortcut: `${modChar} + ${altChar} + Enter`,
+                            preserveIconWidth: false,
+                        },
+                        {
+                            label: "Change block language",
+                            onClick: () => { this.openLanguageSelector() },
+                            shortcut: `${modChar} + L`,
+                            preserveIconWidth: false,
+                        },
+                        // TODO: format if supports format
+                        // TODO: run  if supports run
+                        // TODO: set plain text, markdown
+                        // {
+                        //     label: "Goto next block",
+                        //     onClick: () => { this.$refs.editor.gotoNextBlock() },
+                        //     shortcut: `${modChar} + Down`,
+                        // },
+                        // {
+                        //     label: "Goto previous block",
+                        //     onClick: () => { this.$refs.editor.gotoPreviousBlock() },
+                        //     shortcut: `${modChar} + Up`,
+                        // },
+                        {
+                            label: "Select all text in block",
+                            onClick: () => { this.$refs.editor.selectAll() },
+                            shortcut: `${modChar} + A`,
+                            preserveIconWidth: false,
+                        },
+                        // {
+                        //     label: "Format",
+                        //     onClick: () => { this.$refs.editor.formatCurrentBlock() }
+                        // },
+                        // {
+                        //     label: "Execute block code",
+                        //     onClick: () => { this.openNoteSelector() }
+                        // },
+                        // {
+                        // label: "A submenu",
+                        //     children: [
+                        //         { label: "Item1" },
+                        //         { label: "Item2" },
+                        //         { label: "Item3" },
+                        //     ]
+                        // },
+                    ]
+                });
+            },
+
             openSettings() {
                 this.showSettings = true
             },
@@ -137,12 +222,6 @@
                 // console.log("closeNoteSelector")
             },
 
-            closeContextMenu() {
-                console.log("closeContextMenu")
-                this.showContextMenu = false
-                this.$refs.editor.focus()
-            },
-
             onOpenNote(notePath) {
                 this.showNoteSelector = false
                 this.$refs.editor.openNote(notePath)
@@ -193,7 +272,7 @@
 </script>
 
 <template>
-    <div class="container">
+    <div class="container" @contextmenu="onContextMenu($event)">
         <!-- <TopNav /> -->
         <Editor 
             @cursorChange="onCursorChange"
@@ -251,12 +330,6 @@
                 v-if="showSettings"
                 :initialSettings="settings"
                 @closeSettings="closeSettings"
-            />
-            <ContextMenu
-                v-if="showContextMenu"
-                :x="contextMenuX"
-                :y="contextMenuY"
-                @close="closeContextMenu"
             />
         </div>
     </div>

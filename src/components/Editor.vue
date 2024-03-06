@@ -189,6 +189,51 @@ import { scratchNotePath } from '../notes.js'
                 this.editor.focus();
             },
 
+            addNewBlockBeforeFirst() {
+                this.editor.addNewBlockBeforeFirst()
+                this.editor.focus();
+            },
+
+            addNewBlockAfterCurrent() {
+                this.editor.addNewBlockAfterCurrent()
+                this.editor.focus();
+            },
+
+            addNewBlockBeforeCurrent() {
+                this.editor.addNewBlockBeforeCurrent()
+                this.editor.focus();
+            },
+
+            addNewBlockAfterLast() {
+                this.editor.addNewBlockAfterLast()
+                this.editor.focus();
+            },
+
+            addNewBlockBeforeFirst() {
+                this.editor.addNewBlockBeforeFirst()
+                this.editor.focus();
+            },
+
+            insertNewBlockAtCursor() {
+                this.editor.insertNewBlockAtCursor()
+                this.editor.focus();
+            },
+
+            gotoNextBlock() {
+                this.editor.gotoNextBlock()
+                this.editor.focus();
+            },
+
+            gotoPreviousBlock() {
+                this.editor.gotoPreviousBlock()
+                this.editor.focus();
+            },
+
+            selectAll() {
+                this.editor.selectAll()
+                this.editor.focus();
+            },
+
             getContent() {
                 return this.editor.getContent()
             },

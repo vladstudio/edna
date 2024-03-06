@@ -12,7 +12,16 @@ import { customSetup } from "./setup.js"
 import { heynoteLang } from "./lang-heynote/heynote.js"
 import { noteBlockExtension, blockLineNumbers, blockState } from "./block/block.js"
 import { heynoteEvent, SET_CONTENT } from "./annotation.js";
-import { changeCurrentBlockLanguage, triggerCurrenciesLoaded } from "./block/commands.js"
+import { changeCurrentBlockLanguage, triggerCurrenciesLoaded,     insertNewBlockAtCursor,
+    addNewBlockBeforeCurrent, addNewBlockAfterCurrent,
+    addNewBlockBeforeFirst, addNewBlockAfterLast,
+    selectAll,
+    gotoPreviousBlock, gotoNextBlock,
+    selectNextBlock, selectPreviousBlock,
+    gotoPreviousParagraph, gotoNextParagraph,
+    selectNextParagraph, selectPreviousParagraph,
+    newCursorBelow, newCursorAbove
+ } from "./block/commands.js"
 import { formatBlockContent, runBlockContent } from "./block/format-code.js"
 import { heynoteKeymap } from "./keymap.js"
 import { emacsKeymap } from "./emacs.js"
@@ -236,6 +245,42 @@ export class HeynoteEditor {
 
     currenciesLoaded() {
         triggerCurrenciesLoaded(this.view.state, this.view.dispatch)
+    }
+
+    addNewBlockBeforeFirst() {
+        addNewBlockBeforeFirst(this.view)
+    }
+
+    addNewBlockAfterCurrent() {
+        addNewBlockAfterCurrent(this.view)
+    }
+
+    addNewBlockBeforeCurrent() {
+        addNewBlockBeforeCurrent(this.view)
+    }
+
+    addNewBlockAfterLast() {
+        addNewBlockAfterLast(this.view)
+    }
+
+    addNewBlockBeforeFirst() {
+        addNewBlockBeforeFirst(this.view)
+    }
+
+    insertNewBlockAtCursor() {
+        insertNewBlockAtCursor(this.view)
+    }
+
+    gotoNextBlock() {
+        gotoNextBlock(this.view)
+    }
+
+    gotoPreviousBlock() {
+        gotoPreviousBlock(this.view)
+    }
+
+    selectAll() {
+        selectAll(this.view)
     }
 }
 
