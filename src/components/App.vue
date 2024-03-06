@@ -4,6 +4,7 @@
     import Editor from './Editor.vue'
     import LanguageSelector from './LanguageSelector.vue'
     import NoteSelector from './NoteSelector.vue'
+    import ContextMenu from './ContextMenu.vue'
     import Settings from './settings/Settings.vue'
     import { stringSizeInUtf8Bytes } from '../utils'
     import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
@@ -16,6 +17,7 @@
             LanguageSelector,
             NoteSelector,
             Settings,
+            ContextMenu,
         },
 
         data() {
@@ -35,10 +37,23 @@
                 showNoteSelector: false,
                 showSettings: false,
                 settings: window.heynote.settings,
+                showContextMenu: false,
+                contextMenuX: 0,
+                contextMenuY: 0,
             }
         },
 
         mounted() {
+            document.addEventListener("contextmenu", (e) => {
+                if (false) {
+                    console.log("contextmenu:", e)
+                    this.contextMenuX = e.pageX || e.clientX
+                    this.contextMenuY = e.pageY || e.clientY
+                    this.showContextMenu = true
+                    e.preventDefault()
+                }
+            })
+
             window.heynote.themeMode.get().then((mode) => {
                 this.theme = mode.computed
                 this.themeSetting = mode.theme
@@ -122,6 +137,12 @@
                 // console.log("closeNoteSelector")
             },
 
+            closeContextMenu() {
+                console.log("closeContextMenu")
+                this.showContextMenu = false
+                this.$refs.editor.focus()
+            },
+
             onOpenNote(notePath) {
                 this.showNoteSelector = false
                 this.$refs.editor.openNote(notePath)
@@ -165,7 +186,7 @@
 
             runCurrentBlock() {
                 this.$refs.editor.runCurrentBlock()
-            }
+            },
         },
     }
 
@@ -230,6 +251,12 @@
                 v-if="showSettings"
                 :initialSettings="settings"
                 @closeSettings="closeSettings"
+            />
+            <ContextMenu
+                v-if="showContextMenu"
+                :x="contextMenuX"
+                :y="contextMenuY"
+                @close="closeContextMenu"
             />
         </div>
     </div>

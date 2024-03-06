@@ -61,6 +61,11 @@ import { scratchNotePath } from '../notes.js'
             this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
                 this.$emit("docChanged")
             })
+            // this.$refs.editor.addEventListener("contextmenu", (e) => {
+            //     console.log("contextmenu:", e)
+            //     e.preventDefault()
+            //     this.$emit("contextMenu", e)
+            // })
 
             // load buffer content and create editor
             window.heynote.buffer.load().then((content) => {
