@@ -120,7 +120,7 @@
         bottom: 0
         right: 0
     .language-selector
-        font-size: 13px
+        font-size: 12px
         padding: 10px
         //background: #48b57e
         background: #efefef
