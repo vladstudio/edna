@@ -89,7 +89,7 @@
         >{{ noteName }}</div>
         <div class="status-block line-number">
             Ln <span class="num">{{ line }}</span>
-            Col <span class="num">{{ column }}</span>
+            &nbsp;Col <span class="num">{{ column }}</span>
             <template v-if="selectionSize > 0">
                 Sel <span class="num">{{ selectionSize }}</span>
             </template>

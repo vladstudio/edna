@@ -288,7 +288,7 @@
 </script>
 
 <template>
-    <div class="container" @contextmenu="onContextMenu($event)">
+    <div class="app-container" @contextmenu="onContextMenu($event)">
         <!-- <TopNav /> -->
         <Editor 
             @cursorChange="onCursorChange"
@@ -369,7 +369,7 @@
             height: 100%
             pointer-events: none
             z-index: 45
-    .container
+    .app-container
         width: 100%
         height: 100%
         position: relative

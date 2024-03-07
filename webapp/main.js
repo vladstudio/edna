@@ -1,3 +1,4 @@
+import '../src/css/tailwind.css'
 import '../src/css/application.sass'
 
 import { createApp } from 'vue'
