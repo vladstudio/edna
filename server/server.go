@@ -155,9 +155,12 @@ func serverApiCurrencyRates(w http.ResponseWriter, r *http.Request) {
 	defer muCurrency.Unlock()
 
 	if cachedCurrencyRatesJSON != nil {
-		if time.Since(currencyRatesLastUpdate) > time.Hour {
+		sinceUpdate := time.Since(currencyRatesLastUpdate)
+		logf("serverCurrencyRates: have cached data, since update: %s\n", sinceUpdate)
+		if sinceUpdate < time.Hour {
 			logf("serverCurrencyRates: using cached data\n")
 			serveJSON(w, []byte(cachedCurrencyRatesJSON))
+			return
 		}
 	}
 
@@ -176,16 +179,23 @@ func serverApiCurrencyRates(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logf("serverCurrencyRates: getCurrencyRates() failed with: '%s'\n", err)
 		if cachedCurrencyRatesJSON != nil {
-			serveJSON(w, []byte(cachedCurrencyRatesJSON))
+			serveJSON(w, cachedCurrencyRatesJSON)
 			return
 		}
 		serveInternalError(w, err)
 		return
 	}
-	logf("serverCurrencyRates: got data:\n")
+	logf("serverCurrencyRates: got data of size %d %s\n", len(d), truncData(d, 64))
 	cachedCurrencyRatesJSON = d
 	currencyRatesLastUpdate = time.Now()
 	serveJSON(w, d)
+}
+
+func truncData(data []byte, maxLen int) string {
+	if len(data) > maxLen {
+		return string(data[:maxLen]) + "..."
+	}
+	return string(data)
 }
 
 // in dev, proxyHandler redirects assets to vite web server

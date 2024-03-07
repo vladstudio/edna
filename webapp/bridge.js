@@ -196,10 +196,12 @@ const Heynote = {
             return currencyData
         }
         // currencyData = JSON.parse(cachedCurrencies)
-        // console.log("currencyData:", currencyData)
         const response = await fetch("/api/currency_rates.json", {cache: "no-cache"})
-        currencyData = JSON.parse(await response.text()) // TODO: await response.json()?
-        console.log("currencyData:", currencyData)
+        let s = await response.text()
+        // console.log(`currencyData: '${s}'`)
+        currencyData = JSON.parse(s)
+        // console.log("currencyData:", currencyData)
+        console.log("got currency data:")
         return currencyData
     },
 
