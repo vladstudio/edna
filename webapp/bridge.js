@@ -111,11 +111,11 @@ const Heynote = {
                 console.log("Heynote.buffer.openNote: dt:", dt)
                 if (content === null) {
                     content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
-                    console.log("Heynote.buffer.openNote: content:", content)
+                    // console.log("Heynote.buffer.openNote: content:", content)
                 } else {
                     if (!content.includes(dt)) {
                         content = "\n∞∞∞markdown\n" + "# " + dt + "\n" + content
-                        console.log("Heynote.buffer.openNote: content:", content)
+                        // console.log("Heynote.buffer.openNote: content:", content)
                     }
                 }
             }
