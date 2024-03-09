@@ -82,6 +82,9 @@
         },
 
         methods: {
+            storeNotesOnDisk() {
+                console.log("storeNotesOnDisk")
+            },
             onContextMenu(e) {
                 // console.log("onContextMenu")
                 let theme = document.documentElement.getAttribute("theme")
@@ -146,6 +149,15 @@
                             onClick: () => { this.openLanguageSelector() },
                             shortcut: `${modChar} + L`,
                         },
+                        {
+                            label: "Select all text in block",
+                            onClick: () => { this.$refs.editor.selectAll() },
+                            shortcut: `${modChar} + A`,
+                        },
+                        {
+                            label: "Store notes on disk",
+                            onClick: () => { this.storeNotesOnDisk() },
+                        }
                         // TODO: format if supports format
                         // TODO: run  if supports run
                         // TODO: set plain text, markdown
@@ -159,11 +171,6 @@
                         //     onClick: () => { this.$refs.editor.gotoPreviousBlock() },
                         //     shortcut: `${modChar} + Up`,
                         // },
-                        {
-                            label: "Select all text in block",
-                            onClick: () => { this.$refs.editor.selectAll() },
-                            shortcut: `${modChar} + A`,
-                        },
                         // {
                         //     label: "Format",
                         //     onClick: () => { this.$refs.editor.formatCurrentBlock() }
