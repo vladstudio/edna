@@ -1,146 +1,119 @@
 <script>
-    import UpdateStatusItem from './UpdateStatusItem.vue'
-    import { LANGUAGES } from '../editor/languages.js'
-    import { fmtSize} from '../utils'
+import UpdateStatusItem from './UpdateStatusItem.vue'
+import { LANGUAGES } from '../editor/languages.js'
+import { fmtSize } from '../utils'
 
-    const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
-    const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
+const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
+const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
 
-    export default {
-        props: [
-            "noteName",
-            "line", 
-            "column",
-            "docSize",
-            "selectionSize",
-            "language", 
-            "languageAuto",
-            "theme",
-            "themeSetting",
-            "autoUpdate",
-            "allowBetaVersions",
-        ],
+export default {
+  props: [
+    "noteName",
+    "line",
+    "column",
+    "docSize",
+    "selectionSize",
+    "language",
+    "languageAuto",
+    "theme",
+    "themeSetting",
+    "autoUpdate",
+    "allowBetaVersions",
+  ],
 
-        components: {
-            UpdateStatusItem,
-        },
+  components: {
+    UpdateStatusItem,
+  },
 
-        data() {
-            return {
+  data() {
+    return {
 
-            }
-        },
-
-        mounted() {
-            
-        },
-
-        computed: {
-            languageName() {
-                return LANGUAGE_NAMES[this.language] || this.language
-            },
-
-            supportsFormat() {
-                const lang = LANGUAGE_MAP[this.language]
-                return !!lang ? lang.supportsFormat : false
-            },
-
-            supportsRun() {
-                const lang = LANGUAGE_MAP[this.language]
-                return !!lang ? lang.supportsRun : false
-            },
-
-            cmdKey() {
-                return window.heynote.platform.isMac ? "⌘" : "Ctrl"
-            },
-
-            formatBlockTitle() {
-                return `Format Block Content (Alt + Shift + F)`
-            },
-
-            runBlockTitle() {
-                return `Run Block Code (Alt + Shift + R)`
-            },
-
-            formatSize() {
-                return fmtSize(this.docSize);
-            },
-
-            changeLanguageTitle() {
-                return `Change language for current block (${this.cmdKey} + L)`
-            },
-
-            updatesEnabled() {
-                return !!window.heynote.autoUpdate
-            },
-
-            changeThemeTitle() {
-                return`Toggle system/light/dark theme. Current: ${this.themeSetting}`
-            }
-        },
     }
+  },
+
+  mounted() {
+
+  },
+
+  computed: {
+    languageName() {
+      return LANGUAGE_NAMES[this.language] || this.language
+    },
+
+    supportsFormat() {
+      const lang = LANGUAGE_MAP[this.language]
+      return !!lang ? lang.supportsFormat : false
+    },
+
+    supportsRun() {
+      const lang = LANGUAGE_MAP[this.language]
+      return !!lang ? lang.supportsRun : false
+    },
+
+    cmdKey() {
+      return window.heynote.platform.isMac ? "⌘" : "Ctrl"
+    },
+
+    formatBlockTitle() {
+      return `Format Block Content (Alt + Shift + F)`
+    },
+
+    runBlockTitle() {
+      return `Run Block Code (Alt + Shift + R)`
+    },
+
+    formatSize() {
+      return fmtSize(this.docSize);
+    },
+
+    changeLanguageTitle() {
+      return `Change language for current block (${this.cmdKey} + L)`
+    },
+
+    updatesEnabled() {
+      return !!window.heynote.autoUpdate
+    },
+
+    changeThemeTitle() {
+      return `Toggle system/light/dark theme. Current: ${this.themeSetting}`
+    }
+  },
+}
 </script>
 
 <template>
-    <div class="status">
-        <div class="status-block clickable"
-            @click="$emit('openNoteSelector')"
-            title="Change or create new note"
-        >{{ noteName }}</div>
-        <div class="status-block line-number">
-            Ln <span class="num">{{ line }}</span>
-            &nbsp;Col <span class="num">{{ column }}</span>
-            <template v-if="selectionSize > 0">
-                Sel <span class="num">{{ selectionSize }}</span>
-            </template>
-        </div>
-        <div class="status-block doc-size">{{  formatSize  }}</div>
-        <div class="spacer"></div>
-        <div
-            @click="$emit('openLanguageSelector')"
-            class="status-block lang clickable"
-            :title="changeLanguageTitle"
-        >
-            {{ languageName }}
-            <span v-if="languageAuto" class="auto">(auto)</span>
-        </div>
-        <div
-            v-if="supportsRun"
-            @click="$emit('runCurrentBlock')"
-            class="status-block run clickable"
-            :title="runBlockTitle"
-        >
-            Run
-        </div>
-        <div
-            v-if="supportsFormat"
-            @click="$emit('formatCurrentBlock')"
-            class="status-block format clickable"
-            :title="formatBlockTitle"
-        >
-            <span class="icon icon-format"></span>
-        </div>
-        <UpdateStatusItem
-            v-if="updatesEnabled"
-            :autoUpdate="autoUpdate"
-            :allowBetaVersions="allowBetaVersions"
-        />
-        <div class="status-block theme clickable" @click="$emit('toggleTheme')" :title="changeThemeTitle">
-            <span :class="'icon ' + themeSetting"></span>
-        </div>
-        <div
-            @click="$emit('openSettings')"
-            class="status-block settings clickable"
-            title="Settings"
-        >
-            <span class="icon icon-format"></span>
-        </div>
-        <div
-            @click="$emit('openHelp')"
-            class="status-block clickable"
-            title="Help"
-        >?</div>
+  <div class="status">
+    <div class="status-block clickable" @click="$emit('openNoteSelector')" title="Change or create new note">{{ noteName
+      }}</div>
+    <div class="status-block line-number">
+      Ln <span class="num">{{ line }}</span>
+      &nbsp;Col <span class="num">{{ column }}</span>
+      <template v-if="selectionSize > 0">
+        Sel <span class="num">{{ selectionSize }}</span>
+      </template>
     </div>
+    <div class="status-block doc-size">{{ formatSize }}</div>
+    <div class="spacer"></div>
+    <div @click="$emit('openLanguageSelector')" class="status-block lang clickable" :title="changeLanguageTitle">
+      {{ languageName }}
+      <span v-if="languageAuto" class="auto">(auto)</span>
+    </div>
+    <div v-if="supportsRun" @click="$emit('runCurrentBlock')" class="status-block run clickable" :title="runBlockTitle">
+      Run
+    </div>
+    <div v-if="supportsFormat" @click="$emit('formatCurrentBlock')" class="status-block format clickable"
+      :title="formatBlockTitle">
+      <span class="icon icon-format"></span>
+    </div>
+    <UpdateStatusItem v-if="updatesEnabled" :autoUpdate="autoUpdate" :allowBetaVersions="allowBetaVersions" />
+    <div class="status-block theme clickable" @click="$emit('toggleTheme')" :title="changeThemeTitle">
+      <span :class="'icon ' + themeSetting"></span>
+    </div>
+    <div @click="$emit('openSettings')" class="status-block settings clickable" title="Settings">
+      <span class="icon icon-format"></span>
+    </div>
+    <div @click="$emit('openHelp')" class="status-block clickable" title="Help">?</div>
+  </div>
 </template>
 
 <style scoped lang="sass">

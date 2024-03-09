@@ -1,162 +1,162 @@
 <script>
-    export default {
-        props: [
-            "autoUpdate",
-            "allowBetaVersions",
-        ],
-        
-        data() {
-            return {
-                updateAvailable: false,
-                updateDownloaded: false,
-                downloading: false,
-                checkingForUpdate: false,
-                updateProgress: {
-                    percent: 0.0,
-                    transferred: 0.0,
-                    total: 0.0,
-                    bytesPerSecond: 0.0,
-                },
-                checkForUpdateIntervalId: null,
-            }
-        },
+export default {
+  props: [
+    "autoUpdate",
+    "allowBetaVersions",
+  ],
 
-        mounted() {
-            window.heynote.autoUpdate.callbacks({
-                updateAvailable: (info) => {
-                    //console.log("updateAvailable", info)
-                    this.checkingForUpdate = false
-                    this.updateAvailable = true
-                    this.currentVersion = info.currentVersion
-                    this.version = info.version
-                },
-                updateNotAvailable: () => {
-                    //console.log("updateNotAvailable")
-                    this.checkingForUpdate = false
-                },
-                updateDownloaded: () => {
-                    //console.log("updateDownloaded")
-                    this.updateDownloaded = true
-                    this.downloading = false
-                },
-                updateError: (error) => {
-                    console.log("Update error", error)
-                    this.checkingForUpdate = false
-                    this.downloading = false
-                },
-                updateDownloadProgress: (progress) => {
-                    //console.log("updateDownloadProgress", progress)
-                    this.downloading = true
-                    this.updateProgress = progress
-                }
-            })
-        },
-
-        beforeUnmount() {
-            if (this.checkForUpdateIntervalId) {
-                clearInterval(this.checkForUpdateIntervalId)
-            }
-        },
-
-        watch: {
-            autoUpdate: {
-                immediate: true,
-                handler(autoUpdate) {
-                    if (this.checkForUpdateIntervalId) {
-                        clearInterval(this.checkForUpdateIntervalId)
-                    }
-                    if (autoUpdate) {
-                        // check for update now
-                        this.checkForUpdate()
-                        
-                        // check for updates every 8 hours
-                        this.checkForUpdateIntervalId = setInterval(() => {
-                            this.checkForUpdate()
-                        }, 1000 * 3600 * 8)
-                    }
-                },
-            },
-
-            allowBetaVersions(newValue) {
-                this.checkForUpdate()
-            },
-        },
-
-        computed: {
-            statusText() {
-                if (this.downloading) {
-                    return "Downloading update… " + this.updateProgress.percent.toFixed(0) + "%"
-                } else if (this.updateDownloaded) {
-                    return "Update & Restart"
-                } else if (this.updateAvailable) {
-                    return "New version available!"
-                } else {
-                    return ""
-                }
-            },
-
-            statusTitle() {
-                if (this.downloading) {
-                    return ""
-                } else if (this.updateDownloaded) {
-                    return "Click to restart and update Heynote"
-                } else if (this.updateAvailable) {
-                    return "Update to version " + this.version + " (current version: " + this.currentVersion + ")"
-                } else {
-                    return "Check for updates"
-                }
-            },
-
-            className() {
-                return "status-block update-status-block" + 
-                    (!this.downloading ? " clickable" : "") +
-                    (this.statusText === "" ? " empty" : "")
-            },
-
-            iconClassName() {
-                if (this.checkingForUpdate) {
-                    return "icon-update spinning"
-                } else if (this.downloading) {
-                    return "icon-update spinning"
-                } else if (this.updateDownloaded) {
-                    return "icon-update icon-download "
-                } else if (this.updateAvailable) {
-                    return "icon-update icon-download"
-                } else {
-                    return "icon-update"
-                }
-            },
-        },
-
-        methods: {
-            onClick() {
-                if (this.downloading || this.checkingForUpdate) {
-                    return
-                } else if (this.updateDownloaded) {
-                    window.heynote.autoUpdate.installAndRestart()
-                } else if (this.updateAvailable) {
-                    this.downloading = true
-                    window.heynote.autoUpdate.startDownload()
-                } else {
-                    this.checkForUpdate()
-                }
-            },
-
-            checkForUpdate() {
-                this.updateAvailable = false
-                this.checkingForUpdate = true
-                window.heynote.autoUpdate.checkForUpdates()
-            }
-        },
-        
+  data() {
+    return {
+      updateAvailable: false,
+      updateDownloaded: false,
+      downloading: false,
+      checkingForUpdate: false,
+      updateProgress: {
+        percent: 0.0,
+        transferred: 0.0,
+        total: 0.0,
+        bytesPerSecond: 0.0,
+      },
+      checkForUpdateIntervalId: null,
     }
+  },
+
+  mounted() {
+    window.heynote.autoUpdate.callbacks({
+      updateAvailable: (info) => {
+        //console.log("updateAvailable", info)
+        this.checkingForUpdate = false
+        this.updateAvailable = true
+        this.currentVersion = info.currentVersion
+        this.version = info.version
+      },
+      updateNotAvailable: () => {
+        //console.log("updateNotAvailable")
+        this.checkingForUpdate = false
+      },
+      updateDownloaded: () => {
+        //console.log("updateDownloaded")
+        this.updateDownloaded = true
+        this.downloading = false
+      },
+      updateError: (error) => {
+        console.log("Update error", error)
+        this.checkingForUpdate = false
+        this.downloading = false
+      },
+      updateDownloadProgress: (progress) => {
+        //console.log("updateDownloadProgress", progress)
+        this.downloading = true
+        this.updateProgress = progress
+      }
+    })
+  },
+
+  beforeUnmount() {
+    if (this.checkForUpdateIntervalId) {
+      clearInterval(this.checkForUpdateIntervalId)
+    }
+  },
+
+  watch: {
+    autoUpdate: {
+      immediate: true,
+      handler(autoUpdate) {
+        if (this.checkForUpdateIntervalId) {
+          clearInterval(this.checkForUpdateIntervalId)
+        }
+        if (autoUpdate) {
+          // check for update now
+          this.checkForUpdate()
+
+          // check for updates every 8 hours
+          this.checkForUpdateIntervalId = setInterval(() => {
+            this.checkForUpdate()
+          }, 1000 * 3600 * 8)
+        }
+      },
+    },
+
+    allowBetaVersions(newValue) {
+      this.checkForUpdate()
+    },
+  },
+
+  computed: {
+    statusText() {
+      if (this.downloading) {
+        return "Downloading update… " + this.updateProgress.percent.toFixed(0) + "%"
+      } else if (this.updateDownloaded) {
+        return "Update & Restart"
+      } else if (this.updateAvailable) {
+        return "New version available!"
+      } else {
+        return ""
+      }
+    },
+
+    statusTitle() {
+      if (this.downloading) {
+        return ""
+      } else if (this.updateDownloaded) {
+        return "Click to restart and update Heynote"
+      } else if (this.updateAvailable) {
+        return "Update to version " + this.version + " (current version: " + this.currentVersion + ")"
+      } else {
+        return "Check for updates"
+      }
+    },
+
+    className() {
+      return "status-block update-status-block" +
+        (!this.downloading ? " clickable" : "") +
+        (this.statusText === "" ? " empty" : "")
+    },
+
+    iconClassName() {
+      if (this.checkingForUpdate) {
+        return "icon-update spinning"
+      } else if (this.downloading) {
+        return "icon-update spinning"
+      } else if (this.updateDownloaded) {
+        return "icon-update icon-download "
+      } else if (this.updateAvailable) {
+        return "icon-update icon-download"
+      } else {
+        return "icon-update"
+      }
+    },
+  },
+
+  methods: {
+    onClick() {
+      if (this.downloading || this.checkingForUpdate) {
+        return
+      } else if (this.updateDownloaded) {
+        window.heynote.autoUpdate.installAndRestart()
+      } else if (this.updateAvailable) {
+        this.downloading = true
+        window.heynote.autoUpdate.startDownload()
+      } else {
+        this.checkForUpdate()
+      }
+    },
+
+    checkForUpdate() {
+      this.updateAvailable = false
+      this.checkingForUpdate = true
+      window.heynote.autoUpdate.checkForUpdates()
+    }
+  },
+
+}
 </script>
 
 <template>
-    <div :class="className" @click="onClick" :title="statusTitle">
-        <span :class="iconClassName"></span>
-        {{  statusText }}
-    </div>
+  <div :class="className" @click="onClick" :title="statusTitle">
+    <span :class="iconClassName"></span>
+    {{ statusText }}
+  </div>
 </template>
 
 <style scoped lang="sass">

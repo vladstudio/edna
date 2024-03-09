@@ -1,17 +1,17 @@
 <script>
-    export default {
-        props: ["tab", "activeTab", "name"],
+export default {
+  props: ["tab", "activeTab", "name"],
 
-        computed: {
-            tabClass() {
-                return "tab-" + this.tab + " " + (this.tab === this.activeTab ? "active" : "")
-            }
-        }
+  computed: {
+    tabClass() {
+      return "tab-" + this.tab + " " + (this.tab === this.activeTab ? "active" : "")
     }
+  }
+} 
 </script>
 
 <template>
-    <li :class="tabClass">{{ name }}</li>
+  <li :class="tabClass">{{ name }}</li>
 </template>
 
 <style scoped lang="sass">

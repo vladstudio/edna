@@ -1,358 +1,285 @@
 <script>
-    import KeyboardHotkey from "./KeyboardHotkey.vue"
-    import TabListItem from "./TabListItem.vue"
-    import TabContent from "./TabContent.vue"
+import KeyboardHotkey from "./KeyboardHotkey.vue"
+import TabListItem from "./TabListItem.vue"
+import TabContent from "./TabContent.vue"
 
-    const defaultFontFamily = window.heynote.defaultFontFamily
-    const defaultFontSize = window.heynote.defaultFontSize
-    
-    export default {
-        props: {
-            initialKeymap: String,
-            initialSettings: Object,
-        },
-        components: {
-            KeyboardHotkey,
-            TabListItem,
-            TabContent,
-        },
+const defaultFontFamily = window.heynote.defaultFontFamily
+const defaultFontSize = window.heynote.defaultFontSize
 
-        data() {
-            return {
-                keymaps: [
-                    { name: "Default", value: "default" },
-                    { name: "Emacs", value: "emacs" },
-                ],
-                keymap: this.initialSettings.keymap,
-                metaKey: this.initialSettings.emacsMetaKey,
-                isMac: window.heynote.platform.isMac,
-                showLineNumberGutter: this.initialSettings.showLineNumberGutter,
-                showFoldGutter: this.initialSettings.showFoldGutter,
-                allowBetaVersions: this.initialSettings.allowBetaVersions,
-                enableGlobalHotkey: this.initialSettings.enableGlobalHotkey,
-                globalHotkey: this.initialSettings.globalHotkey,
-                showInDock: this.initialSettings.showInDock,
-                showInMenu: this.initialSettings.showInMenu,
-                alwaysOnTop: this.initialSettings.alwaysOnTop,
-                bracketClosing: this.initialSettings.bracketClosing,
-                autoUpdate: this.initialSettings.autoUpdate,
-                bufferPath: this.initialSettings.bufferPath,
-                fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
-                fontSize: this.initialSettings.fontSize || defaultFontSize,
+export default {
+  props: {
+    initialKeymap: String,
+    initialSettings: Object,
+  },
+  components: {
+    KeyboardHotkey,
+    TabListItem,
+    TabContent,
+  },
 
-                activeTab: "general",
-                isWebApp: window.heynote.platform.isWebApp,
-                customBufferLocation: !!this.initialSettings.bufferPath,
-                systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
-                defaultFontSize: defaultFontSize,
-                appVersion: "",
-                currentNotePath: this.initialSettings.currentNotePath,
-            }
-        },
+  data() {
+    return {
+      keymaps: [
+        { name: "Default", value: "default" },
+        { name: "Emacs", value: "emacs" },
+      ],
+      keymap: this.initialSettings.keymap,
+      metaKey: this.initialSettings.emacsMetaKey,
+      isMac: window.heynote.platform.isMac,
+      showLineNumberGutter: this.initialSettings.showLineNumberGutter,
+      showFoldGutter: this.initialSettings.showFoldGutter,
+      allowBetaVersions: this.initialSettings.allowBetaVersions,
+      enableGlobalHotkey: this.initialSettings.enableGlobalHotkey,
+      globalHotkey: this.initialSettings.globalHotkey,
+      showInDock: this.initialSettings.showInDock,
+      showInMenu: this.initialSettings.showInMenu,
+      alwaysOnTop: this.initialSettings.alwaysOnTop,
+      bracketClosing: this.initialSettings.bracketClosing,
+      autoUpdate: this.initialSettings.autoUpdate,
+      bufferPath: this.initialSettings.bufferPath,
+      fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
+      fontSize: this.initialSettings.fontSize || defaultFontSize,
 
-        async mounted() {
-            if (window.queryLocalFonts !== undefined) {
-                let localFonts = [... new Set((await window.queryLocalFonts()).map(f => f.family))].filter(f => f !== "Hack")
-                localFonts = [...new Set(localFonts)].map(f => [f, f])
-                this.systemFonts = [[defaultFontFamily, defaultFontFamily + " (default)"], ...localFonts]
-            }
-
-            window.addEventListener("keydown", this.onKeyDown);
-            this.$refs.keymapSelector.focus()
-
-            this.appVersion = await window.heynote.getVersion()
-        },
-        beforeUnmount() {
-            window.removeEventListener("keydown", this.onKeyDown);
-        },
-
-        methods: {
-            onKeyDown(event) {
-                if (event.key === "Escape") {
-                    this.$emit("closeSettings")
-                }
-            },
-
-            updateSettings() {
-                window.heynote.setSettings({
-                    showLineNumberGutter: this.showLineNumberGutter,
-                    showFoldGutter: this.showFoldGutter,
-                    keymap: this.keymap,
-                    emacsMetaKey: window.heynote.platform.isMac ? this.metaKey : "alt",
-                    allowBetaVersions: this.allowBetaVersions,
-                    enableGlobalHotkey: this.enableGlobalHotkey,
-                    globalHotkey: this.globalHotkey,
-                    showInDock: this.showInDock,
-                    showInMenu: this.showInMenu || !this.showInDock,
-                    alwaysOnTop: this.alwaysOnTop,
-                    autoUpdate: this.autoUpdate,
-                    bracketClosing: this.bracketClosing,
-                    bufferPath: this.bufferPath,
-                    fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
-                    fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
-                    currentNotePath: this.currentNotePath,
-                })
-                if (!this.showInDock) {
-                    this.showInMenu = true
-                }
-            },
-
-            async selectBufferLocation() {
-                const path = await window.heynote.buffer.selectLocation()
-                if (path) {
-                    this.bufferPath = path
-                    this.updateSettings()
-                }
-            },
-
-            onCustomBufferLocationChange() {
-                if (!this.customBufferLocation) {
-                    this.bufferPath = ""
-                    this.updateSettings()
-                }
-            },
-        }
+      activeTab: "general",
+      isWebApp: window.heynote.platform.isWebApp,
+      customBufferLocation: !!this.initialSettings.bufferPath,
+      systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
+      defaultFontSize: defaultFontSize,
+      appVersion: "",
+      currentNotePath: this.initialSettings.currentNotePath,
     }
+  },
+
+  async mounted() {
+    if (window.queryLocalFonts !== undefined) {
+      let localFonts = [... new Set((await window.queryLocalFonts()).map(f => f.family))].filter(f => f !== "Hack")
+      localFonts = [...new Set(localFonts)].map(f => [f, f])
+      this.systemFonts = [[defaultFontFamily, defaultFontFamily + " (default)"], ...localFonts]
+    }
+
+    window.addEventListener("keydown", this.onKeyDown);
+    this.$refs.keymapSelector.focus()
+
+    this.appVersion = await window.heynote.getVersion()
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.onKeyDown);
+  },
+
+  methods: {
+    onKeyDown(event) {
+      if (event.key === "Escape") {
+        this.$emit("closeSettings")
+      }
+    },
+
+    updateSettings() {
+      window.heynote.setSettings({
+        showLineNumberGutter: this.showLineNumberGutter,
+        showFoldGutter: this.showFoldGutter,
+        keymap: this.keymap,
+        emacsMetaKey: window.heynote.platform.isMac ? this.metaKey : "alt",
+        allowBetaVersions: this.allowBetaVersions,
+        enableGlobalHotkey: this.enableGlobalHotkey,
+        globalHotkey: this.globalHotkey,
+        showInDock: this.showInDock,
+        showInMenu: this.showInMenu || !this.showInDock,
+        alwaysOnTop: this.alwaysOnTop,
+        autoUpdate: this.autoUpdate,
+        bracketClosing: this.bracketClosing,
+        bufferPath: this.bufferPath,
+        fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
+        fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
+        currentNotePath: this.currentNotePath,
+      })
+      if (!this.showInDock) {
+        this.showInMenu = true
+      }
+    },
+
+    async selectBufferLocation() {
+      const path = await window.heynote.buffer.selectLocation()
+      if (path) {
+        this.bufferPath = path
+        this.updateSettings()
+      }
+    },
+
+    onCustomBufferLocationChange() {
+      if (!this.customBufferLocation) {
+        this.bufferPath = ""
+        this.updateSettings()
+      }
+    },
+  }
+}
 </script>
 
 <template>
-    <div class="settings">
-        <div class="dialog">
-            <div class="dialog-content">
-                <nav class="sidebar">
-                    <h1>Settings</h1>
-                    <ul>
-                        <TabListItem 
-                            name="General" 
-                            tab="general" 
-                            :activeTab="activeTab" 
-                            @click="activeTab = 'general'"
-                        />
-                        <TabListItem 
-                            name="Editing" 
-                            tab="editing"
-                            :activeTab="activeTab" 
-                            @click="activeTab = 'editing'"
-                        />
-                        <TabListItem 
-                            name="Appearance" 
-                            tab="appearance"
-                            :activeTab="activeTab" 
-                            @click="activeTab = 'appearance'"
-                        />
-                        <TabListItem 
-                            :name="isWebApp ? 'Version' : 'Updates'" 
-                            tab="updates" 
-                            :activeTab="activeTab" 
-                            @click="activeTab = 'updates'"
-                        />
-                    </ul>
-                </nav>
-                <div class="settings-content">
-                    <TabContent tab="general" :activeTab="activeTab">
-                        <div class="row">
-                            <div class="entry">
-                                <h2>Keymap</h2>
-                                <select ref="keymapSelector" v-model="keymap" @change="updateSettings" class="keymap">
-                                    <template v-for="km in keymaps" :key="km.value">
-                                        <option :selected="km.value === keymap" :value="km.value">{{ km.name }}</option>
-                                    </template>
-                                </select>
-                            </div>
-                            <div class="entry" v-if="keymap === 'emacs' && isMac">
-                                <h2>Meta Key</h2>
-                                <select v-model="metaKey" @change="updateSettings" class="metaKey">
-                                    <option :selected="metaKey === 'meta'" value="meta">Command</option>
-                                    <option :selected="metaKey === 'alt'" value="alt">Option</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row" v-if="!isWebApp">
-                            <div class="entry">
-                                <h2>Global Keyboard Shortcut</h2>
-                                <label class="keyboard-shortcut-label">
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="enableGlobalHotkey" 
-                                        @change="updateSettings"
-                                    />
-                                    Enable Global Hotkey
-                                </label>
-                                
-                                <KeyboardHotkey 
-                                    :disabled="!enableGlobalHotkey"
-                                    v-model="globalHotkey"
-                                    @change="updateSettings"
-                                />
-                            </div>
-                        </div>
-                        <div class="row" v-if="!isWebApp">
-                            <div class="entry">
-                                <h2>Window / Application</h2>
-                                <label v-if="isMac">
-                                    <input
-                                        type="checkbox"
-                                        v-model="showInDock"
-                                        @change="updateSettings"
-                                    />
-                                    Show in dock
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        :disabled="!showInDock"
-                                        v-model="showInMenu"
-                                        @change="updateSettings"
-                                    />
-                                    <template v-if="isMac">
-                                        Show in menu bar
-                                    </template>
-                                    <template v-else>
-                                        Show in system tray
-                                    </template>
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        v-model="alwaysOnTop"
-                                        @change="updateSettings"
-                                    />
-                                    Always on top
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row" v-if="!isWebApp">
-                            <div class="entry buffer-location">
-                                <h2>Buffer File Path</h2>
-                                <label class="keyboard-shortcut-label">
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="customBufferLocation" 
-                                        @change="onCustomBufferLocationChange"
-                                    />
-                                    Use custom buffer file location
-                                </label>
-                                <div class="file-path">
-                                    <button
-                                        :disabled="!customBufferLocation"
-                                        @click="selectBufferLocation"
-                                    >Select Directory</button>
-                                    <span class="path" v-show="customBufferLocation && bufferPath">{{ bufferPath }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </TabContent>
+  <div class="settings">
+    <div class="dialog">
+      <div class="dialog-content">
+        <nav class="sidebar">
+          <h1>Settings</h1>
+          <ul>
+            <TabListItem name="General" tab="general" :activeTab="activeTab" @click="activeTab = 'general'" />
+            <TabListItem name="Editing" tab="editing" :activeTab="activeTab" @click="activeTab = 'editing'" />
+            <TabListItem name="Appearance" tab="appearance" :activeTab="activeTab" @click="activeTab = 'appearance'" />
+            <TabListItem :name="isWebApp ? 'Version' : 'Updates'" tab="updates" :activeTab="activeTab"
+              @click="activeTab = 'updates'" />
+          </ul>
+        </nav>
+        <div class="settings-content">
+          <TabContent tab="general" :activeTab="activeTab">
+            <div class="row">
+              <div class="entry">
+                <h2>Keymap</h2>
+                <select ref="keymapSelector" v-model="keymap" @change="updateSettings" class="keymap">
+                  <template v-for="km in keymaps" :key="km.value">
+                    <option :selected="km.value === keymap" :value="km.value">{{ km.name }}</option>
+                  </template>
+                </select>
+              </div>
+              <div class="entry" v-if="keymap === 'emacs' && isMac">
+                <h2>Meta Key</h2>
+                <select v-model="metaKey" @change="updateSettings" class="metaKey">
+                  <option :selected="metaKey === 'meta'" value="meta">Command</option>
+                  <option :selected="metaKey === 'alt'" value="alt">Option</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" v-if="!isWebApp">
+              <div class="entry">
+                <h2>Global Keyboard Shortcut</h2>
+                <label class="keyboard-shortcut-label">
+                  <input type="checkbox" v-model="enableGlobalHotkey" @change="updateSettings" />
+                  Enable Global Hotkey
+                </label>
 
-                    <TabContent tab="editing" :activeTab="activeTab">
-                        <div class="row">
-                            <div class="entry">
-                                <h2>Input settings</h2>
-                                <label>
-                                    <input 
-                                        type="checkbox"
-                                        v-model="bracketClosing"
-                                        @change="updateSettings"
-                                    />
-                                    Auto-close brackets and quotation marks
-                                </label>
-                            </div>  
-                        </div>
-                    </TabContent>
-
-                    <TabContent tab="appearance" :activeTab="activeTab">
-                        <div class="row">
-                            <div class="entry">
-                                <h2>Gutters</h2>
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="showLineNumberGutter" 
-                                        @change="updateSettings"
-                                    />
-                                    Show line numbers
-                                </label>
-                                
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="showFoldGutter" 
-                                        @change="updateSettings"
-                                    />
-                                    Show fold gutter
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row font-settings">
-                            <div class="entry">
-                                <h2>Font Family</h2>
-                                <select v-model="fontFamily" @change="updateSettings" class="font-family">
-                                    <option
-                                        v-for="[font, label] in systemFonts"
-                                        :selected="font === fontFamily"
-                                        :value="font"
-                                    >{{ label }}</option>
-                                </select>
-                            </div>
-                            <div class="entry">
-                                <h2>Font Size</h2>
-                                <select v-model="fontSize" @change="updateSettings" class="font-size">
-                                    <option
-                                        v-for="size in [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]"
-                                        :selected="size === fontSize"
-                                        :value="size"
-                                    >{{ size }}px{{ size === defaultFontSize ? " (default)" : "" }}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </TabContent>
-                    
-                    <TabContent tab="updates" :activeTab="activeTab">
-                        <div class="row">
-                            <div class="entry">
-                                <h2>Current Version</h2>
-                                <b>{{ appVersion }}</b>
-                            </div>
-                        </div>
-
-                        <div class="row" v-if="!isWebApp">
-                            <div class="entry">
-                                <h2>Auto Update</h2>
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="autoUpdate" 
-                                        @change="updateSettings"
-                                    />
-                                    Periodically check for new updates
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row" v-if="!isWebApp">
-                            <div class="entry">
-                                <h2>Beta Versions</h2>
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="allowBetaVersions" 
-                                        @change="updateSettings"
-                                    />
-                                    Use beta versions of Heynote
-                                </label>
-                            </div>
-                        </div>
-                    </TabContent>
+                <KeyboardHotkey :disabled="!enableGlobalHotkey" v-model="globalHotkey" @change="updateSettings" />
+              </div>
+            </div>
+            <div class="row" v-if="!isWebApp">
+              <div class="entry">
+                <h2>Window / Application</h2>
+                <label v-if="isMac">
+                  <input type="checkbox" v-model="showInDock" @change="updateSettings" />
+                  Show in dock
+                </label>
+                <label>
+                  <input type="checkbox" :disabled="!showInDock" v-model="showInMenu" @change="updateSettings" />
+                  <template v-if="isMac">
+                    Show in menu bar
+                  </template>
+                  <template v-else>
+                    Show in system tray
+                  </template>
+                </label>
+                <label>
+                  <input type="checkbox" v-model="alwaysOnTop" @change="updateSettings" />
+                  Always on top
+                </label>
+              </div>
+            </div>
+            <div class="row" v-if="!isWebApp">
+              <div class="entry buffer-location">
+                <h2>Buffer File Path</h2>
+                <label class="keyboard-shortcut-label">
+                  <input type="checkbox" v-model="customBufferLocation" @change="onCustomBufferLocationChange" />
+                  Use custom buffer file location
+                </label>
+                <div class="file-path">
+                  <button :disabled="!customBufferLocation" @click="selectBufferLocation">Select
+                    Directory</button>
+                  <span class="path" v-show="customBufferLocation && bufferPath">{{ bufferPath
+                    }}</span>
                 </div>
+              </div>
             </div>
-            
-            <div class="bottom-bar">
-                <button 
-                    @click="$emit('closeSettings')"
-                    class="close"
-                >Close</button>
+          </TabContent>
+
+          <TabContent tab="editing" :activeTab="activeTab">
+            <div class="row">
+              <div class="entry">
+                <h2>Input settings</h2>
+                <label>
+                  <input type="checkbox" v-model="bracketClosing" @change="updateSettings" />
+                  Auto-close brackets and quotation marks
+                </label>
+              </div>
             </div>
+          </TabContent>
+
+          <TabContent tab="appearance" :activeTab="activeTab">
+            <div class="row">
+              <div class="entry">
+                <h2>Gutters</h2>
+                <label>
+                  <input type="checkbox" v-model="showLineNumberGutter" @change="updateSettings" />
+                  Show line numbers
+                </label>
+
+                <label>
+                  <input type="checkbox" v-model="showFoldGutter" @change="updateSettings" />
+                  Show fold gutter
+                </label>
+              </div>
+            </div>
+            <div class="row font-settings">
+              <div class="entry">
+                <h2>Font Family</h2>
+                <select v-model="fontFamily" @change="updateSettings" class="font-family">
+                  <option v-for="[font, label] in systemFonts" :selected="font === fontFamily" :value="font">{{ label }}
+                  </option>
+                </select>
+              </div>
+              <div class="entry">
+                <h2>Font Size</h2>
+                <select v-model="fontSize" @change="updateSettings" class="font-size">
+                  <option v-for="size in [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]"
+                    :selected="size === fontSize" :value="size">{{ size }}px{{ size ===
+              defaultFontSize ? " (default)" : "" }}</option>
+                </select>
+              </div>
+            </div>
+          </TabContent>
+
+          <TabContent tab="updates" :activeTab="activeTab">
+            <div class="row">
+              <div class="entry">
+                <h2>Current Version</h2>
+                <b>{{ appVersion }}</b>
+              </div>
+            </div>
+
+            <div class="row" v-if="!isWebApp">
+              <div class="entry">
+                <h2>Auto Update</h2>
+                <label>
+                  <input type="checkbox" v-model="autoUpdate" @change="updateSettings" />
+                  Periodically check for new updates
+                </label>
+              </div>
+            </div>
+            <div class="row" v-if="!isWebApp">
+              <div class="entry">
+                <h2>Beta Versions</h2>
+                <label>
+                  <input type="checkbox" v-model="allowBetaVersions" @change="updateSettings" />
+                  Use beta versions of Heynote
+                </label>
+              </div>
+            </div>
+          </TabContent>
         </div>
-        <div class="shader"></div>
+      </div>
+
+      <div class="bottom-bar">
+        <button @click="$emit('closeSettings')" class="close">Close</button>
+      </div>
     </div>
+    <div class="shader"></div>
+  </div>
 </template>
 
 <style lang="sass" scoped>

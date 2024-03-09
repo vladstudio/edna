@@ -1,117 +1,106 @@
 <script>
-    import { LANGUAGES } from '../editor/languages.js'
+import { LANGUAGES } from '../editor/languages.js'
 
-    const items = LANGUAGES.map(l => {
-        return {
-            "token": l.token, 
-            "name": l.name,
-            "nameLC": l.name.toLowerCase(),
-        }
-    }).sort((a, b) => {
-        return a.name.localeCompare(b.name)
-    })
-    items.unshift({token: "auto", name:"Auto-detect", nameLC:"auto-detect"})
+const items = LANGUAGES.map(l => {
+  return {
+    "token": l.token,
+    "name": l.name,
+    "nameLC": l.name.toLowerCase(),
+  }
+}).sort((a, b) => {
+  return a.name.localeCompare(b.name)
+})
+items.unshift({ token: "auto", name: "Auto-detect", nameLC: "auto-detect" })
 
-    export default {
-        data() {
-            return {
-                selected: 0,
-                filter: "",
-            }
-        },
-
-        mounted() {
-            this.$refs.container.focus()
-            this.$refs.input.focus()
-        },
-
-        computed: {
-            filteredItems() {
-                const filterLC = this.filter.toLowerCase()
-                return items.filter((lang) => {
-                    return lang.nameLC.indexOf(filterLC) !== -1
-                })
-            },
-        },
-
-        methods: {
-            onKeydown(event) {
-                if (event.key === "ArrowDown") {
-                    this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
-                    event.preventDefault()
-                    if (this.selected === this.filteredItems.length - 1) {
-                        this.$refs.container.scrollIntoView({block: "end"})
-                    } else {
-                        this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
-                    }
-                    
-                } else if (event.key === "ArrowUp") {
-                    this.selected = Math.max(this.selected - 1, 0)
-                    event.preventDefault()
-                    if (this.selected === 0) {
-                        this.$refs.container.scrollIntoView({block: "start"})
-                    } else {
-                        this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
-                    }
-                } else if (event.key === "Enter") {
-                    const selected = this.filteredItems[this.selected]
-                    if (selected) {
-                        this.selectItem(selected.token)
-                    } else {
-                        this.$emit("close")
-                    }
-                    event.preventDefault()
-                } else if (event.key === "Escape") {
-                    this.$emit("close")
-                    event.preventDefault()
-                }
-            },
-
-            selectItem(token) {
-                this.$emit("selectLanguage", token)
-            },
-
-            onInput(event) {
-                // reset selection
-                this.selected = 0
-            },
-
-            onFocusOut(event) {
-                let container = this.$refs.container
-                if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
-                    this.$emit("close")
-                }
-            },
-        }
+export default {
+  data() {
+    return {
+      selected: 0,
+      filter: "",
     }
+  },
+
+  mounted() {
+    this.$refs.container.focus()
+    this.$refs.input.focus()
+  },
+
+  computed: {
+    filteredItems() {
+      const filterLC = this.filter.toLowerCase()
+      return items.filter((lang) => {
+        return lang.nameLC.indexOf(filterLC) !== -1
+      })
+    },
+  },
+
+  methods: {
+    onKeydown(event) {
+      if (event.key === "ArrowDown") {
+        this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
+        event.preventDefault()
+        if (this.selected === this.filteredItems.length - 1) {
+          this.$refs.container.scrollIntoView({ block: "end" })
+        } else {
+          this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
+        }
+
+      } else if (event.key === "ArrowUp") {
+        this.selected = Math.max(this.selected - 1, 0)
+        event.preventDefault()
+        if (this.selected === 0) {
+          this.$refs.container.scrollIntoView({ block: "start" })
+        } else {
+          this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
+        }
+      } else if (event.key === "Enter") {
+        const selected = this.filteredItems[this.selected]
+        if (selected) {
+          this.selectItem(selected.token)
+        } else {
+          this.$emit("close")
+        }
+        event.preventDefault()
+      } else if (event.key === "Escape") {
+        this.$emit("close")
+        event.preventDefault()
+      }
+    },
+
+    selectItem(token) {
+      this.$emit("selectLanguage", token)
+    },
+
+    onInput(event) {
+      // reset selection
+      this.selected = 0
+    },
+
+    onFocusOut(event) {
+      let container = this.$refs.container
+      if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
+        this.$emit("close")
+      }
+    },
+  }
+}
 </script>
 
 <template>
-    <div class="scroller">
-        <form class="language-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
-            <input 
-                type="text" 
-                ref="input"
-                @keydown="onKeydown"
-                @input="onInput"
-                v-model="filter"
-            />
-            <ul class="items">
-                <li
-                    v-for="item, idx in filteredItems"
-                    :key="item.token"
-                    :class="idx === selected ? 'selected' : ''"
-                    @click="selectItem(item.token)"
-                    ref="item"
-                >
-                    {{ item.name }}
-                </li>
-            </ul>
-        </form>
-    </div>
+  <div class="scroller">
+    <form class="language-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
+      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
+      <ul class="items">
+        <li v-for="item, idx in filteredItems" :key="item.token" :class="idx === selected ? 'selected' : ''"
+          @click="selectItem(item.token)" ref="item">
+          {{ item.name }}
+        </li>
+      </ul>
+    </form>
+  </div>
 </template>
 
-<style scoped lang="sass">    
+<style scoped lang="sass">
     .scroller
         overflow: auto
         position: fixed

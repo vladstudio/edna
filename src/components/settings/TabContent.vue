@@ -1,19 +1,19 @@
 <script>
-    export default {
-        props: ["tab", "activeTab"],
+export default {
+  props: ["tab", "activeTab"],
 
-        computed: {
-            className() {
-                return "tab-content tab-" + this.tab + " " + (this.tab === this.activeTab ? "active" : "")
-            }
-        }
+  computed: {
+    className() {
+      return "tab-content tab-" + this.tab + " " + (this.tab === this.activeTab ? "active" : "")
     }
+  }
+}
 </script>
 
 <template>
-    <div :class="className">
-        <slot></slot>
-    </div>
+  <div :class="className">
+    <slot></slot>
+  </div>
 </template>
 
 <style scoped lang="sass">

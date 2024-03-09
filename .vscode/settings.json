@@ -8,12 +8,17 @@
     "Scrolllock",
     "topnav"
   ],
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "never"
+      "source.organizeImports": "always"
     }
   },
-  "sort-imports.on-save": false,
+  "sort-imports.on-save": true,
 }

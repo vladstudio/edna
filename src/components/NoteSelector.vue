@@ -1,226 +1,216 @@
 <script>
-    import { loadNotePaths, splitNotePath, getSystemNotes } from '../notes'
+import { loadNotePaths, splitNotePath, getSystemNotes } from '../notes'
 
-    function mkNoteInfo(path) {
-        let [_, name] = splitNotePath(path)
-        return {
-            "path": path,
-            "name": name,
-            "nameLC": name.toLowerCase(),
-        }
+function mkNoteInfo(path) {
+  let [_, name] = splitNotePath(path)
+  return {
+    "path": path,
+    "name": name,
+    "nameLC": name.toLowerCase(),
+  }
+}
+
+function rebuildNotesInfo() {
+  const notePaths = loadNotePaths()
+  console.log("rebuildNotesInfo, notes", notePaths.length)
+  let res = [];
+  for (let path of notePaths) {
+    res.push(mkNoteInfo(path))
+  }
+  res.sort((a, b) => {
+    return a.name.localeCompare(b.name)
+  })
+  const systemNotes = getSystemNotes()
+  for (let path of systemNotes) {
+    res.push(mkNoteInfo(path))
+  }
+  return res
+}
+
+export default {
+  data() {
+    return {
+      items: rebuildNotesInfo(),
+      selected: 0,
+      filter: "",
     }
+  },
 
-    function rebuildNotesInfo() {
-        const notePaths = loadNotePaths()
-        console.log("rebuildNotesInfo, notes", notePaths.length)
-        let res = [];
-        for (let path of notePaths) {
-            res.push(mkNoteInfo(path))
+  mounted() {
+    this.$refs.container.focus()
+    this.$refs.input.focus()
+  },
+
+  computed: {
+    filteredItems() {
+      const filterLC = this.filter.toLowerCase()
+      return this.items.filter((noteInfo) => {
+        return noteInfo.nameLC.indexOf(filterLC) !== -1
+      })
+    },
+    canOpenSelected() {
+      if (this.filteredItems.length === 0) {
+        return false
+      }
+      if (this.selected < 0) {
+        return false
+      }
+      return true
+    },
+    // TODO: filter help note
+    canDeleteSelected() {
+      if (!this.canOpenSelected) {
+        return false
+      }
+      const noteInfo = this.filteredItems[this.selected]
+      // can't delete scratch note
+      if (noteInfo.name === "scratch") {
+        return false
+      }
+      if (noteInfo.path.startsWith("system:")) {
+        return false
+      }
+      return true
+    },
+    showDelete() {
+      return this.canOpenSelected
+    },
+    canCreate() {
+      let filter = this.filter.trim()
+      if (filter.length === 0) {
+        return false
+      }
+      for (let noteInfo of this.items) {
+        if (noteInfo.name === filter) {
+          return false
         }
-        res.sort((a, b) => {
-            return a.name.localeCompare(b.name)
-        })
-        const systemNotes = getSystemNotes()
-        for (let path of systemNotes) {
-            res.push(mkNoteInfo(path))
-        }
-        return res
+      }
+      return true
     }
+  },
 
-    export default {
-        data() {
-            return {
-                items: rebuildNotesInfo(),
-                selected: 0,
-                filter: "",
-            }
-        },
+  methods: {
+    trunc(name) {
+      const maxLen = 24
+      if (name.length > maxLen) {
+        return name.substring(0, maxLen) + "..."
+      }
+      return name
+    },
 
-        mounted() {
-            this.$refs.container.focus()
-            this.$refs.input.focus()
-        },
+    isCtrlDelete(event) {
+      return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
+    },
 
-        computed: {
-            filteredItems() {
-                const filterLC = this.filter.toLowerCase()
-                return this.items.filter((noteInfo) => {
-                    return noteInfo.nameLC.indexOf(filterLC) !== -1
-                })
-            },
-            canOpenSelected() {
-                if (this.filteredItems.length === 0) {
-                    return false
-                }
-                if (this.selected < 0) {
-                    return false
-                }
-                return true
-            },
-            // TODO: filter help note
-            canDeleteSelected() {
-                if (!this.canOpenSelected) {
-                    return false
-                }
-                const noteInfo = this.filteredItems[this.selected]
-                // can't delete scratch note
-                if (noteInfo.name === "scratch") {
-                    return false
-                }
-                if (noteInfo.path.startsWith("system:")) {
-                    return false
-                }
-                return true
-            },
-            showDelete() {
-                return this.canOpenSelected
-            },
-            canCreate() {
-                let filter = this.filter.trim()
-                if (filter.length === 0) {
-                    return false
-                }
-                for (let noteInfo of this.items) {
-                    if (noteInfo.name === filter) {
-                        return false
-                    }
-                }
-                return true
-            }
-        },
-
-        methods: {
-            trunc(name) {
-                const maxLen = 24
-                if (name.length > maxLen) {
-                    return name.substring(0, maxLen) + "..."
-                }
-                return name
-            },
-
-            isCtrlDelete(event) {
-                return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
-            },
-
-            onKeydown(event) {
-                if (event.key === "ArrowDown") {
-                    this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
-                    event.preventDefault()
-                    if (this.selected === this.filteredItems.length - 1) {
-                        this.$refs.container.scrollIntoView({block: "end"})
-                    } else {
-                        this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
-                    }
-                    
-                } else if (event.key === "ArrowUp") {
-                    this.selected = Math.max(this.selected - 1, 0)
-                    event.preventDefault()
-                    if (this.selected === 0) {
-                        this.$refs.container.scrollIntoView({block: "start"})
-                    } else {
-                        this.$refs.item[this.selected].scrollIntoView({block: "nearest"})
-                    }
-                } else if (event.key === "Enter") {
-                    if (event.ctrlKey) {
-                        console.log("Ctrl+Enter, filter:", this.filter)
-                        if (this.filter.length > 0) {
-                            this.createNote(this.filter)
-                        }
-                        return;
-                    }
-                    const selected = this.filteredItems[this.selected]
-                    if (selected) {
-                        this.openNote(selected.path)
-                    } else {
-                        this.$emit("close")
-                    }
-                    event.preventDefault()
-                } else if (this.isCtrlDelete(event)) {
-                    const selected = this.filteredItems[this.selected]
-                    if (selected) {
-                        this.deleteNote(selected.path)
-                    } else {
-                        this.$emit("close")
-                    }
-                    event.preventDefault()
-                } else if (event.key === "Escape") {
-                    // TODO: we also call onFocusOut() and emit "close" event twice
-                    this.$emit("close")
-                    event.preventDefault()
-                }
-            },
-
-            openNote(path) {
-                this.$emit("openNote", path)
-            },
-
-            createNote(name) {
-                console.log("create note", name)
-                this.$emit("createNote", name)
-            },
-
-            deleteNote(notePath) {
-                console.log("deleteNote", notePath)
-                this.$emit("deleteNote", notePath)
-            },
-
-            onInput(event) {
-                // reset selection
-                this.selected = 0
-            },
-
-            onFocusOut(event) {
-                let container = this.$refs.container
-                if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
-                    this.$emit("close")
-                }
-            },
+    onKeydown(event) {
+      if (event.key === "ArrowDown") {
+        this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
+        event.preventDefault()
+        if (this.selected === this.filteredItems.length - 1) {
+          this.$refs.container.scrollIntoView({ block: "end" })
+        } else {
+          this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
-    }
+
+      } else if (event.key === "ArrowUp") {
+        this.selected = Math.max(this.selected - 1, 0)
+        event.preventDefault()
+        if (this.selected === 0) {
+          this.$refs.container.scrollIntoView({ block: "start" })
+        } else {
+          this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
+        }
+      } else if (event.key === "Enter") {
+        if (event.ctrlKey) {
+          console.log("Ctrl+Enter, filter:", this.filter)
+          if (this.filter.length > 0) {
+            this.createNote(this.filter)
+          }
+          return;
+        }
+        const selected = this.filteredItems[this.selected]
+        if (selected) {
+          this.openNote(selected.path)
+        } else {
+          this.$emit("close")
+        }
+        event.preventDefault()
+      } else if (this.isCtrlDelete(event)) {
+        const selected = this.filteredItems[this.selected]
+        if (selected) {
+          this.deleteNote(selected.path)
+        } else {
+          this.$emit("close")
+        }
+        event.preventDefault()
+      } else if (event.key === "Escape") {
+        // TODO: we also call onFocusOut() and emit "close" event twice
+        this.$emit("close")
+        event.preventDefault()
+      }
+    },
+
+    openNote(path) {
+      this.$emit("openNote", path)
+    },
+
+    createNote(name) {
+      console.log("create note", name)
+      this.$emit("createNote", name)
+    },
+
+    deleteNote(notePath) {
+      console.log("deleteNote", notePath)
+      this.$emit("deleteNote", notePath)
+    },
+
+    onInput(event) {
+      // reset selection
+      this.selected = 0
+    },
+
+    onFocusOut(event) {
+      let container = this.$refs.container
+      if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
+        this.$emit("close")
+      }
+    },
+  }
+}
 </script>
 
 <template>
-    <div class="scroller">
-        <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
-            <input
-                type="text"
-                ref="input"
-                @keydown="onKeydown"
-                @input="onInput"
-                v-model="filter"
-            />
-            <ul class="items">
-                <li
-                    v-for="item, idx in filteredItems"
-                    :key="item.path"
-                    :class="idx === selected ? 'selected' : ''"
-                    @click="openNote(item.path)"
-                    ref="item"
-                >
-                    {{ item.name }}
-                </li>
-            </ul>
-            <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
-            <div class="kbd-grid">
-                <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
-                <div v-if="canOpenSelected">open note</div>
-                <div v-if="canOpenSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+  <div class="scroller">
+    <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
+      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
+      <ul class="items">
+        <li v-for="item, idx in filteredItems" :key="item.path" :class="idx === selected ? 'selected' : ''"
+          @click="openNote(item.path)" ref="item">
+          {{ item.name }}
+        </li>
+      </ul>
+      <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
+      <div class="kbd-grid">
+        <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
+        <div v-if="canOpenSelected">open note</div>
+        <div v-if="canOpenSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
 
-                <div v-if="canCreate"><span class="kbd">Ctrl + Enter</span></div>
-                <div v-if="canCreate">create note</div>
-                <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
+        <div v-if="canCreate"><span class="kbd">Ctrl + Enter</span></div>
+        <div v-if="canCreate">create note</div>
+        <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
 
-                <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
-                <div v-if="showDelete" class="red">delete note</div>
-                <div v-if="showDelete && canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
-                <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold">{{ trunc(filteredItems[selected].name) }}</span></div>
+        <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
+        <div v-if="showDelete" class="red">delete note</div>
+        <div v-if="showDelete && canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+        <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold">{{
+      trunc(filteredItems[selected].name) }}</span></div>
 
-                <div><span class="kbd">Esc</span></div>
-                <div>dismiss</div>
-                <div></div>
-            </div>
-        </form>
-    </div>
+        <div><span class="kbd">Esc</span></div>
+        <div>dismiss</div>
+        <div></div>
+      </div>
+    </form>
+  </div>
 </template>
 
 <style scoped lang="sass">

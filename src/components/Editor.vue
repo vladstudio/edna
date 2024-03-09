@@ -1,279 +1,275 @@
 <script>
-    import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
-    import { syntaxTree } from "@codemirror/language"
-    import { EditorState, EditorSelection } from "@codemirror/state"
+import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
+import { syntaxTree } from "@codemirror/language"
+import { EditorState, EditorSelection } from "@codemirror/state"
 import { scratchNotePath } from '../notes.js'
 
-    export default {
-        props: {
-            theme: String,
-            development: Boolean,
-            debugSyntaxTree: Boolean,
-            keymap: {
-                type: String,
-                default: "default",
-            },
-            emacsMetaKey: {
-                type: String,
-                default: "alt",
-            },
-            showLineNumberGutter: {
-                type: Boolean,
-                default: true,
-            },
-            showFoldGutter: {
-                type: Boolean,
-                default: true,
-            },
-            bracketClosing: {
-                type: Boolean,
-                default: false,
-            },
-            fontFamily: String,
-            fontSize: Number,
-        },
+export default {
+  props: {
+    theme: String,
+    development: Boolean,
+    debugSyntaxTree: Boolean,
+    keymap: {
+      type: String,
+      default: "default",
+    },
+    emacsMetaKey: {
+      type: String,
+      default: "alt",
+    },
+    showLineNumberGutter: {
+      type: Boolean,
+      default: true,
+    },
+    showFoldGutter: {
+      type: Boolean,
+      default: true,
+    },
+    bracketClosing: {
+      type: Boolean,
+      default: false,
+    },
+    fontFamily: String,
+    fontSize: Number,
+  },
 
-        components: {},
+  components: {},
 
-        data() {
-            return {
-                syntaxTreeDebugContent: null,
-            }
-        },
-
-        mounted() {
-            this.$refs.editor.addEventListener("selectionChange", (e) => {
-                // console.log("selectionChange:", e)
-                this.$emit("cursorChange", {
-                    cursorLine: e.cursorLine,
-                    selectionSize: e.selectionSize,
-                    language: e.language,
-                    languageAuto: e.languageAuto,
-                })
-            })
-
-            this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
-                this.$emit("openLanguageSelector")
-            })
-            this.$refs.editor.addEventListener(NOTE_SELECTOR_EVENT, (e) => {
-                this.$emit("openNoteSelector")
-            })
-            this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
-                this.$emit("docChanged")
-            })
-            // this.$refs.editor.addEventListener("contextmenu", (e) => {
-            //     console.log("contextmenu:", e)
-            //     e.preventDefault()
-            //     this.$emit("contextMenu", e)
-            // })
-
-            // load buffer content and create editor
-            window.heynote.buffer.load().then((content) => {
-                let diskContent = content
-                this.editor = new HeynoteEditor({
-                    element: this.$refs.editor,
-                    content: content,
-                    theme: this.theme,
-                    saveFunction: (content) => {
-                        if (content === diskContent) {
-                            return
-                        }
-                        diskContent = content
-                        window.heynote.buffer.save(content)
-                    },
-                    keymap: this.keymap,
-                    emacsMetaKey: this.emacsMetaKey,
-                    showLineNumberGutter: this.showLineNumberGutter,
-                    showFoldGutter: this.showFoldGutter,
-                    bracketClosing: this.bracketClosing,
-                    fontFamily: this.fontFamily,
-                    fontSize: this.fontSize,
-                })
-                window._heynote_editor = this.editor
-                window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
-
-                // set up buffer change listener
-                window.heynote.buffer.onChangeCallback((event, content) => {
-                    diskContent = content
-                    this.editor.setContent(content)
-                })
-                this.$emit("docChanged")
-            })
-            // set up window close handler that will save the buffer and quit
-            window.heynote.onWindowClose(() => {
-                window.heynote.buffer.saveAndQuit(this.editor.getContent())
-            })
-
-            // if debugSyntaxTree prop is set, display syntax tree for debugging
-            if (this.debugSyntaxTree) {
-                setInterval(() => {
-                    function render(tree) {
-                        let lists = ''
-                        tree.iterate({
-                            enter(type) {
-                                lists += `<ul><li>${type.name} (${type.from},${type.to})`
-                            },
-                            leave() {
-                                lists += '</ul>'
-                            }
-                        })
-                        return lists
-                    }
-                    this.syntaxTreeDebugContent = render(syntaxTree(this.editor.view.state))
-                }, 1000)
-            }
-        },
-
-        beforeUnmount() {
-            window.document.removeEventListener("currenciesLoaded", this.onCurrenciesLoaded)
-        },
-
-        watch: {
-            theme(newTheme) {
-                this.editor.setTheme(newTheme)
-            },
-
-            keymap() {
-                this.editor.setKeymap(this.keymap, this.emacsMetaKey)
-            },
-
-            emacsMetaKey() {
-                this.editor.setKeymap(this.keymap, this.emacsMetaKey)
-            },
-
-            showLineNumberGutter(show) {
-                this.editor.setLineNumberGutter(show)
-            },
-
-            showFoldGutter(show) {
-                this.editor.setFoldGutter(show)
-            },
-
-            bracketClosing(value) {
-                this.editor.setBracketClosing(value)
-            },
-
-            fontFamily() {
-                this.editor.setFont(this.fontFamily, this.fontSize)
-            },
-            fontSize() {
-                this.editor.setFont(this.fontFamily, this.fontSize)
-            },
-        },
-
-        methods: {
-            setLanguage(language) {
-                if (language === "auto") {
-                    this.editor.setCurrentLanguage("text", true)
-                } else {
-                    this.editor.setCurrentLanguage(language, false)
-                }
-                this.editor.focus()
-            },
-
-            formatCurrentBlock() {
-                this.editor.formatCurrentBlock()
-                this.editor.focus()
-            },
-
-            runCurrentBlock() {
-                this.editor.runCurrentBlock()
-                this.editor.focus()
-            },
-
-            onCurrenciesLoaded() {
-                this.editor.currenciesLoaded()
-            },
-
-            focus() {
-                this.editor.focus();
-            },
-
-            addNewBlockBeforeFirst() {
-                this.editor.addNewBlockBeforeFirst()
-                this.editor.focus();
-            },
-
-            addNewBlockAfterCurrent() {
-                this.editor.addNewBlockAfterCurrent()
-                this.editor.focus();
-            },
-
-            addNewBlockBeforeCurrent() {
-                this.editor.addNewBlockBeforeCurrent()
-                this.editor.focus();
-            },
-
-            addNewBlockAfterLast() {
-                this.editor.addNewBlockAfterLast()
-                this.editor.focus();
-            },
-
-            addNewBlockBeforeFirst() {
-                this.editor.addNewBlockBeforeFirst()
-                this.editor.focus();
-            },
-
-            insertNewBlockAtCursor() {
-                this.editor.insertNewBlockAtCursor()
-                this.editor.focus();
-            },
-
-            gotoNextBlock() {
-                this.editor.gotoNextBlock()
-                this.editor.focus();
-            },
-
-            gotoPreviousBlock() {
-                this.editor.gotoPreviousBlock()
-                this.editor.focus();
-            },
-
-            selectAll() {
-                this.editor.selectAll()
-                this.editor.focus();
-            },
-
-            getContent() {
-                return this.editor.getContent()
-            },
-
-            openNote(notePath) {
-                console.log("openNote:", notePath)
-                // saving is debounced so ensure we save before opening a new note
-                // TODO: we'll have a spurious save if there was a debounce, because
-                // the debounce is still in progress, I think
-                this.editor.saveFunction(this.editor.getContent())
-                window.heynote.buffer.openNote(notePath).then((content) => {
-                    let newState = this.editor.createState(content)
-                    this.editor.view.setState(newState);
-                    // a bit magic: sometimes we open at the beginning, sometimes at the end
-                    // TODO: remember selection in memory so that we can restore during a session
-                    let pos = 0;
-                    if (notePath === scratchNotePath) {
-                        pos = content.length
-                    }
-                    this.editor.view.dispatch({
-                        selection: {anchor: pos, head: pos},
-                        scrollIntoView: true,
-                    })
-                    this.$emit("docChanged")
-                    this.focus()
-                })
-            }
-        },
+  data() {
+    return {
+      syntaxTreeDebugContent: null,
     }
+  },
+
+  mounted() {
+    this.$refs.editor.addEventListener("selectionChange", (e) => {
+      // console.log("selectionChange:", e)
+      this.$emit("cursorChange", {
+        cursorLine: e.cursorLine,
+        selectionSize: e.selectionSize,
+        language: e.language,
+        languageAuto: e.languageAuto,
+      })
+    })
+
+    this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
+      this.$emit("openLanguageSelector")
+    })
+    this.$refs.editor.addEventListener(NOTE_SELECTOR_EVENT, (e) => {
+      this.$emit("openNoteSelector")
+    })
+    this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
+      this.$emit("docChanged")
+    })
+    // this.$refs.editor.addEventListener("contextmenu", (e) => {
+    //     console.log("contextmenu:", e)
+    //     e.preventDefault()
+    //     this.$emit("contextMenu", e)
+    // })
+
+    // load buffer content and create editor
+    window.heynote.buffer.load().then((content) => {
+      let diskContent = content
+      this.editor = new HeynoteEditor({
+        element: this.$refs.editor,
+        content: content,
+        theme: this.theme,
+        saveFunction: (content) => {
+          if (content === diskContent) {
+            return
+          }
+          diskContent = content
+          window.heynote.buffer.save(content)
+        },
+        keymap: this.keymap,
+        emacsMetaKey: this.emacsMetaKey,
+        showLineNumberGutter: this.showLineNumberGutter,
+        showFoldGutter: this.showFoldGutter,
+        bracketClosing: this.bracketClosing,
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize,
+      })
+      window._heynote_editor = this.editor
+      window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
+
+      // set up buffer change listener
+      window.heynote.buffer.onChangeCallback((event, content) => {
+        diskContent = content
+        this.editor.setContent(content)
+      })
+      this.$emit("docChanged")
+    })
+    // set up window close handler that will save the buffer and quit
+    window.heynote.onWindowClose(() => {
+      window.heynote.buffer.saveAndQuit(this.editor.getContent())
+    })
+
+    // if debugSyntaxTree prop is set, display syntax tree for debugging
+    if (this.debugSyntaxTree) {
+      setInterval(() => {
+        function render(tree) {
+          let lists = ''
+          tree.iterate({
+            enter(type) {
+              lists += `<ul><li>${type.name} (${type.from},${type.to})`
+            },
+            leave() {
+              lists += '</ul>'
+            }
+          })
+          return lists
+        }
+        this.syntaxTreeDebugContent = render(syntaxTree(this.editor.view.state))
+      }, 1000)
+    }
+  },
+
+  beforeUnmount() {
+    window.document.removeEventListener("currenciesLoaded", this.onCurrenciesLoaded)
+  },
+
+  watch: {
+    theme(newTheme) {
+      this.editor.setTheme(newTheme)
+    },
+
+    keymap() {
+      this.editor.setKeymap(this.keymap, this.emacsMetaKey)
+    },
+
+    emacsMetaKey() {
+      this.editor.setKeymap(this.keymap, this.emacsMetaKey)
+    },
+
+    showLineNumberGutter(show) {
+      this.editor.setLineNumberGutter(show)
+    },
+
+    showFoldGutter(show) {
+      this.editor.setFoldGutter(show)
+    },
+
+    bracketClosing(value) {
+      this.editor.setBracketClosing(value)
+    },
+
+    fontFamily() {
+      this.editor.setFont(this.fontFamily, this.fontSize)
+    },
+    fontSize() {
+      this.editor.setFont(this.fontFamily, this.fontSize)
+    },
+  },
+
+  methods: {
+    setLanguage(language) {
+      if (language === "auto") {
+        this.editor.setCurrentLanguage("text", true)
+      } else {
+        this.editor.setCurrentLanguage(language, false)
+      }
+      this.editor.focus()
+    },
+
+    formatCurrentBlock() {
+      this.editor.formatCurrentBlock()
+      this.editor.focus()
+    },
+
+    runCurrentBlock() {
+      this.editor.runCurrentBlock()
+      this.editor.focus()
+    },
+
+    onCurrenciesLoaded() {
+      this.editor.currenciesLoaded()
+    },
+
+    focus() {
+      this.editor.focus();
+    },
+
+    addNewBlockBeforeFirst() {
+      this.editor.addNewBlockBeforeFirst()
+      this.editor.focus();
+    },
+
+    addNewBlockAfterCurrent() {
+      this.editor.addNewBlockAfterCurrent()
+      this.editor.focus();
+    },
+
+    addNewBlockBeforeCurrent() {
+      this.editor.addNewBlockBeforeCurrent()
+      this.editor.focus();
+    },
+
+    addNewBlockAfterLast() {
+      this.editor.addNewBlockAfterLast()
+      this.editor.focus();
+    },
+
+    addNewBlockBeforeFirst() {
+      this.editor.addNewBlockBeforeFirst()
+      this.editor.focus();
+    },
+
+    insertNewBlockAtCursor() {
+      this.editor.insertNewBlockAtCursor()
+      this.editor.focus();
+    },
+
+    gotoNextBlock() {
+      this.editor.gotoNextBlock()
+      this.editor.focus();
+    },
+
+    gotoPreviousBlock() {
+      this.editor.gotoPreviousBlock()
+      this.editor.focus();
+    },
+
+    selectAll() {
+      this.editor.selectAll()
+      this.editor.focus();
+    },
+
+    getContent() {
+      return this.editor.getContent()
+    },
+
+    openNote(notePath) {
+      console.log("openNote:", notePath)
+      // saving is debounced so ensure we save before opening a new note
+      // TODO: we'll have a spurious save if there was a debounce, because
+      // the debounce is still in progress, I think
+      this.editor.saveFunction(this.editor.getContent())
+      window.heynote.buffer.openNote(notePath).then((content) => {
+        let newState = this.editor.createState(content)
+        this.editor.view.setState(newState);
+        // a bit magic: sometimes we open at the beginning, sometimes at the end
+        // TODO: remember selection in memory so that we can restore during a session
+        let pos = 0;
+        if (notePath === scratchNotePath) {
+          pos = content.length
+        }
+        this.editor.view.dispatch({
+          selection: { anchor: pos, head: pos },
+          scrollIntoView: true,
+        })
+        this.$emit("docChanged")
+        this.focus()
+      })
+    }
+  },
+}
 </script>
 
 <template>
-    <div>
-        <div class="editor" ref="editor"></div>
-        <div 
-            v-if="debugSyntaxTree"
-            v-html="syntaxTreeDebugContent"
-            class="debug-syntax-tree"
-        ></div>
-    </div>
+  <div>
+    <div class="editor" ref="editor"></div>
+    <div v-if="debugSyntaxTree" v-html="syntaxTreeDebugContent" class="debug-syntax-tree"></div>
+  </div>
 </template>
 
 <style lang="sass" scoped>
