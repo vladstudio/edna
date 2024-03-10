@@ -1,28 +1,14 @@
-import '../src/css/tailwind.css'
-import '../src/css/application.sass'
+import "../src/css/application.sass";
+import "../src/css/tailwind.css";
 
-import { createApp } from 'vue'
-import App from '../src/components/App.vue'
-import { loadCurrencies } from '../src/currency'
-import { getGitHubToken, apiGetPaginateAll } from "../src/githubapi";
-import { startTimer } from "../src/utils"
+import { createApp } from "vue";
+import App from "../src/components/App.vue";
+import { loadCurrencies } from "../src/currency";
 
-const app = createApp(App)
-app.mount('#app')
+const app = createApp(App);
+app.mount("#app");
 //console.log("test:", app.hej.test)
 
 // load math.js currencies
-loadCurrencies()
-setInterval(loadCurrencies, 1000 * 3600 * 4)
-
-let ghToken = getGitHubToken()
-console.log("ghToken:", ghToken)
-if (false && ghToken) {
-    const durFn = startTimer()
-    const gists = await apiGetPaginateAll("/gists?per_page=100")
-    console.log("gists:", gists)
-    console.log(`getting gists took ${durFn()} ms to get info about ${gists.length} gists`)
-    const s = JSON.stringify(gists, null, 0)
-    //console.log("gists:", s)
-    console.log("gists response size as json:", s.length, "bytes")
-}
+loadCurrencies();
+setInterval(loadCurrencies, 1000 * 3600 * 4);
