@@ -135,7 +135,8 @@ export default {
             <div class="row">
               <div class="entry">
                 <h2>Keymap</h2>
-                <select ref="keymapSelector" v-model="keymap" @change="updateSettings" class="keymap">
+                <select ref="keymapSelector" v-model="keymap" @change="updateSettings"
+                  class="keymap border border-black">
                   <template v-for="km in keymaps" :key="km.value">
                     <option :selected="km.value === keymap" :value="km.value">{{ km.name }}</option>
                   </template>
@@ -143,7 +144,7 @@ export default {
               </div>
               <div class="entry" v-if="keymap === 'emacs' && isMac">
                 <h2>Meta Key</h2>
-                <select v-model="metaKey" @change="updateSettings" class="metaKey">
+                <select v-model="metaKey" @change="updateSettings" class="metaKey border border-black">
                   <option :selected="metaKey === 'meta'" value="meta">Command</option>
                   <option :selected="metaKey === 'alt'" value="alt">Option</option>
                 </select>
@@ -152,7 +153,7 @@ export default {
             <div class="row" v-if="!isWebApp">
               <div class="entry">
                 <h2>Global Keyboard Shortcut</h2>
-                <label class="keyboard-shortcut-label">
+                <label class="mb-[14px]">
                   <input type="checkbox" v-model="enableGlobalHotkey" @change="updateSettings" />
                   Enable Global Hotkey
                 </label>
@@ -185,7 +186,7 @@ export default {
             <div class="row" v-if="!isWebApp">
               <div class="entry buffer-location">
                 <h2>Buffer File Path</h2>
-                <label class="keyboard-shortcut-label">
+                <label class="mb-[14px]">
                   <input type="checkbox" v-model="customBufferLocation" @change="onCustomBufferLocationChange" />
                   Use custom buffer file location
                 </label>
@@ -226,17 +227,17 @@ export default {
                 </label>
               </div>
             </div>
-            <div class="row font-settings">
+            <div class="row flex">
               <div class="entry">
                 <h2>Font Family</h2>
-                <select v-model="fontFamily" @change="updateSettings" class="font-family">
+                <select v-model="fontFamily" @change="updateSettings" class="width-[280px] border border-black">
                   <option v-for="[font, label] in systemFonts" :selected="font === fontFamily" :value="font">{{ label }}
                   </option>
                 </select>
               </div>
               <div class="entry">
                 <h2>Font Size</h2>
-                <select v-model="fontSize" @change="updateSettings" class="font-size">
+                <select v-model="fontSize" @change="updateSettings" class="width-[120px] border border-black">
                   <option v-for="size in [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]"
                     :selected="size === fontSize" :value="size">{{ size }}px{{ size ===
               defaultFontSize ? " (default)" : "" }}</option>
@@ -366,20 +367,12 @@ export default {
                             label
                                 display: block
                                 user-select: none
-                                &.keyboard-shortcut-label
-                                    margin-bottom: 14px
                                 > input[type=checkbox]
                                     position: relative
                                     top: 2px
                                     left: -3px
-                        &.font-settings
-                            display: flex
-                            .font-family
-                                width: 280px
-                            .font-size
-                                width: 120px
-                        
-                        .buffer-location 
+
+                        .buffer-location
                             width: 100%
                             .file-path
                                 display: flex
