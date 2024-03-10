@@ -10,6 +10,7 @@ import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
 import { modChar, altChar } from "../../shared-utils/key-helper"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
+import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
 
 export default {
   components: {
@@ -82,9 +83,23 @@ export default {
   },
 
   methods: {
-    storeNotesOnDisk() {
+    async storeNotesOnDisk() {
       console.log("storeNotesOnDisk")
+      let dh = await openDirPicker(true)
+      if (!dh) {
+        return;
+      }
+      let skipEntryFn = (entry, dir) => {
+        if (entry.kind === "directory") {
+          return true
+        }
+        let name = entry.name.toLowerCase()
+        return !(name.endsWith(".edna.txt") || name.endsWith("edna.encr.txt"))
+      }
+      let files = await readDir(dh, skipEntryFn)
+      console.log("files", files)
     },
+
     onContextMenu(e) {
       // console.log("onContextMenu")
       let theme = document.documentElement.getAttribute("theme")
@@ -96,6 +111,85 @@ export default {
       let editor = this.$refs.editor;
       e.preventDefault();
       this.showingMenu = true
+      let items = [
+        {
+          label: "Open note",
+          onClick: () => { this.openNoteSelector() },
+          shortcut: `${modChar} + O`,
+        },
+        {
+          label: "And block after current",
+          onClick: () => { editor.addNewBlockAfterCurrent() },
+          shortcut: `${modChar} + Enter`,
+        },
+        {
+          label: "Add block before current",
+          onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
+          shortcut: `${altChar} + Enter`,
+        },
+        {
+          label: "Add block at end",
+          onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
+          shortcut: `${modChar} + Shift + Enter`,
+        },
+        {
+          label: "Add block at start",
+          onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
+          shortcut: `${altChar} + Shift + Enter`,
+        },
+        {
+          label: "Split block at cursor position",
+          onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
+          shortcut: `${modChar} + ${altChar} + Enter`,
+        },
+        {
+          label: "Change block language",
+          onClick: () => { this.openLanguageSelector() },
+          shortcut: `${modChar} + L`,
+        },
+        {
+          label: "Select all text in block",
+          onClick: () => { this.$refs.editor.selectAll() },
+          shortcut: `${modChar} + A`,
+        },
+        // TODO: format if supports format
+        // TODO: run  if supports run
+        // TODO: set plain text, markdown
+        // {
+        //     label: "Goto next block",
+        //     onClick: () => { this.$refs.editor.gotoNextBlock() },
+        //     shortcut: `${modChar} + Down`,
+        // },
+        // {
+        //     label: "Goto previous block",
+        //     onClick: () => { this.$refs.editor.gotoPreviousBlock() },
+        //     shortcut: `${modChar} + Up`,
+        // },
+        // {
+        //     label: "Format",
+        //     onClick: () => { this.$refs.editor.formatCurrentBlock() }
+        // },
+        // {
+        //     label: "Execute block code",
+        //     onClick: () => { this.openNoteSelector() }
+        // },
+        // {
+        // label: "A submenu",
+        //     children: [
+        //         { label: "Item1" },
+        //         { label: "Item2" },
+        //         { label: "Item3" },
+        //     ]
+        // },
+      ]
+
+      if (supportsFileSystem) {
+        items.push({
+          label: "Store notes on disk",
+          onClick: () => { this.storeNotesOnDisk() },
+        })
+      }
+
       ContextMenu.showContextMenu({
         x: e.x,
         y: e.y,
@@ -113,82 +207,9 @@ export default {
           // console.log("onClose: lastClicked:", lastClicked)
           this.showingMenu = false
         },
-        items: [
-          {
-            label: "Open note",
-            onClick: () => { this.openNoteSelector() },
-            shortcut: `${modChar} + O`,
-          },
-          {
-            label: "And block after current",
-            onClick: () => { editor.addNewBlockAfterCurrent() },
-            shortcut: `${modChar} + Enter`,
-          },
-          {
-            label: "Add block before current",
-            onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
-            shortcut: `${altChar} + Enter`,
-          },
-          {
-            label: "Add block at end",
-            onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
-            shortcut: `${modChar} + Shift + Enter`,
-          },
-          {
-            label: "Add block at start",
-            onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
-            shortcut: `${altChar} + Shift + Enter`,
-          },
-          {
-            label: "Split block at cursor position",
-            onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
-            shortcut: `${modChar} + ${altChar} + Enter`,
-          },
-          {
-            label: "Change block language",
-            onClick: () => { this.openLanguageSelector() },
-            shortcut: `${modChar} + L`,
-          },
-          {
-            label: "Select all text in block",
-            onClick: () => { this.$refs.editor.selectAll() },
-            shortcut: `${modChar} + A`,
-          },
-          {
-            label: "Store notes on disk",
-            onClick: () => { this.storeNotesOnDisk() },
-          }
-          // TODO: format if supports format
-          // TODO: run  if supports run
-          // TODO: set plain text, markdown
-          // {
-          //     label: "Goto next block",
-          //     onClick: () => { this.$refs.editor.gotoNextBlock() },
-          //     shortcut: `${modChar} + Down`,
-          // },
-          // {
-          //     label: "Goto previous block",
-          //     onClick: () => { this.$refs.editor.gotoPreviousBlock() },
-          //     shortcut: `${modChar} + Up`,
-          // },
-          // {
-          //     label: "Format",
-          //     onClick: () => { this.$refs.editor.formatCurrentBlock() }
-          // },
-          // {
-          //     label: "Execute block code",
-          //     onClick: () => { this.openNoteSelector() }
-          // },
-          // {
-          // label: "A submenu",
-          //     children: [
-          //         { label: "Item1" },
-          //         { label: "Item2" },
-          //         { label: "Item3" },
-          //     ]
-          // },
-        ]
+        items: items,
       });
+
       this.$refs.menuContainer.focus()
     },
 
