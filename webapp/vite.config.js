@@ -1,35 +1,18 @@
 import * as child from "child_process";
 
-import { defineConfig } from "vite";
-import path from "path";
 import vue from "@vitejs/plugin-vue";
-
-const middleware = () => {
-  return {
-    name: "middleware",
-    apply: "serve",
-    configureServer(viteDevServer) {
-      return () => {
-        viteDevServer.middlewares.use(async (req, res, next) => {
-          console.log("url:", req.originalUrl);
-          if (!req.originalUrl.endsWith(".html") && req.originalUrl !== "/") {
-            req.url = `/src` + req.originalUrl + ".html";
-          } else if (req.url === "/index.html") {
-            //req.url = `/src` + req.url;
-          }
-
-          next();
-        });
-      };
-    },
-  };
-};
+import path from "path";
+import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   publicDir: "../public",
 
   plugins: [vue()],
+
+  build: {
+    target: "esnext", // needed for top-level await
+  },
 
   css: {
     preprocessorOptions: {
