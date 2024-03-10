@@ -1,22 +1,22 @@
-import { getInitialContent, getHelp } from "../webapp/initial-content";
+import { getHelp, getInitialContent } from "./initial-content";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
 export const inboxNotePath = "note:inbox";
 export const helpNotePath = "system:help";
 
-export const blockHdrPlainTex = "\n∞∞∞text-a\n"
-export const blockHdrMarkdown = "\n∞∞∞markdown\n"
+export const blockHdrPlainTex = "\n∞∞∞text-a\n";
+export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
-export const isDev = location.host.startsWith("localhost")
+export const isDev = location.host.startsWith("localhost");
 
 // migrate "buffer" => "note:scratch"
 export function migrateDefaultNote() {
-  const d = localStorage.getItem("buffer")
+  const d = localStorage.getItem("buffer");
   if (d !== null) {
-      localStorage.setItem(scratchNotePath, d)
-      localStorage.removeItem("buffer")
-      console.log("migrated default note from buffer to note:scratch")
+    localStorage.setItem(scratchNotePath, d);
+    localStorage.removeItem("buffer");
+    console.log("migrated default note from buffer to note:scratch");
   }
 }
 
@@ -33,7 +33,7 @@ To make it easy, when you open daily journal, we auto-create a block for the cur
 If you don't care about daily journal, \`Ctrl + O\` and delete it.
 
 You can re-create it in the future as long as you name it 'daily journal'.
-`
+`;
 
 const inboxInitial = `# Inbox
 
@@ -44,28 +44,28 @@ Then you can process them later and clear up inbox.
 If you don't care about inbox, \`Ctrl + O\` and delete it.
 
 You can re-create it in the future.
-`
+`;
 export function createDefaultNotes() {
   function createNote(notePath, content) {
-      if (localStorage.getItem(notePath) === null) {
-          localStorage.setItem(notePath, content)
-      }
+    if (localStorage.getItem(notePath) === null) {
+      localStorage.setItem(notePath, content);
+    }
   }
-  const { initialContent, initialDevContent } = getInitialContent()
+  const { initialContent, initialDevContent } = getInitialContent();
   const s = isDev ? initialDevContent : initialContent;
-  createNote(scratchNotePath, s)
-  createNote(journalNotePath, blockHdrMarkdown + journalInitial)
-  createNote(inboxNotePath, blockHdrMarkdown + inboxInitial)
+  createNote(scratchNotePath, s);
+  createNote(journalNotePath, blockHdrMarkdown + journalInitial);
+  createNote(inboxNotePath, blockHdrMarkdown + inboxInitial);
 }
 
 export function loadNotePaths() {
   const res = [];
-  let nKeys = localStorage.length
+  let nKeys = localStorage.length;
   for (let i = 0; i < nKeys; i++) {
-      const key = localStorage.key(i)
-      if (key.startsWith("note:")) {
-          res.push(key)
-      }
+    const key = localStorage.key(i);
+    if (key.startsWith("note:")) {
+      res.push(key);
+    }
   }
   return res;
 }
@@ -74,40 +74,40 @@ export function loadNotePaths() {
 export function fixUpNote(content) {
   // console.log("fixUpNote:", content)
   if (content === null) {
-      // console.log("fixUpNote: null content")
-      return blockHdrPlainTex;
+    // console.log("fixUpNote: null content")
+    return blockHdrPlainTex;
   }
   if (!content.startsWith("\n∞∞∞")) {
-      content = blockHdrPlainTex + content;
-      // console.log('fixUpNote: added block to content', content)
+    content = blockHdrPlainTex + content;
+    // console.log('fixUpNote: added block to content', content)
   }
-  return content
+  return content;
 }
 
 export function splitNotePath(notePath) {
-  const i = notePath.indexOf(":")
-  return [notePath.substring(0, i), notePath.substring(i+1)]
+  const i = notePath.indexOf(":");
+  return [notePath.substring(0, i), notePath.substring(i + 1)];
 }
 
 export function getNoteName(notePath) {
-  console.log("getNoteName:", notePath)
-  const i = notePath.indexOf(":")
-  return notePath.substring(i+1)
+  console.log("getNoteName:", notePath);
+  const i = notePath.indexOf(":");
+  return notePath.substring(i + 1);
 }
 
 export function isSystemNote(notePath) {
   // console.log("isSystemNote:", notePath)
-  return notePath.startsWith("system:")
+  return notePath.startsWith("system:");
 }
 
 export function getSystemNotes() {
-  return ["system:help"]
+  return ["system:help"];
 }
 
 export function getSystemNoteContent(notePath) {
-  console.log("getSystemNoteContent:", notePath)
+  console.log("getSystemNoteContent:", notePath);
   if (notePath === "system:help") {
-      return getHelp()
+    return getHelp();
   }
-  return blockHdrPlainTex + "error: unknown system note:" + notePath + "\n"
+  return blockHdrPlainTex + "error: unknown system note:" + notePath + "\n";
 }
