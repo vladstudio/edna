@@ -251,5 +251,31 @@ Shopping list:
 - Bread
 - Cheese`
 
-  return {initialContent, initialDevContent}
+  const initialJournal = `# Daily Journal
+
+The daily journal is where you can record what you did every day or write your daily thoughts and ideas.
+
+The format is up to you but we suggest to use a block for each day.
+
+Put the date in format YYYY-MM-DD DayOfWeek at the beginning of the block.
+
+To make it easy, when you open daily journal, we auto-create a block for the current day (if it doesn't exist).
+
+If you don't care about daily journal, \`Ctrl + O\` and delete it.
+
+You can re-create it in the future as long as you name it 'daily journal'.
+`;
+
+const initialInbox = `# Inbox
+
+Inbox is for storing links to web pages you want to read later, videos you want to watch later etc.
+
+Then you can process them later and clear up inbox.
+
+If you don't care about inbox, \`Ctrl + O\` and delete it.
+
+You can re-create it in the future.
+`;
+
+  return {initialContent, initialDevContent, initialJournal, initialInbox}
 }
