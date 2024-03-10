@@ -157,10 +157,10 @@ func rebuildFrontend() {
 	logf("deleted frontend dist dir '%s'\n", frontEndBuildDir)
 	if hasBun() {
 		u.RunLoggedInDirMust(".", "bun", "install")
-		u.RunLoggedInDirMust(".", "bun", "run", "webapp:build")
+		u.RunLoggedInDirMust(".", "bun", "run", "build")
 	} else if u.IsWindows() {
 		u.RunLoggedInDirMust(".", "yarn")
-		u.RunLoggedInDirMust(".", "yarn", "webapp:build")
+		u.RunLoggedInDirMust(".", "yarn", "build")
 	}
 	// copy files from webapp\dist => server\dist
 	copyFilesRecurMust(filepath.Join("webapp", "dist"), frontEndBuildDir)
