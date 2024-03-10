@@ -2,6 +2,7 @@
 import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
+import { setSettings } from "../../settings.js"
 
 const defaultFontFamily = window.heynote.defaultFontFamily
 const defaultFontSize = window.heynote.defaultFontSize
@@ -74,7 +75,7 @@ export default {
     },
 
     updateSettings() {
-      window.heynote.setSettings({
+      setSettings({
         showLineNumberGutter: this.showLineNumberGutter,
         showFoldGutter: this.showFoldGutter,
         keymap: this.keymap,
@@ -275,7 +276,8 @@ export default {
       </div>
 
       <div class="bottom-bar">
-        <button @click="$emit('closeSettings')" class="close">Close</button>
+        <button @click="$emit('closeSettings')"
+          class="close border-gray-500 px-4 border hover:bg-gray-200">Close</button>
       </div>
     </div>
     <div class="shader"></div>

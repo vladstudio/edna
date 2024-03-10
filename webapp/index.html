@@ -14,8 +14,7 @@
   <div id="app"></div>
 
   <script type="module">
-    import { Heynote, ipcRenderer } from "../src/bridge.js";
-    window.ipcRenderer = ipcRenderer;
+    import { Heynote } from "../src/boot.js";
     window.heynote = Heynote;
   </script>
   <script type="module" src="main.js"></script>

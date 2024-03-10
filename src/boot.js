@@ -9,8 +9,10 @@ import {
   migrateDefaultNote,
   scratchNotePath,
 } from "../src/notes";
-import { loadSettings, saveSettings } from "../src/settings";
 import { getDateYYYYMMDDDay, platform } from "../src/utils";
+import { getSettings, loadSettings, setSetting, setSettings } from "./settings";
+
+import { ipcRenderer } from "./ipcrenderer";
 
 const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 let themeCallback = null;
@@ -24,29 +26,6 @@ const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 
 let currencyData = null;
 
-class IpcRenderer {
-  constructor() {
-    this.callbacks = {};
-  }
-
-  on(event, callback) {
-    if (!this.callbacks[event]) {
-      this.callbacks[event] = [];
-    }
-    this.callbacks[event].push(callback);
-  }
-
-  send(event, ...args) {
-    if (this.callbacks[event]) {
-      for (const callback of this.callbacks[event]) {
-        callback(null, ...args);
-      }
-    }
-  }
-}
-
-const ipcRenderer = new IpcRenderer();
-
 document.addEventListener("keydown", (e) => {
   // Prevent the default Save dialog from opening.
   if (e.ctrlKey && e.key === "s") {
@@ -55,32 +34,47 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-migrateDefaultNote();
-createDefaultNotes();
+export async function boot() {
+  let initialSettings = {
+    keymap: "default",
+    emacsMetaKey: "alt",
+    showLineNumberGutter: true,
+    showFoldGutter: true,
+    bracketClosing: false,
+    currentNotePath: scratchNotePath,
+  };
 
-let initialSettings = await loadSettings();
+  let s = await loadSettings();
+  console.log("settings loaded:", s);
+  s = Object.assign(initialSettings, s);
+  await setSettings(s);
 
-// make sure currentNotePath points to a valid note
-let currentNotePath = initialSettings.currentNotePath;
-let notePaths = loadNotePaths();
-if (!notePaths.includes(currentNotePath)) {
-  currentNotePath = scratchNotePath;
-  initialSettings.currentNotePath = currentNotePath;
+  migrateDefaultNote();
+  createDefaultNotes();
+
+  let settings = getSettings();
+  console.log("settings:", settings);
+  // make sure currentNotePath points to a valid note
+  let currentNotePath = settings.currentNotePath;
+  let notePaths = loadNotePaths();
+  if (!notePaths.includes(currentNotePath)) {
+    currentNotePath = scratchNotePath;
+    initialSettings.currentNotePath = currentNotePath;
+  }
+  console.log("currentNotePath:", currentNotePath);
 }
-console.log("currentNotePath:", currentNotePath);
 
 const Heynote = {
   platform: platform,
   defaultFontFamily: "Hack",
   defaultFontSize: isMobileDevice ? 16 : 12,
 
-  settings: initialSettings,
-
   buffer: {
     async load() {
-      let self = Heynote;
-      // console.log("Heynote:", self.settings);
-      const notePath = self.settings.currentNotePath;
+      // let self = Heynote;
+      let settings = getSettings();
+      // console.log("Heynote:", settings);
+      const notePath = settings.currentNotePath;
       console.log("Heynote.buffer.load: loading from ", notePath);
       const content = localStorage.getItem(notePath);
       return fixUpNote(content);
@@ -88,13 +82,12 @@ const Heynote = {
 
     async openNote(notePath) {
       console.log("Heynote.buffer.openNote:", notePath);
-      let self = Heynote;
       if (isSystemNote(notePath)) {
-        self.setOneSetting("currentNotePath", notePath);
+        await setSetting("currentNotePath", notePath);
         return getSystemNoteContent(notePath);
       }
       let content = localStorage.getItem(notePath);
-      self.setOneSetting("currentNotePath", notePath);
+      await setSetting("currentNotePath", notePath);
       if (notePath === journalNotePath) {
         console.log("Heynote.buffer.openNote:");
         // create block for a current day
@@ -114,8 +107,8 @@ const Heynote = {
     },
 
     async save(content) {
-      let self = Heynote;
-      const notePath = self.settings.currentNotePath;
+      // let self = Heynote;
+      const notePath = settings.currentNotePath;
       console.log("Heynote.buffer.save:", notePath);
       if (isSystemNote(notePath)) {
         console.log("skipped saving system note");
@@ -129,6 +122,7 @@ const Heynote = {
     onChangeCallback(callback) {},
   },
 
+  // TODO: hook it up to document unload
   onWindowClose(callback) {
     //ipcRenderer.on(WINDOW_CLOSE_EVENT, callback)
   },
@@ -142,21 +136,6 @@ const Heynote = {
     ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) =>
       callback(settings)
     );
-  },
-
-  async setOneSetting(key, value) {
-    console.log("setOneSetting:", key, value);
-    let currSettings = await setSetting(key, value);
-    await this.setSettings(currSettings);
-  },
-
-  async setSettings(settings) {
-    let self = Heynote;
-    console.log("setSettings:", settings);
-    await saveSettings(settings);
-    self.settings = settings;
-    // TODO: move to saveSettings()
-    ipcRenderer.send(SETTINGS_CHANGE_EVENT, settings);
   },
 
   themeMode: {
@@ -203,4 +182,4 @@ const Heynote = {
   },
 };
 
-export { Heynote, ipcRenderer };
+export { Heynote };

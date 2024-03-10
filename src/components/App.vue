@@ -11,6 +11,7 @@ import { modChar, altChar } from "../../src/key-helper"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
+import { getSettings } from '../settings'
 
 export default {
   components: {
@@ -24,8 +25,10 @@ export default {
   },
 
   data() {
+    let settings = getSettings()
+    console.log("setting:", settings)
     return {
-      noteName: getNoteName(window.heynote.settings.currentNotePath),
+      noteName: getNoteName(settings.currentNotePath),
       line: 1,
       column: 1,
       docSize: 0,
@@ -39,7 +42,7 @@ export default {
       showLanguageSelector: false,
       showNoteSelector: false,
       showSettings: false,
-      settings: window.heynote.settings,
+      settings: settings,
       showingMenu: false,
     }
   },
@@ -61,7 +64,7 @@ export default {
     window.heynote.themeMode.onChange(onThemeChange)
     window.heynote.onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
-      this.settings = settings
+      this.settings = settings;
       this.noteName = getNoteName(settings.currentNotePath)
       console.log("noteName", this.noteName)
     })
@@ -102,6 +105,10 @@ export default {
 
     onContextMenu(e) {
       // console.log("onContextMenu")
+      if (this.showNoteSelector || this.showLanguageSelector || this.showSettings) {
+        return
+      }
+
       let theme = document.documentElement.getAttribute("theme")
       console.log("theme:", theme)
       let menuTheme = "default"
@@ -292,7 +299,8 @@ export default {
       this.showNoteSelector = false
       localStorage.removeItem(notePath)
       console.log("deleted note", notePath)
-      if (notePath === this.settings.currentNotePath) {
+      let settings = getSettings()
+      if (notePath === settings.currentNotePath) {
         console.log("deleted current note, opening scratch note")
         this.$refs.editor.openNote(scratchNotePath)
       }

@@ -11,3 +11,4 @@ release
 yarn.lock
 secrets.env
 edna-*
+package-lock.json

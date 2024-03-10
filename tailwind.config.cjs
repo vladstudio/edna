@@ -3,7 +3,7 @@
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  content: ["./src/**/*.{html,js,vue}", "./webapp/**/*.{html,js,vue}"],
+  content: ["./src/**/*.{html,js,vue}", "./webapp/**/*.{html,js}"],
   theme: {
     extend: {
       animation: {

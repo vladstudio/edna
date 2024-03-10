@@ -1,6 +1,10 @@
 export let platform;
 export let platformName;
 
+export function len(o) {
+  return o ? o.length : 0;
+}
+
 // @ts-ignore
 const uaPlatform =
   window.navigator?.userAgentData?.platform || window.navigator.platform;

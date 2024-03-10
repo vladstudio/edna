@@ -10,9 +10,9 @@ export default defineConfig({
 
   plugins: [vue()],
 
-  build: {
-    target: "esnext", // needed for top-level await
-  },
+  // build: {
+  //   target: "esnext", // needed for top-level await
+  // },
 
   css: {
     preprocessorOptions: {
