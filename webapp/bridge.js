@@ -1,7 +1,4 @@
-import {
-  OPEN_SETTINGS_EVENT,
-  SETTINGS_CHANGE_EVENT,
-} from "../electron/constants";
+import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "../src/constants";
 import {
   createDefaultNotes,
   fixUpNote,
