@@ -1,5 +1,6 @@
-import { keyHelpStr, modChar } from "../shared-utils/key-helper";
-import { platformName } from "../shared-utils/utils"
+import { keyHelpStr, modChar } from "../src/key-helper";
+
+import { platformName } from "../src/utils"
 
 export function getHelp() {
   const help = `

@@ -7,7 +7,7 @@ import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes } from '../utils'
 import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
-import { modChar, altChar } from "../../shared-utils/key-helper"
+import { modChar, altChar } from "../../src/key-helper"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'

@@ -1,3 +1,33 @@
+export let platform;
+export let platformName;
+
+// @ts-ignore
+const uaPlatform =
+  window.navigator?.userAgentData?.platform || window.navigator.platform;
+if (uaPlatform.indexOf("Win") !== -1) {
+  platform = {
+    isMac: false,
+    isWindows: true,
+    isLinux: false,
+  };
+  platformName = "windows";
+} else if (uaPlatform.indexOf("Linux") !== -1) {
+  platform = {
+    isMac: false,
+    isWindows: false,
+    isLinux: true,
+  };
+  platformName = "linux";
+} else {
+  platform = {
+    isMac: true,
+    isWindows: false,
+    isLinux: false,
+  };
+  platformName = "darwin";
+}
+platform.isWebApp = true;
+
 const utf8Encoder = new TextEncoder(); // perf: a single globar encoder
 
 export function toUtf8(text) {

@@ -10,9 +10,7 @@ import {
   scratchNotePath,
 } from "../src/notes";
 import { loadSettings, saveSettings } from "../src/settings";
-
-import { platform } from "../shared-utils/utils";
-import { getDateYYYYMMDDDay } from "../src/utils";
+import { getDateYYYYMMDDDay, platform } from "../src/utils";
 
 const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 let themeCallback = null;
