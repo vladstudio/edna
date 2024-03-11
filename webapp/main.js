@@ -1,9 +1,9 @@
-import "../src/css/application.sass";
 import "../src/css/tailwind.css";
+import "../src/css/application.sass";
 
-import { createApp } from "vue";
-import { boot } from "../src/boot";
 import App from "../src/components/App.vue";
+import { boot } from "../src/boot";
+import { createApp } from "vue";
 import { loadCurrencies } from "../src/currency";
 
 loadCurrencies();
