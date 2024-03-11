@@ -38,8 +38,8 @@ export default {
     }
     keys = keys.concat(')!@#$%^&*(:;:+=<,_->.?/~`{][|\\}"'.split(""))
     return {
-      isMac: window.heynote.platform.isMac,
-      isWindows: window.heynote.platform.isWindows,
+      isMac: window.edna.platform.isMac,
+      isWindows: window.edna.platform.isWindows,
       cmdOrCtrl: false,
       ctrl: false,
       shift: false,

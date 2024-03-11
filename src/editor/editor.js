@@ -1,287 +1,327 @@
-import { Annotation, EditorState, Compartment, EditorSelection } from "@codemirror/state"
-import { EditorView, keymap, drawSelection, ViewPlugin, lineNumbers } from "@codemirror/view"
-import { indentUnit, forceParsing, foldGutter } from "@codemirror/language"
-import { markdown } from "@codemirror/lang-markdown"
+import { Compartment, EditorState } from "@codemirror/state";
+import { EditorView, drawSelection, lineNumbers } from "@codemirror/view";
+import { SET_CONTENT, heynoteEvent } from "./annotation.js";
+import {
+  addNewBlockAfterCurrent,
+  addNewBlockAfterLast,
+  addNewBlockBeforeCurrent,
+  addNewBlockBeforeFirst,
+  changeCurrentBlockLanguage,
+  gotoNextBlock,
+  gotoPreviousBlock,
+  insertNewBlockAtCursor,
+  selectAll,
+  triggerCurrenciesLoaded,
+} from "./block/commands.js";
+import {
+  blockLineNumbers,
+  blockState,
+  noteBlockExtension,
+} from "./block/block.js";
+import { foldGutter, indentUnit } from "@codemirror/language";
+import { formatBlockContent, runBlockContent } from "./block/format-code.js";
+
+import { autoSaveContent } from "./save.js";
 import { closeBrackets } from "@codemirror/autocomplete";
-
-import { heynoteLight } from "./theme/light.js"
-import { heynoteDark } from "./theme/dark.js"
-import { heynoteBase } from "./theme/base.js"
+import { customSetup } from "./setup.js";
+import { emacsKeymap } from "./emacs.js";
+import { focusEditorView } from "../cmutils.js";
 import { getFontTheme } from "./theme/font-theme.js";
-import { customSetup } from "./setup.js"
-import { heynoteLang } from "./lang-heynote/heynote.js"
-import { noteBlockExtension, blockLineNumbers, blockState } from "./block/block.js"
-import { heynoteEvent, SET_CONTENT } from "./annotation.js";
-import { changeCurrentBlockLanguage, triggerCurrenciesLoaded,     insertNewBlockAtCursor,
-    addNewBlockBeforeCurrent, addNewBlockAfterCurrent,
-    addNewBlockBeforeFirst, addNewBlockAfterLast,
-    selectAll,
-    gotoPreviousBlock, gotoNextBlock,
-    selectNextBlock, selectPreviousBlock,
-    gotoPreviousParagraph, gotoNextParagraph,
-    selectNextParagraph, selectPreviousParagraph,
-    newCursorBelow, newCursorAbove
- } from "./block/commands.js"
-import { formatBlockContent, runBlockContent } from "./block/format-code.js"
-import { heynoteKeymap } from "./keymap.js"
-import { emacsKeymap } from "./emacs.js"
-import { heynoteCopyCut } from "./copy-paste"
-import { languageDetection } from "./language-detection/autodetect.js"
-import { autoSaveContent } from "./save.js"
-import { todoCheckboxPlugin} from "./todo-checkbox.ts"
-import { links } from "./links.js"
-import { focusEditorView } from "../cmutils.js"
+import { heynoteBase } from "./theme/base.js";
+import { heynoteCopyCut } from "./copy-paste";
+import { heynoteDark } from "./theme/dark.js";
+import { heynoteKeymap } from "./keymap.js";
+import { heynoteLang } from "./lang-heynote/heynote.js";
+import { heynoteLight } from "./theme/light.js";
+import { languageDetection } from "./language-detection/autodetect.js";
+import { links } from "./links.js";
+import { markdown } from "@codemirror/lang-markdown";
+import { todoCheckboxPlugin } from "./todo-checkbox.ts";
 
-export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector"
-export const NOTE_SELECTOR_EVENT = "openNoteSelector"
-export const DOC_CHANGED_EVENT = "docChanged"
+export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector";
+export const NOTE_SELECTOR_EVENT = "openNoteSelector";
+export const DOC_CHANGED_EVENT = "docChanged";
 
 function getKeymapExtensions(editor, keymap) {
-    if (keymap === "emacs") {
-        return emacsKeymap(editor)
-    } else {
-        return heynoteKeymap(editor)
-    }
+  if (keymap === "emacs") {
+    return emacsKeymap(editor);
+  } else {
+    return heynoteKeymap(editor);
+  }
 }
 
-export class HeynoteEditor {
-    constructor({
-        element, 
-        content,
-        focus=true, 
-        theme="light", 
-        saveFunction=null,
-        keymap="default", 
-        emacsMetaKey,
-        showLineNumberGutter=true, 
-        showFoldGutter=true,
-        bracketClosing=false,
-        fontFamily,
-        fontSize,
-    }) {
-        this.element = element
-        this.themeCompartment = new Compartment
-        this.keymapCompartment = new Compartment
-        this.lineNumberCompartmentPre = new Compartment
-        this.lineNumberCompartment = new Compartment
-        this.foldGutterCompartment = new Compartment
-        this.readOnlyCompartment = new Compartment
-        this.closeBracketsCompartment = new Compartment
-        this.deselectOnCopy = keymap === "emacs"
-        this.emacsMetaKey = emacsMetaKey
-        this.fontTheme = new Compartment
-        this.saveFunction = saveFunction
+export class EdnaEditor {
+  constructor({
+    element,
+    content,
+    focus = true,
+    theme = "light",
+    saveFunction = null,
+    keymap = "default",
+    emacsMetaKey,
+    showLineNumberGutter = true,
+    showFoldGutter = true,
+    bracketClosing = false,
+    fontFamily,
+    fontSize,
+  }) {
+    this.element = element;
+    this.themeCompartment = new Compartment();
+    this.keymapCompartment = new Compartment();
+    this.lineNumberCompartmentPre = new Compartment();
+    this.lineNumberCompartment = new Compartment();
+    this.foldGutterCompartment = new Compartment();
+    this.readOnlyCompartment = new Compartment();
+    this.closeBracketsCompartment = new Compartment();
+    this.deselectOnCopy = keymap === "emacs";
+    this.emacsMetaKey = emacsMetaKey;
+    this.fontTheme = new Compartment();
+    this.saveFunction = saveFunction;
 
-        let updateListenerExtension = EditorView.updateListener.of((update) => {
-            if (update.docChanged) {
-                // console.log("docChanged:", update)
-                this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT))
-            }
-          });
-          this.createState = (content) => {
-            const state = EditorState.create({
-              doc: content || "",
-              extensions: [
-                  updateListenerExtension,
-                  this.keymapCompartment.of(getKeymapExtensions(this, keymap)),
-                  heynoteCopyCut(this),
+    let updateListenerExtension = EditorView.updateListener.of((update) => {
+      if (update.docChanged) {
+        // console.log("docChanged:", update)
+        this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT));
+      }
+    });
+    this.createState = (content) => {
+      const state = EditorState.create({
+        doc: content || "",
+        extensions: [
+          updateListenerExtension,
+          this.keymapCompartment.of(getKeymapExtensions(this, keymap)),
+          heynoteCopyCut(this),
 
-                  //minimalSetup,
-                  this.lineNumberCompartment.of(showLineNumberGutter ? [lineNumbers(), blockLineNumbers] : []),
-                  customSetup,
-                  this.foldGutterCompartment.of(showFoldGutter ? [foldGutter()] : []),
+          //minimalSetup,
+          this.lineNumberCompartment.of(
+            showLineNumberGutter ? [lineNumbers(), blockLineNumbers] : []
+          ),
+          customSetup,
+          this.foldGutterCompartment.of(showFoldGutter ? [foldGutter()] : []),
 
-                  this.closeBracketsCompartment.of(bracketClosing ? [closeBrackets()] : []),
+          this.closeBracketsCompartment.of(
+            bracketClosing ? [closeBrackets()] : []
+          ),
 
-                  this.readOnlyCompartment.of([]),
+          this.readOnlyCompartment.of([]),
 
-                  this.themeCompartment.of(theme === "dark" ? heynoteDark : heynoteLight),
-                  heynoteBase,
-                  this.fontTheme.of(getFontTheme(fontFamily, fontSize)),
-                  indentUnit.of("    "),
-                  EditorView.scrollMargins.of(f => {
-                      return {top: 80, bottom: 80}
-                  }),
-                  heynoteLang(),
-                  noteBlockExtension(this),
-                  languageDetection(() => this.view),
+          this.themeCompartment.of(
+            theme === "dark" ? heynoteDark : heynoteLight
+          ),
+          heynoteBase,
+          this.fontTheme.of(getFontTheme(fontFamily, fontSize)),
+          indentUnit.of("    "),
+          EditorView.scrollMargins.of((f) => {
+            return { top: 80, bottom: 80 };
+          }),
+          heynoteLang(),
+          noteBlockExtension(this),
+          languageDetection(() => this.view),
 
-                  // set cursor blink rate to 1 second
-                  drawSelection({cursorBlinkRate:1000}),
+          // set cursor blink rate to 1 second
+          drawSelection({ cursorBlinkRate: 1000 }),
 
-                  // add CSS class depending on dark/light theme
-                  EditorView.editorAttributes.of((view) => {
-                      return {class: view.state.facet(EditorView.darkTheme) ? "dark-theme" : "light-theme"}
-                  }),
+          // add CSS class depending on dark/light theme
+          EditorView.editorAttributes.of((view) => {
+            return {
+              class: view.state.facet(EditorView.darkTheme)
+                ? "dark-theme"
+                : "light-theme",
+            };
+          }),
 
-                  saveFunction ? autoSaveContent(saveFunction, 2000) : [],
+          saveFunction ? autoSaveContent(saveFunction, 2000) : [],
 
-                  todoCheckboxPlugin,
-                  markdown(),
-                  links,
-              ],
-            })
-            return state
-          }
-        const state = this.createState(content)
+          todoCheckboxPlugin,
+          markdown(),
+          links,
+        ],
+      });
+      return state;
+    };
+    const state = this.createState(content);
 
-        // make sure saveFunction is called when page is unloaded
-        if (saveFunction) {
-            window.addEventListener("beforeunload", () => {
-                saveFunction(this.getContent())
-            })
-        }
-
-        this.view = new EditorView({
-            state: state,
-            parent: element,
-        })
-
-        if (focus) {
-            this.view.dispatch({
-                selection: {anchor: this.view.state.doc.length, head: this.view.state.doc.length},
-                scrollIntoView: true,
-            })
-            this.view.focus()
-        }
+    // make sure saveFunction is called when page is unloaded
+    if (saveFunction) {
+      window.addEventListener("beforeunload", () => {
+        console.log("beforeunload");
+        this.saveForce();
+      });
     }
 
-    getContent() {
-        return this.view.state.sliceDoc()
-    }
+    this.view = new EditorView({
+      state: state,
+      parent: element,
+    });
 
-    setContent(content) {
-        this.view.dispatch({
-            changes: {
-                from: 0,
-                to: this.view.state.doc.length,
-                insert: content,
-            },
-            annotations: [heynoteEvent.of(SET_CONTENT)],
-        })
-        this.view.dispatch({
-            selection: {anchor: this.view.state.doc.length, head: this.view.state.doc.length},
-            scrollIntoView: true,
-        })
+    if (focus) {
+      this.view.dispatch({
+        selection: {
+          anchor: this.view.state.doc.length,
+          head: this.view.state.doc.length,
+        },
+        scrollIntoView: true,
+      });
+      this.view.focus();
     }
+  }
 
-    getBlocks() {
-        return this.view.state.facet(blockState)
-    }
+  saveForce() {
+    console.log("saveForce");
+    this.saveFunction(this.getContent());
+  }
 
-    getCursorPosition() {
-        return this.view.state.selection.main.head
-    }
+  getContent() {
+    return this.view.state.sliceDoc();
+  }
 
-    focus() {
-        // console.log("focus");
-        focusEditorView(this.view)
-        //this.view.focus()
-    }
+  setContent(content) {
+    this.view.dispatch({
+      changes: {
+        from: 0,
+        to: this.view.state.doc.length,
+        insert: content,
+      },
+      annotations: [heynoteEvent.of(SET_CONTENT)],
+    });
+    this.view.dispatch({
+      selection: {
+        anchor: this.view.state.doc.length,
+        head: this.view.state.doc.length,
+      },
+      scrollIntoView: true,
+    });
+  }
 
-    setReadOnly(readOnly) {
-        this.view.dispatch({
-            effects: this.readOnlyCompartment.reconfigure(readOnly ? [EditorState.readOnly.of(true)] : []),
-        })
-    }
+  getBlocks() {
+    return this.view.state.facet(blockState);
+  }
 
-    setFont(fontFamily, fontSize) {
-        this.view.dispatch({
-            effects: this.fontTheme.reconfigure(getFontTheme(fontFamily, fontSize)),
-        })
-    }
+  getCursorPosition() {
+    return this.view.state.selection.main.head;
+  }
 
-    setTheme(theme) {
-        this.view.dispatch({
-            effects: this.themeCompartment.reconfigure(theme === "dark" ? heynoteDark : heynoteLight),
-        })
-    }
+  focus() {
+    // console.log("focus");
+    focusEditorView(this.view);
+    //this.view.focus()
+  }
 
-    setKeymap(keymap, emacsMetaKey) {
-        this.deselectOnCopy = keymap === "emacs"
-        this.emacsMetaKey = emacsMetaKey
-        this.view.dispatch({
-            effects: this.keymapCompartment.reconfigure(getKeymapExtensions(this, keymap)),
-        })
-    }
+  setReadOnly(readOnly) {
+    this.view.dispatch({
+      effects: this.readOnlyCompartment.reconfigure(
+        readOnly ? [EditorState.readOnly.of(true)] : []
+      ),
+    });
+  }
 
-    openLanguageSelector() {
-        this.element.dispatchEvent(new Event(LANGUAGE_SELECTOR_EVENT))
-    }
+  setFont(fontFamily, fontSize) {
+    this.view.dispatch({
+      effects: this.fontTheme.reconfigure(getFontTheme(fontFamily, fontSize)),
+    });
+  }
 
-    openNoteSelector() {
-        this.element.dispatchEvent(new Event(NOTE_SELECTOR_EVENT))
-    }
+  setTheme(theme) {
+    this.view.dispatch({
+      effects: this.themeCompartment.reconfigure(
+        theme === "dark" ? heynoteDark : heynoteLight
+      ),
+    });
+  }
 
-    setCurrentLanguage(lang, auto=false) {
-        changeCurrentBlockLanguage(this.view.state, this.view.dispatch, lang, auto)
-    }
+  setKeymap(keymap, emacsMetaKey) {
+    this.deselectOnCopy = keymap === "emacs";
+    this.emacsMetaKey = emacsMetaKey;
+    this.view.dispatch({
+      effects: this.keymapCompartment.reconfigure(
+        getKeymapExtensions(this, keymap)
+      ),
+    });
+  }
 
-    setLineNumberGutter(show) {
-        this.view.dispatch({
-            effects: this.lineNumberCompartment.reconfigure(show ? [lineNumbers(), blockLineNumbers] : []),
-        })
-    }
+  openLanguageSelector() {
+    this.element.dispatchEvent(new Event(LANGUAGE_SELECTOR_EVENT));
+  }
 
-    setFoldGutter(show) {
-        this.view.dispatch({
-            effects: this.foldGutterCompartment.reconfigure(show ? [foldGutter()] : []),
-        })
-    }
+  openNoteSelector() {
+    this.element.dispatchEvent(new Event(NOTE_SELECTOR_EVENT));
+  }
 
-    setBracketClosing(value) {
-        this.view.dispatch({
-            effects: this.closeBracketsCompartment.reconfigure(value ? [closeBrackets()] : []),
-        })
-    }
+  setCurrentLanguage(lang, auto = false) {
+    changeCurrentBlockLanguage(this.view.state, this.view.dispatch, lang, auto);
+  }
 
-    formatCurrentBlock() {
-        formatBlockContent(this.view)
-    }
+  setLineNumberGutter(show) {
+    this.view.dispatch({
+      effects: this.lineNumberCompartment.reconfigure(
+        show ? [lineNumbers(), blockLineNumbers] : []
+      ),
+    });
+  }
 
-    runCurrentBlock() {
-        runBlockContent(this.view)
-    }
+  setFoldGutter(show) {
+    this.view.dispatch({
+      effects: this.foldGutterCompartment.reconfigure(
+        show ? [foldGutter()] : []
+      ),
+    });
+  }
 
-    currenciesLoaded() {
-        triggerCurrenciesLoaded(this.view.state, this.view.dispatch)
-    }
+  setBracketClosing(value) {
+    this.view.dispatch({
+      effects: this.closeBracketsCompartment.reconfigure(
+        value ? [closeBrackets()] : []
+      ),
+    });
+  }
 
-    addNewBlockBeforeFirst() {
-        addNewBlockBeforeFirst(this.view)
-    }
+  formatCurrentBlock() {
+    formatBlockContent(this.view);
+  }
 
-    addNewBlockAfterCurrent() {
-        addNewBlockAfterCurrent(this.view)
-    }
+  runCurrentBlock() {
+    runBlockContent(this.view);
+  }
 
-    addNewBlockBeforeCurrent() {
-        addNewBlockBeforeCurrent(this.view)
-    }
+  currenciesLoaded() {
+    triggerCurrenciesLoaded(this.view.state, this.view.dispatch);
+  }
 
-    addNewBlockAfterLast() {
-        addNewBlockAfterLast(this.view)
-    }
+  addNewBlockBeforeFirst() {
+    addNewBlockBeforeFirst(this.view);
+  }
 
-    addNewBlockBeforeFirst() {
-        addNewBlockBeforeFirst(this.view)
-    }
+  addNewBlockAfterCurrent() {
+    addNewBlockAfterCurrent(this.view);
+  }
 
-    insertNewBlockAtCursor() {
-        insertNewBlockAtCursor(this.view)
-    }
+  addNewBlockBeforeCurrent() {
+    addNewBlockBeforeCurrent(this.view);
+  }
 
-    gotoNextBlock() {
-        gotoNextBlock(this.view)
-    }
+  addNewBlockAfterLast() {
+    addNewBlockAfterLast(this.view);
+  }
 
-    gotoPreviousBlock() {
-        gotoPreviousBlock(this.view)
-    }
+  addNewBlockBeforeFirst() {
+    addNewBlockBeforeFirst(this.view);
+  }
 
-    selectAll() {
-        selectAll(this.view)
-    }
+  insertNewBlockAtCursor() {
+    insertNewBlockAtCursor(this.view);
+  }
+
+  gotoNextBlock() {
+    gotoNextBlock(this.view);
+  }
+
+  gotoPreviousBlock() {
+    gotoPreviousBlock(this.view);
+  }
+
+  selectAll() {
+    selectAll(this.view);
+  }
 }
 
 /*// set initial data
@@ -295,4 +335,3 @@ editor.update([
         annotations: heynoteEvent.of(INITIAL_DATA),
     })
 ])*/
-

@@ -35,8 +35,8 @@ export default {
       selectionSize: 0,
       language: "plaintext",
       languageAuto: true,
-      theme: window.heynote.themeMode.initial,
-      initialTheme: window.heynote.themeMode.initial,
+      theme: window.edna.themeMode.initial,
+      initialTheme: window.edna.themeMode.initial,
       themeSetting: 'system',
       development: window.location.href.indexOf("dev=1") !== -1,
       showLanguageSelector: false,
@@ -48,7 +48,7 @@ export default {
   },
 
   mounted() {
-    window.heynote.themeMode.get().then((mode) => {
+    window.edna.themeMode.get().then((mode) => {
       this.theme = mode.computed
       this.themeSetting = mode.theme
     })
@@ -60,21 +60,21 @@ export default {
         document.documentElement.setAttribute("theme", theme)
       }
     }
-    onThemeChange(window.heynote.themeMode.initial)
-    window.heynote.themeMode.onChange(onThemeChange)
-    window.heynote.onSettingsChange((settings) => {
+    onThemeChange(window.edna.themeMode.initial)
+    window.edna.themeMode.onChange(onThemeChange)
+    window.edna.onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
       this.settings = settings;
       this.noteName = getNoteName(settings.currentNotePath)
       console.log("noteName", this.noteName)
     })
-    window.heynote.onOpenSettings(() => {
+    window.edna.onOpenSettings(() => {
       this.showSettings = true
     })
   },
 
   beforeUnmount() {
-    window.heynote.themeMode.removeListener()
+    window.edna.themeMode.removeListener()
   },
 
   computed: {
@@ -236,7 +236,7 @@ export default {
       } else {
         newTheme = this.themeSetting === "system" ? "light" : (this.themeSetting === "light" ? "dark" : "system")
       }
-      window.heynote.themeMode.set(newTheme)
+      window.edna.themeMode.set(newTheme)
       this.themeSetting = newTheme
       this.$refs.editor.focus()
     },

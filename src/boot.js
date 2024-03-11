@@ -9,6 +9,7 @@ import {
   migrateDefaultNote,
   scratchNotePath,
 } from "../src/notes";
+import { editorGlobal, isDocDirty } from "./state";
 import { getDateYYYYMMDDDay, platform } from "../src/utils";
 import { getSettings, loadSettings, setSetting, setSettings } from "./settings";
 
@@ -26,11 +27,18 @@ const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 
 let currencyData = null;
 
+// TODO: maybe capture this on editor level and no need for editorGlobal
 document.addEventListener("keydown", (e) => {
-  // Prevent the default Save dialog from opening.
+  // prevent the default Save dialog from opening and save if dirty
   if (e.ctrlKey && e.key === "s") {
     e.preventDefault();
-    // console.log('CTRL + S pressed');
+    if (isDocDirty.value) {
+      console.log("saving because dirty");
+      console.log("editorGlobal.value:", editorGlobal.value);
+      editorGlobal.value.saveForce();
+    } else {
+      console.log("not saving");
+    }
   }
 });
 
@@ -115,6 +123,8 @@ const Edna = {
         return;
       }
       localStorage.setItem(notePath, content);
+      // TODO: or do it in save.js?
+      isDocDirty.value = false;
     },
 
     async saveAndQuit(content) {},

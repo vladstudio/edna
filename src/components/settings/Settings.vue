@@ -4,8 +4,8 @@ import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
 import { setSettings } from "../../settings.js"
 
-const defaultFontFamily = window.heynote.defaultFontFamily
-const defaultFontSize = window.heynote.defaultFontSize
+const defaultFontFamily = window.edna.defaultFontFamily
+const defaultFontSize = window.edna.defaultFontSize
 
 export default {
   props: {
@@ -26,7 +26,7 @@ export default {
       ],
       keymap: this.initialSettings.keymap,
       metaKey: this.initialSettings.emacsMetaKey,
-      isMac: window.heynote.platform.isMac,
+      isMac: window.edna.platform.isMac,
       showLineNumberGutter: this.initialSettings.showLineNumberGutter,
       showFoldGutter: this.initialSettings.showFoldGutter,
       allowBetaVersions: this.initialSettings.allowBetaVersions,
@@ -42,7 +42,7 @@ export default {
       fontSize: this.initialSettings.fontSize || defaultFontSize,
 
       activeTab: "general",
-      isWebApp: window.heynote.platform.isWebApp,
+      isWebApp: window.edna.platform.isWebApp,
       customBufferLocation: !!this.initialSettings.bufferPath,
       systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
       defaultFontSize: defaultFontSize,
@@ -61,7 +61,7 @@ export default {
     window.addEventListener("keydown", this.onKeyDown);
     this.$refs.keymapSelector.focus()
 
-    this.appVersion = await window.heynote.getVersion()
+    this.appVersion = await window.edna.getVersion()
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
@@ -79,7 +79,7 @@ export default {
         showLineNumberGutter: this.showLineNumberGutter,
         showFoldGutter: this.showFoldGutter,
         keymap: this.keymap,
-        emacsMetaKey: window.heynote.platform.isMac ? this.metaKey : "alt",
+        emacsMetaKey: window.edna.platform.isMac ? this.metaKey : "alt",
         allowBetaVersions: this.allowBetaVersions,
         enableGlobalHotkey: this.enableGlobalHotkey,
         globalHotkey: this.globalHotkey,
@@ -99,7 +99,7 @@ export default {
     },
 
     async selectBufferLocation() {
-      const path = await window.heynote.buffer.selectLocation()
+      const path = await window.edna.buffer.selectLocation()
       if (path) {
         this.bufferPath = path
         this.updateSettings()

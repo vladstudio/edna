@@ -2,6 +2,7 @@
 import UpdateStatusItem from './UpdateStatusItem.vue'
 import { LANGUAGES } from '../editor/languages.js'
 import { fmtSize } from '../utils'
+import { isDocDirty } from '../state'
 
 const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
 const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
@@ -23,6 +24,12 @@ export default {
 
   components: {
     UpdateStatusItem,
+  },
+
+  setup() {
+    return {
+      isDocDirty
+    }
   },
 
   data() {
@@ -51,7 +58,7 @@ export default {
     },
 
     cmdKey() {
-      return window.heynote.platform.isMac ? "⌘" : "Ctrl"
+      return window.edna.platform.isMac ? "⌘" : "Ctrl"
     },
 
     formatBlockTitle() {
@@ -71,7 +78,7 @@ export default {
     },
 
     updatesEnabled() {
-      return !!window.heynote.autoUpdate
+      return !!window.edna.autoUpdate
     },
 
     changeThemeTitle() {
@@ -84,7 +91,10 @@ export default {
 <template>
   <div class="status">
     <div class="status-block clickable" @click="$emit('openNoteSelector')" title="Change or create new note">{{ noteName
-      }}</div>
+      }}<span class="ml-1 w-[1em]" v-if="isDocDirty">&bull;</span><span class="ml-1 w-[1em]"
+        v-if="!isDocDirty">&nbsp;</span>
+    </div>
+
     <div class="status-block line-number">
       Ln <span class="num">{{ line }}</span>
       &nbsp;Col <span class="num">{{ column }}</span>

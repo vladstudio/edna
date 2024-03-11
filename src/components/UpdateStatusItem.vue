@@ -22,7 +22,7 @@ export default {
   },
 
   mounted() {
-    window.heynote.autoUpdate.callbacks({
+    window.edna.autoUpdate.callbacks({
       updateAvailable: (info) => {
         //console.log("updateAvailable", info)
         this.checkingForUpdate = false
@@ -133,10 +133,10 @@ export default {
       if (this.downloading || this.checkingForUpdate) {
         return
       } else if (this.updateDownloaded) {
-        window.heynote.autoUpdate.installAndRestart()
+        window.edna.autoUpdate.installAndRestart()
       } else if (this.updateAvailable) {
         this.downloading = true
-        window.heynote.autoUpdate.startDownload()
+        window.edna.autoUpdate.startDownload()
       } else {
         this.checkForUpdate()
       }
@@ -145,7 +145,7 @@ export default {
     checkForUpdate() {
       this.updateAvailable = false
       this.checkingForUpdate = true
-      window.heynote.autoUpdate.checkForUpdates()
+      window.edna.autoUpdate.checkForUpdates()
     }
   },
 

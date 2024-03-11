@@ -1,8 +1,9 @@
 <script>
-import { DOC_CHANGED_EVENT, HeynoteEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
+import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
 import { EditorState, EditorSelection } from "@codemirror/state"
 import { scratchNotePath } from '../notes.js'
+import { editorGlobal } from '../state.js'
 
 export default {
   props: {
@@ -68,9 +69,9 @@ export default {
     // })
 
     // load buffer content and create editor
-    window.heynote.buffer.load().then((content) => {
+    window.edna.buffer.load().then((content) => {
       let diskContent = content
-      this.editor = new HeynoteEditor({
+      this.editor = new EdnaEditor({
         element: this.$refs.editor,
         content: content,
         theme: this.theme,
@@ -79,7 +80,7 @@ export default {
             return
           }
           diskContent = content
-          window.heynote.buffer.save(content)
+          window.edna.buffer.save(content)
         },
         keymap: this.keymap,
         emacsMetaKey: this.emacsMetaKey,
@@ -89,19 +90,20 @@ export default {
         fontFamily: this.fontFamily,
         fontSize: this.fontSize,
       })
+      editorGlobal.value = this.editor;
       window._heynote_editor = this.editor
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
 
       // set up buffer change listener
-      window.heynote.buffer.onChangeCallback((event, content) => {
+      window.edna.buffer.onChangeCallback((event, content) => {
         diskContent = content
         this.editor.setContent(content)
       })
       this.$emit("docChanged")
     })
     // set up window close handler that will save the buffer and quit
-    window.heynote.onWindowClose(() => {
-      window.heynote.buffer.saveAndQuit(this.editor.getContent())
+    window.edna.onWindowClose(() => {
+      window.edna.buffer.saveAndQuit(this.editor.getContent())
     })
 
     // if debugSyntaxTree prop is set, display syntax tree for debugging
@@ -244,7 +246,7 @@ export default {
       // TODO: we'll have a spurious save if there was a debounce, because
       // the debounce is still in progress, I think
       this.editor.saveFunction(this.editor.getContent())
-      window.heynote.buffer.openNote(notePath).then((content) => {
+      window.edna.buffer.openNote(notePath).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // a bit magic: sometimes we open at the beginning, sometimes at the end
