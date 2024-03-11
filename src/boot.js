@@ -18,7 +18,7 @@ const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 let themeCallback = null;
 mediaMatch.addEventListener("change", async (event) => {
   if (themeCallback) {
-    themeCallback((await Heynote.themeMode.get()).computed);
+    themeCallback((await Edna.themeMode.get()).computed);
   }
 });
 
@@ -64,7 +64,7 @@ export async function boot() {
   console.log("currentNotePath:", currentNotePath);
 }
 
-const Heynote = {
+const Edna = {
   platform: platform,
   defaultFontFamily: "Hack",
   defaultFontSize: isMobileDevice ? 16 : 12,
@@ -107,7 +107,7 @@ const Heynote = {
     },
 
     async save(content) {
-      // let self = Heynote;
+      let settings = getSettings();
       const notePath = settings.currentNotePath;
       console.log("Heynote.buffer.save:", notePath);
       if (isSystemNote(notePath)) {
@@ -182,4 +182,4 @@ const Heynote = {
   },
 };
 
-export { Heynote };
+export { Edna };
