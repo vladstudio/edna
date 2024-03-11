@@ -43,9 +43,9 @@ export default {
 
   computed: {
     filteredItems() {
-      const filterLC = this.filter.toLowerCase()
+      const nameLC = this.filter.toLowerCase().trim()
       return this.items.filter((noteInfo) => {
-        return noteInfo.nameLC.indexOf(filterLC) !== -1
+        return noteInfo.nameLC.indexOf(nameLC) !== -1
       })
     },
     canOpenSelected() {
@@ -56,6 +56,11 @@ export default {
         return false
       }
       return true
+    },
+    canCreateWithEnter() {
+      // if there are no matches for the filter, we can create with just Enter
+      // otherwise we need Ctrl + Enter
+      return !this.canOpenSelected;
     },
     // TODO: filter help note
     canDeleteSelected() {
@@ -76,12 +81,13 @@ export default {
       return this.canOpenSelected
     },
     canCreate() {
-      let filter = this.filter.trim()
-      if (filter.length === 0) {
+      // TODO: use lowerCase name?
+      let name = this.filter.trim()
+      if (name.length === 0) {
         return false
       }
       for (let noteInfo of this.items) {
-        if (noteInfo.name === filter) {
+        if (noteInfo.name === name) {
           return false
         }
       }
@@ -90,12 +96,9 @@ export default {
   },
 
   methods: {
-    trunc(name) {
-      const maxLen = 24
-      if (name.length > maxLen) {
-        return name.substring(0, maxLen) + "..."
-      }
-      return name
+    cleanNoteName(name) {
+      // TODO: sanitize for file name
+      return `"` + name.trim() + `"`
     },
 
     isCtrlDelete(event) {
@@ -121,11 +124,17 @@ export default {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
       } else if (event.key === "Enter") {
-        if (event.ctrlKey) {
-          console.log("Ctrl+Enter, filter:", this.filter)
-          if (this.filter.length > 0) {
-            this.createNote(this.filter)
-          }
+        let name = this.filter.trim();
+        if (name.length === 0) {
+          return;
+        }
+        console.log("selected:", this.selected);
+        if (this.canCreateWithEnter) {
+          this.createNote(name);
+          return;
+        }
+        if (event.ctrlKey && this.canCreate) {
+          this.createNote(this.filter)
           return;
         }
         const selected = this.filteredItems[this.selected]
@@ -193,17 +202,20 @@ export default {
       <div class="kbd-grid">
         <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
         <div v-if="canOpenSelected">open note</div>
-        <div v-if="canOpenSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
+        <div v-if="canOpenSelected" class="bold truncate">{{ cleanNoteName(filteredItems[selected].name) }}</div>
 
-        <div v-if="canCreate"><span class="kbd">Ctrl + Enter</span></div>
+        <div v-if="canCreateWithEnter"><span class="kbd">Enter</span></div>
+        <div v-if="canCreate && !canCreateWithEnter"><span class="kbd">Ctrl + Enter</span></div>
         <div v-if="canCreate">create note</div>
-        <div v-if="canCreate" class="bold">{{ trunc(filter) }}</div>
+        <div v-if="canCreate" class="bold truncate">{{ cleanNoteName(filter) }}</div>
 
         <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
         <div v-if="showDelete" class="red">delete note</div>
-        <div v-if="showDelete && canDeleteSelected" class="bold">{{ trunc(filteredItems[selected].name) }}</div>
-        <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold">{{
-      trunc(filteredItems[selected].name) }}</span></div>
+        <div v-if="showDelete && canDeleteSelected" class="bold truncate">{{ cleanNoteName(filteredItems[selected].name)
+          }}
+        </div>
+        <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold truncate">{{
+      cleanNoteName(filteredItems[selected].name) }}</span></div>
 
         <div><span class="kbd">Esc</span></div>
         <div>dismiss</div>
@@ -221,7 +233,9 @@ export default {
         left: 0
         bottom: 0
         right: 0
+
     .note-selector
+        width: 32em
         font-size: 13px
         padding: 10px
         //background: #48b57e
@@ -239,12 +253,12 @@ export default {
             max-width: calc(100% - 80px)
 
         input
+            width: 100%
             background: #fff
             padding: 4px 5px
             border: 1px solid #ccc
             box-sizing: border-box
             border-radius: 2px
-            width: 400px
             margin-bottom: 10px
             &:focus
                 outline: none
