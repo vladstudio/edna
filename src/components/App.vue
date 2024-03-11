@@ -299,13 +299,17 @@ export default {
 
     onDeleteNote(notePath) {
       this.showNoteSelector = false
-      localStorage.removeItem(notePath)
-      console.log("deleted note", notePath)
       let settings = getSettings()
       if (notePath === settings.currentNotePath) {
         console.log("deleted current note, opening scratch note")
         this.$refs.editor.openNote(scratchNotePath)
       }
+      // must delete after openNote() because openNote() saves
+      // current note
+      // TODO: could pass a "doNotSave" flag
+      // TODO: need layer of indirection when saving to disk
+      localStorage.removeItem(notePath)
+      console.log("deleted note", notePath)
     },
 
     docChanged() {

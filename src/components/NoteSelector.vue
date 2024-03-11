@@ -57,9 +57,26 @@ export default {
       }
       return true
     },
+    canCreate() {
+      // TODO: use lowerCase name?
+      let name = this.filter.trim()
+      if (name.length === 0) {
+        return false
+      }
+      for (let noteInfo of this.items) {
+        if (noteInfo.name === name) {
+          return false
+        }
+      }
+      return true
+    },
     canCreateWithEnter() {
       // if there are no matches for the filter, we can create with just Enter
       // otherwise we need Ctrl + Enter
+      let name = this.filter.trim()
+      if (name.length === 0) {
+        return false
+      }
       return !this.canOpenSelected;
     },
     // TODO: filter help note
@@ -80,19 +97,6 @@ export default {
     showDelete() {
       return this.canOpenSelected
     },
-    canCreate() {
-      // TODO: use lowerCase name?
-      let name = this.filter.trim()
-      if (name.length === 0) {
-        return false
-      }
-      for (let noteInfo of this.items) {
-        if (noteInfo.name === name) {
-          return false
-        }
-      }
-      return true
-    }
   },
 
   methods: {
@@ -124,11 +128,9 @@ export default {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
       } else if (event.key === "Enter") {
+        event.preventDefault()
         let name = this.filter.trim();
-        if (name.length === 0) {
-          return;
-        }
-        console.log("selected:", this.selected);
+        console.log("selected:", this.selected, "name:", name);
         if (this.canCreateWithEnter) {
           this.createNote(name);
           return;
@@ -143,7 +145,6 @@ export default {
         } else {
           this.$emit("close")
         }
-        event.preventDefault()
       } else if (this.isCtrlDelete(event)) {
         const selected = this.filteredItems[this.selected]
         if (selected) {
