@@ -72,10 +72,12 @@ export default {
     window.edna.onOpenSettings(() => {
       this.showSettings = true
     })
+    window.addEventListener("keydown", this.onKeyDown)
   },
 
   beforeUnmount() {
     window.edna.themeMode.removeListener()
+    window.removeEventListener("keydown", this.onKeyDown);
   },
 
   computed: {
@@ -87,6 +89,17 @@ export default {
   },
 
   methods: {
+    onKeyDown(e) {
+      // hack: stop Ctrl + O unless it originates from code mirror (because then it
+      // triggers NoteSelector.vue)
+      if (e.key == "o" && e.ctrlKey && !e.altKey && !e.shiftKey) {
+        let fromCodeMirror = e.target && e.target.className.includes("cm-content")
+        if (!fromCodeMirror) {
+          e.preventDefault()
+        }
+      }
+    },
+
     async storeNotesOnDisk() {
       console.log("storeNotesOnDisk")
       let dh = await openDirPicker(true)
