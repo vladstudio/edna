@@ -277,6 +277,7 @@ export default {
                 max-width: 100%
         .items
             > li
+                line-height: 1.5
                 border-radius: 3px
                 padding: 2px 8px
                 cursor: pointer
