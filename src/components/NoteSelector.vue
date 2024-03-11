@@ -278,7 +278,7 @@ export default {
         .items
             > li
                 border-radius: 3px
-                padding: 5px 12px
+                padding: 2px 8px
                 cursor: pointer
                 &:hover
                     background: #e2e2e2
@@ -300,6 +300,8 @@ export default {
             grid-row-gap: 1em
             margin-top: 1em
             font-size: 11px
+            padding-left: 8px
+            padding-right: 8px
             color: gray
             +dark-mode
                     color: rgba(255,255,255, 0.53)
