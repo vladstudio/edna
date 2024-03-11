@@ -33,6 +33,7 @@ import { heynoteDark } from "./theme/dark.js";
 import { heynoteKeymap } from "./keymap.js";
 import { heynoteLang } from "./lang-heynote/heynote.js";
 import { heynoteLight } from "./theme/light.js";
+import { isDocDirty } from "../state.js";
 import { languageDetection } from "./language-detection/autodetect.js";
 import { links } from "./links.js";
 import { markdown } from "@codemirror/lang-markdown";
@@ -144,10 +145,20 @@ export class EdnaEditor {
     // make sure saveFunction is called when page is unloaded
     if (saveFunction) {
       window.addEventListener("beforeunload", () => {
-        console.log("beforeunload");
         this.saveForce();
       });
     }
+
+    document.addEventListener("keydown", (e) => {
+      // prevent the default Save dialog from opening and save if dirty
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        // TODO: track isDocDirty state here?
+        if (isDocDirty.value) {
+          this.saveForce();
+        }
+      }
+    });
 
     this.view = new EditorView({
       state: state,

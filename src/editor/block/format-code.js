@@ -1,6 +1,6 @@
-import { EditorSelection } from "@codemirror/state";
-
 import * as prettier from "prettier/standalone";
+
+import { EditorSelection } from "@codemirror/state";
 import { getActiveNoteBlock } from "./block.js";
 import { getLanguage } from "../languages.js";
 
@@ -52,13 +52,13 @@ export async function formatBlockContent(view) {
     // TODO: maybe show some indication that we're doing an operation
     let s;
     try {
-      window._heynote_editor.setReadOnly(true);
+      window._edna_editor.setReadOnly(true);
       s = await formatGo(content);
     } catch (e) {
       console.log("error formatting go:", e);
       return false;
     } finally {
-      window._heynote_editor.setReadOnly(false);
+      window._edna_editor.setReadOnly(false);
     }
 
     if (!s) {
@@ -221,13 +221,13 @@ export async function runBlockContent(view) {
     // TODO: maybe show some indication that we're doing an operation
     let s;
     try {
-      window._heynote_editor.setReadOnly(true);
+      window._edna_editor.setReadOnly(true);
       s = await runGo(content);
     } catch (e) {
       console.log("error formatting go:", e);
       return false;
     } finally {
-      window._heynote_editor.setReadOnly(false);
+      window._edna_editor.setReadOnly(false);
     }
 
     if (!s) {

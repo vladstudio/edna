@@ -12,6 +12,7 @@ import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
 import { getSettings } from '../settings'
+import { incNoteCreateCount } from '../state'
 
 export default {
   components: {
@@ -289,6 +290,7 @@ export default {
       if (localStorage.getItem(notePath) == null) {
         localStorage.setItem(notePath, fixUpNote(null))
         console.log("created note", name)
+        incNoteCreateCount();
       } else {
         console.log("note already exists", name)
       }

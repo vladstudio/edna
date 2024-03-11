@@ -9,9 +9,9 @@ import {
   migrateDefaultNote,
   scratchNotePath,
 } from "../src/notes";
-import { editorGlobal, isDocDirty } from "./state";
 import { getDateYYYYMMDDDay, platform } from "../src/utils";
 import { getSettings, loadSettings, setSetting, setSettings } from "./settings";
+import { incSaveCount, isDocDirty } from "./state";
 
 import { ipcRenderer } from "./ipcrenderer";
 
@@ -26,21 +26,6 @@ mediaMatch.addEventListener("change", async (event) => {
 const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 
 let currencyData = null;
-
-// TODO: maybe capture this on editor level and no need for editorGlobal
-document.addEventListener("keydown", (e) => {
-  // prevent the default Save dialog from opening and save if dirty
-  if (e.ctrlKey && e.key === "s") {
-    e.preventDefault();
-    if (isDocDirty.value) {
-      console.log("saving because dirty");
-      console.log("editorGlobal.value:", editorGlobal.value);
-      editorGlobal.value.saveForce();
-    } else {
-      console.log("not saving");
-    }
-  }
-});
 
 export async function boot() {
   let initialSettings = {
@@ -125,6 +110,7 @@ const Edna = {
       localStorage.setItem(notePath, content);
       // TODO: or do it in save.js?
       isDocDirty.value = false;
+      incSaveCount();
     },
 
     async saveAndQuit(content) {},
@@ -132,9 +118,8 @@ const Edna = {
     onChangeCallback(callback) {},
   },
 
-  // TODO: hook it up to document unload
   onWindowClose(callback) {
-    //ipcRenderer.on(WINDOW_CLOSE_EVENT, callback)
+    // do nothing, we listen on "beforeunload" to save the note
   },
 
   onOpenSettings(callback) {

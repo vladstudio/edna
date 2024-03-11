@@ -1,5 +1,7 @@
 import { getHelp, getInitialContent } from "./initial-content";
 
+import { getOpenCount } from "./state";
+
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
 export const inboxNotePath = "note:inbox";
@@ -10,7 +12,9 @@ export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
 export const isDev = location.host.startsWith("localhost");
 
-// migrate "buffer" => "note:scratch"
+// migrate "buffer" (Heynote) => "note:scratch"
+// TODO: probably not needed anymore because no-one has used Edna
+// when we used "buffer"
 export function migrateDefaultNote() {
   const d = localStorage.getItem("buffer");
   if (d !== null) {
@@ -30,6 +34,13 @@ export function createDefaultNotes() {
     getInitialContent();
   const s = isDev ? initialDevContent : initialContent;
   createNote(scratchNotePath, s);
+
+  // scratch note must always exist but the user can delete inbox / daily journal notes
+  let n = getOpenCount();
+  if (n > 1) {
+    console.log("skipping creating inbox / journal because openCount:", n);
+    return;
+  }
   createNote(journalNotePath, blockHdrMarkdown + initialJournal);
   createNote(inboxNotePath, blockHdrMarkdown + initialInbox);
 }
