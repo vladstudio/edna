@@ -1,7 +1,10 @@
 let currenciesLoaded = false;
 export async function loadCurrencies() {
+  // @ts-ignore
+  let math = window.math;
   let data;
   try {
+    // @ts-ignore
     data = await window.edna.getCurrencyData();
   } catch (e) {
     console.log("error getting currency data:", e);

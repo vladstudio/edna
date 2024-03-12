@@ -1,4 +1,14 @@
 /**
+ * @param {boolean} cond
+ * @param {string} [msg]
+ */
+export function throwIf(cond, msg) {
+  if (cond) {
+    throw new Error(msg || "invalid condition");
+  }
+}
+
+/**
  * @param {any} fileHandle
  * @param {boolean} readWrite
  * @returns {Promise<boolean>}

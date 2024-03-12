@@ -1,6 +1,13 @@
 import { ref } from "vue";
 
+/**
+ * @typedef {Object} NoteInfo
+ * @property {string} name
+ * @property {string} path
+ */
+
 export let isDocDirty = ref(false);
+export let noteInfos = ref([]);
 
 const keyOpenCount = "edna:openCount";
 const keySaveCount = "edna:saveCount";
@@ -30,19 +37,28 @@ function incLSCount(key) {
   return v;
 }
 
+/**
+ * @returns {number}
+ */
 export function getOpenCount() {
   return getLSCount(keyOpenCount);
 }
 
+/**
+ * @returns {number}
+ */
 export function incSaveCount() {
   return incLSCount(keySaveCount);
 }
 
+/**
+ * @returns {number}
+ */
 export function incNoteCreateCount() {
   return incLSCount(keyNoteCreateCount);
 }
 
-let openCount = incLSCount();
+let openCount = incLSCount(keyOpenCount);
 console.log(
   "openCount:",
   openCount,

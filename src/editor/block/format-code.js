@@ -112,6 +112,7 @@ export async function formatBlockContent(view) {
           plugins: language.prettier.plugins,
           tabWidth: state.tabSize,
         }),
+        cursorOffset: 0,
       };
       formattedContent.cursorOffset =
         cursorPos == block.content.from ? 0 : formattedContent.formatted.length;

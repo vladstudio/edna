@@ -37,7 +37,7 @@ import { isDocDirty } from "../state.js";
 import { languageDetection } from "./language-detection/autodetect.js";
 import { links } from "./links.js";
 import { markdown } from "@codemirror/lang-markdown";
-import { todoCheckboxPlugin } from "./todo-checkbox.ts";
+import { todoCheckboxPlugin } from "./todo-checkbox";
 
 export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector";
 export const NOTE_SELECTOR_EVENT = "openNoteSelector";
@@ -296,10 +296,6 @@ export class EdnaEditor {
 
   currenciesLoaded() {
     triggerCurrenciesLoaded(this.view.state, this.view.dispatch);
-  }
-
-  addNewBlockBeforeFirst() {
-    addNewBlockBeforeFirst(this.view);
   }
 
   addNewBlockAfterCurrent() {
