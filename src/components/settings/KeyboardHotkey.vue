@@ -1,4 +1,6 @@
 <script>
+import { platform } from '../../utils'
+
 export default {
   props: [
     "disabled",
@@ -38,8 +40,8 @@ export default {
     }
     keys = keys.concat(')!@#$%^&*(:;:+=<,_->.?/~`{][|\\}"'.split(""))
     return {
-      isMac: window.edna.platform.isMac,
-      isWindows: window.edna.platform.isWindows,
+      isMac: platform.isMac,
+      isWindows: platform.isWindows,
       cmdOrCtrl: false,
       ctrl: false,
       shift: false,

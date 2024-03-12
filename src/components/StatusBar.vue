@@ -1,6 +1,6 @@
 <script>
 import { LANGUAGES } from '../editor/languages.js'
-import { fmtSize } from '../utils'
+import { fmtSize, platform } from '../utils'
 import { isDocDirty } from '../state'
 
 const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
@@ -52,7 +52,7 @@ export default {
     },
 
     cmdKey() {
-      return window.edna.platform.isMac ? "⌘" : "Ctrl"
+      return platform.isMac ? "⌘" : "Ctrl"
     },
 
     formatBlockTitle() {

@@ -3,6 +3,7 @@ import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
 import { setSettings } from "../../settings.js"
+import { platform } from "../../utils"
 
 const defaultFontFamily = window.edna.defaultFontFamily
 const defaultFontSize = window.edna.defaultFontSize
@@ -27,7 +28,7 @@ export default {
       ],
       keymap: this.initialSettings.keymap,
       metaKey: this.initialSettings.emacsMetaKey,
-      isMac: window.edna.platform.isMac,
+      isMac: platform.isMac,
       showLineNumberGutter: this.initialSettings.showLineNumberGutter,
       showFoldGutter: this.initialSettings.showFoldGutter,
       enableGlobalHotkey: this.initialSettings.enableGlobalHotkey,
@@ -43,7 +44,7 @@ export default {
       themeSetting: this.initialTheme,
 
       activeTab: "general",
-      isWebApp: window.edna.platform.isWebApp,
+      isWebApp: platform.isWebApp,
       customBufferLocation: !!this.initialSettings.bufferPath,
       systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
@@ -86,7 +87,7 @@ export default {
         showLineNumberGutter: this.showLineNumberGutter,
         showFoldGutter: this.showFoldGutter,
         keymap: this.keymap,
-        emacsMetaKey: window.edna.platform.isMac ? this.metaKey : "alt",
+        emacsMetaKey: platform.isMac ? this.metaKey : "alt",
         enableGlobalHotkey: this.enableGlobalHotkey,
         globalHotkey: this.globalHotkey,
         showInDock: this.showInDock,

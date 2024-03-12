@@ -1,19 +1,14 @@
 import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "../src/constants";
 import {
   createDefaultNotes,
-  fixUpNote,
-  getSystemNoteContent,
-  isJournalNote,
-  isSystemNote,
   loadNotePaths,
   migrateDefaultNote,
   scratchNotePath,
 } from "../src/notes";
-import { getDateYYYYMMDDDay, platform } from "../src/utils";
-import { getSettings, loadSettings, setSetting, setSettings } from "./settings";
-import { incSaveCount, isDocDirty } from "./state";
+import { getSettings, loadSettings, setSettings } from "./settings";
 
 import { ipcRenderer } from "./ipcrenderer";
+import { platform } from "../src/utils";
 
 const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 let themeCallback = null;
@@ -58,7 +53,6 @@ export async function boot() {
 }
 
 const Edna = {
-  platform: platform,
   defaultFontFamily: "Hack",
   defaultFontSize: isMobileDevice ? 16 : 12,
 

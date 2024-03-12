@@ -1,7 +1,9 @@
 import { Decoration, MatchDecorator, ViewPlugin } from "@codemirror/view";
 
-const modChar = window.edna.platform.isMac ? "⌘" : "Ctrl";
-const eventKeyModAttribute = window.edna.platform.isMac ? "metaKey" : "ctrlKey";
+import { platform } from "../utils";
+
+const modChar = platform.isMac ? "⌘" : "Ctrl";
+const eventKeyModAttribute = platform.isMac ? "metaKey" : "ctrlKey";
 
 const linkMatcher = new MatchDecorator({
   regexp: /https?:\/\/[^\s\)]+/gi,

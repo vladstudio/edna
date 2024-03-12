@@ -1,19 +1,20 @@
-export let platform;
+export let platform = {
+  // default to windows
+  isMac: false,
+  isWindows: true,
+  isLinux: false,
+};
+
 export let platformName;
 
 export function len(o) {
   return o ? o.length : 0;
 }
 
-// @ts-ignore
 const uaPlatform =
+  // @ts-ignore
   window.navigator?.userAgentData?.platform || window.navigator.platform;
 if (uaPlatform.indexOf("Win") !== -1) {
-  platform = {
-    isMac: false,
-    isWindows: true,
-    isLinux: false,
-  };
   platformName = "windows";
 } else if (uaPlatform.indexOf("Linux") !== -1) {
   platform = {
@@ -50,7 +51,7 @@ export function stringSizeInUtf8Bytes(text) {
  * @returns {string}
  */
 export function fmtSize(n) {
-  // @type {Array<[number, string]>}
+  // @type {[][number, string]}
   const a = [
     [1024 * 1024 * 1024 * 1024, "TB"],
     [1024 * 1024 * 1024, "GB"],
