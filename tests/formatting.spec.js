@@ -47,7 +47,7 @@ test("JSON formatting (cursor at start)", async ({ page }) => {
   const block = (await heynotePage.getBlocks())[0];
   expect(
     await page.evaluate(
-      () => window._edna_editor.view.state.selection.main.from
+      () => window.ednaCurrentEditor.view.state.selection.main.from
     )
   ).toBe(block.content.from);
 });

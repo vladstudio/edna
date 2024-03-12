@@ -22,24 +22,24 @@ export class HeynotePage {
   }
 
   async getBlocks() {
-    return await this.page.evaluate(() => window._edna_editor.getBlocks());
+    return await this.page.evaluate(() => window.ednaCurrentEdito.getBlocks());
   }
 
   async getContent() {
-    return await this.page.evaluate(() => window._edna_editor.getContent());
+    return await this.page.evaluate(() => window.ednaCurrentEdito.getContent());
   }
 
   async setContent(content) {
     await expect(this.page.locator("css=.cm-editor")).toBeVisible();
     await this.page.evaluate(
-      (content) => window._edna_editor.setContent(content),
+      (content) => window.ednaCurrentEdito.setContent(content),
       content
     );
   }
 
   async getCursorPosition() {
     return await this.page.evaluate(() =>
-      window._edna_editor.getCursorPosition()
+      window.ednaCurrentEdito.getCursorPosition()
     );
   }
 

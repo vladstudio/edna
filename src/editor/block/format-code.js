@@ -1,6 +1,7 @@
 import * as prettier from "prettier/standalone";
 
 import { EditorSelection } from "@codemirror/state";
+import { findEditorByView } from "../../state.js";
 import { getActiveNoteBlock } from "./block.js";
 import { getLanguage } from "../languages.js";
 
@@ -45,20 +46,20 @@ export async function formatBlockContent(view) {
   const content = state.sliceDoc(block.content.from, block.content.to);
 
   //console.log("prettier supports:", getSupportInfo())
-
+  let editor = findEditorByView(view);
   if (language.token == "golang") {
     // formatGo() is async so we need to prevent changes to the state of the editor
     // we make it read-only
     // TODO: maybe show some indication that we're doing an operation
     let s;
     try {
-      window._edna_editor.setReadOnly(true);
+      editor.setReadOnly(true);
       s = await formatGo(content);
     } catch (e) {
       console.log("error formatting go:", e);
       return false;
     } finally {
-      window._edna_editor.setReadOnly(false);
+      editor.setReadOnly(false);
     }
 
     if (!s) {
@@ -211,6 +212,8 @@ export async function runBlockContent(view) {
     return false;
   }
 
+  let editor = findEditorByView(view);
+
   const content = state.sliceDoc(block.content.from, block.content.to);
 
   //console.log("prettier supports:", getSupportInfo())
@@ -222,13 +225,13 @@ export async function runBlockContent(view) {
     // TODO: maybe show some indication that we're doing an operation
     let s;
     try {
-      window._edna_editor.setReadOnly(true);
+      editor.setReadOnly(true);
       s = await runGo(content);
     } catch (e) {
       console.log("error formatting go:", e);
       return false;
     } finally {
-      window._edna_editor.setReadOnly(false);
+      editor.setReadOnly(false);
     }
 
     if (!s) {

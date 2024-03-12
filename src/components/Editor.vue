@@ -3,6 +3,7 @@ import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_E
 import { syntaxTree } from "@codemirror/language"
 import { EditorState, EditorSelection } from "@codemirror/state"
 import { loadCurrentNote, loadNote, saveCurrentNote, scratchNotePath } from '../notes.js'
+import { rememberEditor } from '../state.js'
 
 export default {
   props: {
@@ -93,7 +94,7 @@ export default {
         fontFamily: this.fontFamily,
         fontSize: this.fontSize,
       })
-      window._edna_editor = this.editor
+      rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
 
       // set up buffer change listener

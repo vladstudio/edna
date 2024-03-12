@@ -136,7 +136,7 @@ export default {
         {
           label: "Open note",
           onClick: () => { this.openNoteSelector() },
-          shortcut: `${modChar} + O`,
+          shortcut: `${modChar} + P`,
         },
         {
           label: "And block after current",
