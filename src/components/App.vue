@@ -27,7 +27,7 @@ export default {
 
   data() {
     let settings = getSettings()
-    console.log("setting:", settings)
+    // console.log("setting:", settings)
     return {
       noteName: getNoteName(settings.currentNotePath),
       line: 1,

@@ -38,7 +38,7 @@ export async function boot() {
   };
 
   let s = await loadSettings();
-  console.log("settings loaded:", s);
+  // console.log("settings loaded:", s);
   s = Object.assign(initialSettings, s);
   await setSettings(s);
 
@@ -46,7 +46,7 @@ export async function boot() {
   createDefaultNotes();
 
   let settings = getSettings();
-  console.log("settings:", settings);
+  // console.log("settings:", settings);
   // make sure currentNotePath points to a valid note
   let currentNotePath = settings.currentNotePath;
   let notePaths = loadNotePaths();
@@ -63,16 +63,6 @@ const Edna = {
   defaultFontSize: isMobileDevice ? 16 : 12,
 
   buffer: {
-    async load() {
-      // let self = Heynote;
-      let settings = getSettings();
-      // console.log("Heynote:", settings);
-      const notePath = settings.currentNotePath;
-      console.log("Heynote.buffer.load: loading from ", notePath);
-      const content = localStorage.getItem(notePath);
-      return fixUpNote(content);
-    },
-
     async openNote(notePath) {
       console.log("Heynote.buffer.openNote:", notePath);
       if (isSystemNote(notePath)) {
@@ -99,27 +89,7 @@ const Edna = {
       return fixUpNote(content);
     },
 
-    async save(content) {
-      let settings = getSettings();
-      const notePath = settings.currentNotePath;
-      console.log("Heynote.buffer.save:", notePath);
-      if (isSystemNote(notePath)) {
-        console.log("skipped saving system note");
-        return;
-      }
-      localStorage.setItem(notePath, content);
-      // TODO: or do it in save.js?
-      isDocDirty.value = false;
-      incSaveCount();
-    },
-
-    async saveAndQuit(content) {},
-
     onChangeCallback(callback) {},
-  },
-
-  onWindowClose(callback) {
-    // do nothing, we listen on "beforeunload" to save the note
   },
 
   onOpenSettings(callback) {

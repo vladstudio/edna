@@ -1,6 +1,7 @@
 import { getHelp, getInitialContent } from "./initial-content";
+import { getOpenCount, incSaveCount, isDocDirty } from "./state";
 
-import { getOpenCount } from "./state";
+import { getSettings } from "./settings";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
@@ -38,7 +39,7 @@ export function createDefaultNotes() {
   // scratch note must always exist but the user can delete inbox / daily journal notes
   let n = getOpenCount();
   if (n > 1) {
-    console.log("skipping creating inbox / journal because openCount:", n);
+    // console.log("skipping creating inbox / journal because openCount:", n);
     return;
   }
   createNote(journalNotePath, blockHdrMarkdown + initialJournal);
@@ -101,4 +102,28 @@ export function getSystemNoteContent(notePath) {
     return getHelp();
   }
   return blockHdrPlainTex + "error: unknown system note:" + notePath + "\n";
+}
+
+export async function loadCurrentNote() {
+  // let self = Heynote;
+  let settings = getSettings();
+  // console.log("Heynote:", settings);
+  const notePath = settings.currentNotePath;
+  // console.log("loadCurrentNote: from ", notePath);
+  const content = localStorage.getItem(notePath);
+  return fixUpNote(content);
+}
+
+export async function saveCurrentNote(content) {
+  let settings = getSettings();
+  const notePath = settings.currentNotePath;
+  console.log("notePath:", notePath);
+  if (isSystemNote(notePath)) {
+    console.log("skipped saving system note");
+    return;
+  }
+  localStorage.setItem(notePath, content);
+  // TODO: or do it in save.js?
+  isDocDirty.value = false;
+  incSaveCount();
 }

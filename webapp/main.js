@@ -10,7 +10,6 @@ loadCurrencies();
 setInterval(loadCurrencies, 1000 * 3600 * 4);
 
 boot().then(() => {
-  console.log("booted");
   const app = createApp(App);
   app.mount("#app");
 });

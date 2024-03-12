@@ -2,7 +2,7 @@
 import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
 import { EditorState, EditorSelection } from "@codemirror/state"
-import { scratchNotePath } from '../notes.js'
+import { loadCurrentNote, saveCurrentNote, scratchNotePath } from '../notes.js'
 
 export default {
   props: {
@@ -42,6 +42,7 @@ export default {
   },
 
   mounted() {
+    // @ts-ignore
     this.$refs.editor.addEventListener("selectionChange", (e) => {
       // console.log("selectionChange:", e)
       this.$emit("cursorChange", {
@@ -52,12 +53,15 @@ export default {
       })
     })
 
+    // @ts-ignore
     this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
       this.$emit("openLanguageSelector")
     })
+    // @ts-ignore
     this.$refs.editor.addEventListener(NOTE_SELECTOR_EVENT, (e) => {
       this.$emit("openNoteSelector")
     })
+    // @ts-ignore
     this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
       this.$emit("docChanged")
     })
@@ -68,7 +72,7 @@ export default {
     // })
 
     // load buffer content and create editor
-    window.edna.buffer.load().then((content) => {
+    loadCurrentNote().then((content) => {
       let diskContent = content
       this.editor = new EdnaEditor({
         element: this.$refs.editor,
@@ -79,7 +83,7 @@ export default {
             return
           }
           diskContent = content
-          window.edna.buffer.save(content)
+          saveCurrentNotee(content)
         },
         keymap: this.keymap,
         emacsMetaKey: this.emacsMetaKey,
@@ -98,10 +102,6 @@ export default {
         this.editor.setContent(content)
       })
       this.$emit("docChanged")
-    })
-    // set up window close handler that will save the buffer and quit
-    window.edna.onWindowClose(() => {
-      window.edna.buffer.saveAndQuit(this.editor.getContent())
     })
 
     // if debugSyntaxTree prop is set, display syntax tree for debugging

@@ -24,7 +24,7 @@ export function getSettings() {
 }
 
 export async function setSettings(newSettings) {
-  console.log("setSettings:", newSettings);
+  // console.log("setSettings:", newSettings);
   await saveSettings(newSettings);
   settings = newSettings;
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
