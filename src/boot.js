@@ -3,8 +3,8 @@ import {
   createDefaultNotes,
   fixUpNote,
   getSystemNoteContent,
+  isJournalNote,
   isSystemNote,
-  journalNotePath,
   loadNotePaths,
   migrateDefaultNote,
   scratchNotePath,
@@ -81,7 +81,7 @@ const Edna = {
       }
       let content = localStorage.getItem(notePath);
       await setSetting("currentNotePath", notePath);
-      if (notePath === journalNotePath) {
+      if (isJournalNote(notePath)) {
         console.log("Heynote.buffer.openNote:");
         // create block for a current day
         const dt = getDateYYYYMMDDDay();

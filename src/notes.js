@@ -87,6 +87,10 @@ export function isSystemNote(notePath) {
   return notePath.startsWith("system:");
 }
 
+export function isJournalNote(notePath) {
+  return notePath === journalNotePath;
+}
+
 export function getSystemNotes() {
   return ["system:help"];
 }

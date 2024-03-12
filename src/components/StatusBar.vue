@@ -15,8 +15,6 @@ export default {
     "selectionSize",
     "language",
     "languageAuto",
-    "theme",
-    "themeSetting",
   ],
 
   components: {
@@ -72,10 +70,6 @@ export default {
     changeLanguageTitle() {
       return `Change language for current block (${this.cmdKey} + L)`
     },
-
-    changeThemeTitle() {
-      return `Toggle system/light/dark theme. Current: ${this.themeSetting}`
-    }
   },
 }
 </script>
@@ -105,9 +99,6 @@ export default {
     <div v-if="supportsFormat" @click="$emit('formatCurrentBlock')" class="status-block format clickable"
       :title="formatBlockTitle">
       <span class="icon icon-format"></span>
-    </div>
-    <div class="status-block theme clickable" @click="$emit('toggleTheme')" :title="changeThemeTitle">
-      <span :class="'icon ' + themeSetting"></span>
     </div>
     <div @click="$emit('openSettings')" class="status-block settings clickable" title="Settings">
       <span class="icon icon-format"></span>

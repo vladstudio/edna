@@ -208,6 +208,7 @@ export default {
         items.push({
           label: "Store notes on disk",
           onClick: () => { this.storeNotesOnDisk() },
+          shortcut: "",
         })
       }
 
@@ -218,6 +219,7 @@ export default {
         preserveIconWidth: false,
         keyboardControl: true,
         zIndex: 40,
+        // @ts-ignore
         getContainer: () => {
           const o = this.$refs.menuContainer;
           // const o = document.body;
@@ -231,6 +233,7 @@ export default {
         items: items,
       });
 
+      // @ts-ignore
       this.$refs.menuContainer.focus()
     },
 
@@ -239,7 +242,13 @@ export default {
     },
     closeSettings() {
       this.showSettings = false
+      // @ts-ignore
       this.$refs.editor.focus()
+    },
+
+    setTheme(newTheme) {
+      window.edna.themeMode.set(newTheme)
+      this.themeSetting = newTheme
     },
 
     toggleTheme() {
@@ -250,8 +259,7 @@ export default {
       } else {
         newTheme = this.themeSetting === "system" ? "light" : (this.themeSetting === "light" ? "dark" : "system")
       }
-      window.edna.themeMode.set(newTheme)
-      this.themeSetting = newTheme
+      this.setTheme(newTheme)
       this.$refs.editor.focus()
     },
 
@@ -352,15 +360,15 @@ export default {
       class="editor" ref="editor" @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
       @docChanged="docChanged" />
     <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
-      :language="language" :languageAuto="languageAuto" :theme="theme" :themeSetting="themeSetting"
-      @toggleTheme="toggleTheme" @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
-      @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock" @openSettings="showSettings = true"
-      @openHelp="openHelp" class="status" />
+      :language="language" :languageAuto="languageAuto" @openLanguageSelector="openLanguageSelector"
+      @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
+      @openSettings="showSettings = true" @openHelp="openHelp" class="status" />
     <div class="overlay">
       <LanguageSelector v-if="showLanguageSelector" @selectLanguage="onSelectLanguage" @close="closeLanguageSelector" />
       <NoteSelector v-if="showNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote" @deleteNote="onDeleteNote"
         @close="closeNoteSelector" />
-      <Settings v-if="showSettings" :initialSettings="settings" @closeSettings="closeSettings" />
+      <Settings v-if="showSettings" :initialSettings="settings" :initialTheme="themeSetting" @setTheme="setTheme"
+        @closeSettings="closeSettings" />
     </div>
   </div>
   <div style="mcStyle" class="menu-overlay">

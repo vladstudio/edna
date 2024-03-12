@@ -11,6 +11,7 @@ export default {
   props: {
     initialKeymap: String,
     initialSettings: Object,
+    initialTheme: String,
   },
   components: {
     KeyboardHotkey,
@@ -38,11 +39,14 @@ export default {
       bufferPath: this.initialSettings.bufferPath,
       fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
       fontSize: this.initialSettings.fontSize || defaultFontSize,
+      // theme: this.initialSettings.theme,
+      themeSetting: this.initialTheme,
 
       activeTab: "general",
       isWebApp: window.edna.platform.isWebApp,
       customBufferLocation: !!this.initialSettings.bufferPath,
       systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
+      themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
       defaultFontSize: defaultFontSize,
       appVersion: "",
       currentNotePath: this.initialSettings.currentNotePath,
@@ -70,6 +74,11 @@ export default {
       if (event.key === "Escape") {
         this.$emit("closeSettings")
       }
+    },
+
+    updateTheme() {
+      console.log("updateTheme", this.themeSetting)
+      this.$emit("setTheme", this.themeSetting)
     },
 
     updateSettings() {
@@ -210,7 +219,7 @@ export default {
           </TabContent>
 
           <TabContent tab="appearance" :activeTab="activeTab">
-            <div class="row">
+            <div class="row flex">
               <div class="entry">
                 <h2>Gutters</h2>
                 <label>
@@ -222,6 +231,15 @@ export default {
                   <input type="checkbox" v-model="showFoldGutter" @change="updateSettings" />
                   Show fold gutter
                 </label>
+              </div>
+            </div>
+            <div class="row flex">
+              <div class="entry">
+                <h2>Theme</h2>
+                <select v-model="themeSetting" @change="updateTheme" class="width-[280px] border border-black">
+                  <option v-for="[theme, label] in themes" :selected="theme === themeSetting" :value="theme">{{ label }}
+                  </option>
+                </select>
               </div>
             </div>
             <div class="row flex">
@@ -265,8 +283,7 @@ export default {
       </div>
 
       <div class="bottom-bar">
-        <button @click="$emit('closeSettings')"
-          class="close border-gray-500 px-4 border hover:bg-gray-200">Close</button>
+        <button @click="$emit('closeSettings')" class="close border-gray-500 px-4 border">Close</button>
       </div>
     </div>
     <div class="shader"></div>
@@ -289,7 +306,7 @@ export default {
             bottom: 0
             right: 0
             background: rgba(0, 0, 0, 0.5)
-        
+
         .dialog
             box-sizing: border-box
             z-index: 2
@@ -337,6 +354,9 @@ export default {
                     overflow-y: auto
                     select
                         height: 22px
+                        +dark-mode
+                            background: #222
+                            color: #eee
                     .row
                         display: flex
                         .entry
@@ -390,4 +410,9 @@ export default {
                     background: #222
                 .close
                     height: 28px
+                    &:hover
+                      background-color: lightgray
+                      +dark-mode
+                          background: #333
+                          color: #eee
 </style>
