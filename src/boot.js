@@ -62,10 +62,6 @@ const Edna = {
   defaultFontFamily: "Hack",
   defaultFontSize: isMobileDevice ? 16 : 12,
 
-  buffer: {
-    onChangeCallback(callback) {},
-  },
-
   onOpenSettings(callback) {
     ipcRenderer.on(OPEN_SETTINGS_EVENT, callback);
   },

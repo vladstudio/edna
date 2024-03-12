@@ -96,13 +96,6 @@ export default {
       })
       rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
-
-      // set up buffer change listener
-      window.edna.buffer.onChangeCallback((event, content) => {
-        console.log("onChangeCallback")
-        diskContent = content
-        this.editor.setContent(content)
-      })
       this.$emit("docChanged")
     })
 
