@@ -1,7 +1,8 @@
 import { getHelp, getInitialContent } from "./initial-content";
 import { getOpenCount, incSaveCount, isDocDirty } from "./state";
+import { getSettings, setSetting } from "./settings";
 
-import { getSettings } from "./settings";
+import { getDateYYYYMMDDDay } from "./utils";
 
 export const scratchNotePath = "note:scratch";
 export const journalNotePath = "note:daily journal";
@@ -126,4 +127,30 @@ export async function saveCurrentNote(content) {
   // TODO: or do it in save.js?
   isDocDirty.value = false;
   incSaveCount();
+}
+
+export async function loadNote(notePath) {
+  console.log("openNote:", notePath);
+  if (isSystemNote(notePath)) {
+    await setSetting("currentNotePath", notePath);
+    return getSystemNoteContent(notePath);
+  }
+  let content = localStorage.getItem(notePath);
+  await setSetting("currentNotePath", notePath);
+  if (isJournalNote(notePath)) {
+    console.log("openNote:");
+    // create block for a current day
+    const dt = getDateYYYYMMDDDay();
+    console.log("openNote: dt:", dt);
+    if (content === null) {
+      content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
+      // console.log("openNote: content:", content)
+    } else {
+      if (!content.includes(dt)) {
+        content = "\n∞∞∞markdown\n" + "# " + dt + "\n" + content;
+        // console.log("openNote: content:", content)
+      }
+    }
+  }
+  return fixUpNote(content);
 }

@@ -2,7 +2,7 @@
 import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
 import { EditorState, EditorSelection } from "@codemirror/state"
-import { loadCurrentNote, saveCurrentNote, scratchNotePath } from '../notes.js'
+import { loadCurrentNote, loadNote, saveCurrentNote, scratchNotePath } from '../notes.js'
 
 export default {
   props: {
@@ -83,7 +83,7 @@ export default {
             return
           }
           diskContent = content
-          saveCurrentNotee(content)
+          saveCurrentNote(content)
         },
         keymap: this.keymap,
         emacsMetaKey: this.emacsMetaKey,
@@ -98,6 +98,7 @@ export default {
 
       // set up buffer change listener
       window.edna.buffer.onChangeCallback((event, content) => {
+        console.log("onChangeCallback")
         diskContent = content
         this.editor.setContent(content)
       })
@@ -189,11 +190,6 @@ export default {
       this.editor.focus();
     },
 
-    addNewBlockBeforeFirst() {
-      this.editor.addNewBlockBeforeFirst()
-      this.editor.focus();
-    },
-
     addNewBlockAfterCurrent() {
       this.editor.addNewBlockAfterCurrent()
       this.editor.focus();
@@ -244,7 +240,7 @@ export default {
       // TODO: we'll have a spurious save if there was a debounce, because
       // the debounce is still in progress, I think
       this.editor.saveFunction(this.editor.getContent())
-      window.edna.buffer.openNote(notePath).then((content) => {
+      loadNote(notePath).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // a bit magic: sometimes we open at the beginning, sometimes at the end

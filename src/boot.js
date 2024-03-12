@@ -63,32 +63,6 @@ const Edna = {
   defaultFontSize: isMobileDevice ? 16 : 12,
 
   buffer: {
-    async openNote(notePath) {
-      console.log("Heynote.buffer.openNote:", notePath);
-      if (isSystemNote(notePath)) {
-        await setSetting("currentNotePath", notePath);
-        return getSystemNoteContent(notePath);
-      }
-      let content = localStorage.getItem(notePath);
-      await setSetting("currentNotePath", notePath);
-      if (isJournalNote(notePath)) {
-        console.log("Heynote.buffer.openNote:");
-        // create block for a current day
-        const dt = getDateYYYYMMDDDay();
-        console.log("Heynote.buffer.openNote: dt:", dt);
-        if (content === null) {
-          content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
-          // console.log("Heynote.buffer.openNote: content:", content)
-        } else {
-          if (!content.includes(dt)) {
-            content = "\n∞∞∞markdown\n" + "# " + dt + "\n" + content;
-            // console.log("Heynote.buffer.openNote: content:", content)
-          }
-        }
-      }
-      return fixUpNote(content);
-    },
-
     onChangeCallback(callback) {},
   },
 
