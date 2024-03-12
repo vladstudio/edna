@@ -29,14 +29,12 @@ export default {
       isMac: window.edna.platform.isMac,
       showLineNumberGutter: this.initialSettings.showLineNumberGutter,
       showFoldGutter: this.initialSettings.showFoldGutter,
-      allowBetaVersions: this.initialSettings.allowBetaVersions,
       enableGlobalHotkey: this.initialSettings.enableGlobalHotkey,
       globalHotkey: this.initialSettings.globalHotkey,
       showInDock: this.initialSettings.showInDock,
       showInMenu: this.initialSettings.showInMenu,
       alwaysOnTop: this.initialSettings.alwaysOnTop,
       bracketClosing: this.initialSettings.bracketClosing,
-      autoUpdate: this.initialSettings.autoUpdate,
       bufferPath: this.initialSettings.bufferPath,
       fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
       fontSize: this.initialSettings.fontSize || defaultFontSize,
@@ -80,7 +78,6 @@ export default {
         showFoldGutter: this.showFoldGutter,
         keymap: this.keymap,
         emacsMetaKey: window.edna.platform.isMac ? this.metaKey : "alt",
-        allowBetaVersions: this.allowBetaVersions,
         enableGlobalHotkey: this.enableGlobalHotkey,
         globalHotkey: this.globalHotkey,
         showInDock: this.showInDock,
@@ -260,15 +257,6 @@ export default {
                 <label>
                   <input type="checkbox" v-model="autoUpdate" @change="updateSettings" />
                   Periodically check for new updates
-                </label>
-              </div>
-            </div>
-            <div class="row" v-if="!isWebApp">
-              <div class="entry">
-                <h2>Beta Versions</h2>
-                <label>
-                  <input type="checkbox" v-model="allowBetaVersions" @change="updateSettings" />
-                  Use beta versions of Heynote
                 </label>
               </div>
             </div>

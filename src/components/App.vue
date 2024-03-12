@@ -353,8 +353,7 @@ export default {
       @docChanged="docChanged" />
     <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
       :language="language" :languageAuto="languageAuto" :theme="theme" :themeSetting="themeSetting"
-      :autoUpdate="settings.autoUpdate" :allowBetaVersions="settings.allowBetaVersions" @toggleTheme="toggleTheme"
-      @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
+      @toggleTheme="toggleTheme" @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
       @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock" @openSettings="showSettings = true"
       @openHelp="openHelp" class="status" />
     <div class="overlay">

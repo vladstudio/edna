@@ -1,5 +1,4 @@
 <script>
-import UpdateStatusItem from './UpdateStatusItem.vue'
 import { LANGUAGES } from '../editor/languages.js'
 import { fmtSize } from '../utils'
 import { isDocDirty } from '../state'
@@ -18,12 +17,9 @@ export default {
     "languageAuto",
     "theme",
     "themeSetting",
-    "autoUpdate",
-    "allowBetaVersions",
   ],
 
   components: {
-    UpdateStatusItem,
   },
 
   setup() {
@@ -77,10 +73,6 @@ export default {
       return `Change language for current block (${this.cmdKey} + L)`
     },
 
-    updatesEnabled() {
-      return !!window.edna.autoUpdate
-    },
-
     changeThemeTitle() {
       return `Toggle system/light/dark theme. Current: ${this.themeSetting}`
     }
@@ -114,7 +106,6 @@ export default {
       :title="formatBlockTitle">
       <span class="icon icon-format"></span>
     </div>
-    <UpdateStatusItem v-if="updatesEnabled" :autoUpdate="autoUpdate" :allowBetaVersions="allowBetaVersions" />
     <div class="status-block theme clickable" @click="$emit('toggleTheme')" :title="changeThemeTitle">
       <span :class="'icon ' + themeSetting"></span>
     </div>
