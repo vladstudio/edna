@@ -9,6 +9,7 @@ export let platform = {
   isLinux: false,
 };
 
+/** @type {string} */
 export let platformName;
 
 const uaPlatform =

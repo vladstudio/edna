@@ -5,8 +5,8 @@ import Editor from './Editor.vue'
 import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
-import { stringSizeInUtf8Bytes } from '../utils'
-import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
+import { stringSizeInUtf8Bytes, platformName } from '../utils'
+import { fixUpNote, getNoteName, scratchNotePath } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -86,6 +86,12 @@ export default {
       return {
         display: this.showingMenu ? "block" : "none"
       }
+    },
+    helpURL() {
+      if (platformName === "mac") {
+        return "/help-mac.html"
+      }
+      return "/help-win.html"
     }
   },
 
@@ -392,7 +398,7 @@ export default {
     <form class="menu-container" ref="menuContainer" tabIndex="-1"></form>
   </div>
   <div v-if="showingHelp" class="fixed bottom-[28px] right-[28px] w-[80%] h-[80%] bg-yellow-50 shadow-md">
-    <iframe src="/help-win.html" width="100%" height="100%"></iframe>
+    <iframe :src="helpURL" width="100%" height="100%"></iframe>
   </div>
 </template>
 
