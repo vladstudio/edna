@@ -103,7 +103,7 @@ export default {
     <div @click="$emit('openSettings')" class="status-block settings clickable" title="Settings">
       <span class="icon icon-format"></span>
     </div>
-    <div @click="$emit('openHelp')" class="status-block clickable" title="Help">?</div>
+    <div @click="$emit('toggleHelp')" class="status-block clickable" title="Help">?</div>
   </div>
 </template>
 

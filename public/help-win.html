@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <meta name="color-scheme" content="light dark">
+    <title>About Heynote</title>
+    <link rel="stylesheet" href="help.css">
+  </head>
+  <body>
+    <div class="content">
+  <h1>Welcome to Edna</h1>
+<p>Edna is a scratchpad for quickly taking notes.</p>
+<p>This is a help note. To switch to a different note, press <code>Ctrl + O</code>.</p>
+<h1>Keyboard shortcuts</h1>
+<pre><code>Ctrl + O               Open, create or delete a note
+Ctrl + Enter           Add new block below the current block
+Alt + Enter            Add new block before the current block
+Ctrl + Shift + Enter   Add new block at the end of the buffer
+Alt + Shift + Enter    Add new block at the start of the buffer
+Ctrl + Alt + Enter     Split the current block at cursor position
+Ctrl + L               Change block language
+Ctrl + Down            Goto next block
+Ctrl + Up              Goto previous block
+Ctrl + A               Select all text in a note block. Press again to select the whole buffer
+Ctrl + Alt + Up/Down   Add additional cursor above/below
+Alt + Shift + F        Format block content (works for Go, JSON, JavaScript, HTML, CSS and Markdown)
+Alt + Shift + R        Execute block code (works for Go)
+Ctrl + F               Search / replace within a note
+</code></pre>
+<h1>Why Edna?</h1>
+<p>Edna is optimized for speed of note taking.</p>
+<p>We have keyboard shortcuts for quickly navigating between blocks and notes.</p>
+<p>We have syntax highlighting for markdown and multiple programming languages.</p>
+<h1>Blocks and notes</h1>
+<p>Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.</p>
+<p>Each block has its own type for syntax highlighting.</p>
+<p>You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.</p>
+<h1>Multiple notes</h1>
+<p>You can create multiple notes:</p>
+<ul>
+<li>default, always available note is 'scratch'. Press <code>Alt-1</code> to quickly switch to it</li>
+<li>press 'Ctrl + O' to switch to another note or create / delete a note</li>
+<li>or click on the note name in the bottom left corner</li>
+</ul>
+<p>It's up to you to how to divide your writing into blocks and notes.</p>
+<p>A <code>scratch</code> note is always available and cannot be deleted.</p>
+<h1>Daily journal</h1>
+<p>By default we create a 'daily journal' note.</p>
+<p>Daily journal is for keeping track of what you do daily.</p>
+<p>By convention each block represents a day.</p>
+<p>We recommend that first line is date in the format: <code>#YYYY-MM-DD &lt;day of week&gt;</code>.</p>
+<p>We automatically create a new block for each day when you open journal note.</p>
+<p>You can delete it if you don't want to use it.</p>
+<h1>Accessing notes on multiple devices</h1>
+<p>You can login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.</p>
+<h1>Privacy and security</h1>
+<p>Your notes are private and secure.</p>
+<p>Your notes are stored:</p>
+<ul>
+<li>locally in the browser if you don't login with GitHub</li>
+<li>encrypted with a password if you login with GitHub. The password is only stored in the browser.</li>
+</ul>
+<p>The code is <a href="">open source</a> so you can audit it.</p>
+<p>In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:</p>
+<ul>
+<li>[ ] Try out Edna</li>
+<li>[ ] Do laundry</li>
+</ul>
+<p>This is a Math block. Here, rows are evaluated as math expressions.</p>
+<p>radius = 5
+area = radius^2 * PI
+sqrt(9)</p>
+<p>It also supports some basic unit conversions, including currencies:</p>
+<p>13 inches in cm
+time = 3900 seconds to minutes
+time * 2</p>
+<p>1 EUR in USD</p>
+<p>// this is a javascript block
+let x = 5
+console.log(&quot;x is&quot;, x)</p>
+<h1>How I use Edna</h1>
+<ul>
+<li>I use <code>scratch</code> note for temporary notes</li>
+<li>I use <code>daily journal</code> for keeping track of what I do</li>
+<li>I have <code>todo</code> note for keeping track of short term todos</li>
+<li>I have a note for each project I work on</li>
+<li>I have a note for each programming language / technology I use. I keep code snippets and notes about it</li>
+<li>I have <code>ideas</code> note for jotting down ideas</li>
+</ul>
+<h1>More info</h1>
+<p>You can find more software by <a href="https://blog.kowalczyk.info/">me</a> on https://arslexis.io</p>
+<p>Edna is open source: https://github.com/kjk/edna</p>
+<p>To report a bug or request a feature, please use https://github.com/kjk/edna</p>
+<h1>Credits</h1>
+<p>Edna is a for of <a href="https://github.com/heyman/heynote">Heynote</a> with the following differences:</p>
+<ul>
+<li>web first (no desktop apps)</li>
+<li>multiple notes</li>
+<li>ability to access notes on multiple devices by storing them in GitHub Gists</li>
+</ul>
+<p>There's a spirit of Notational Velocity and Simplenote in Edna in how it allows quickly switching between notes.</p>
+<p>Edna is built upon <a href="https://codemirror.net/">CodeMirror</a>, <a href="https://vuejs.org/">Vue</a>, <a href="https://mathjs.org/">Math.js</a>, <a href="https://prettier.io/">Prettier</a> and other great open-source projects.</p>
+
+    </div>
+  </body>
+</html>

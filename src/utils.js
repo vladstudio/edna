@@ -1,3 +1,7 @@
+export function len(o) {
+  return o ? o.length : 0;
+}
+
 export let platform = {
   // default to windows
   isMac: false,
@@ -7,13 +11,10 @@ export let platform = {
 
 export let platformName;
 
-export function len(o) {
-  return o ? o.length : 0;
-}
-
 const uaPlatform =
-  // @ts-ignore
-  window.navigator?.userAgentData?.platform || window.navigator.platform;
+  typeof window !== "undefined"
+    ? window?.navigator?.userAgentData?.platform || window?.navigator.platform
+    : "Win";
 if (uaPlatform.indexOf("Win") !== -1) {
   platformName = "windows";
 } else if (uaPlatform.indexOf("Linux") !== -1) {
@@ -32,6 +33,13 @@ if (uaPlatform.indexOf("Win") !== -1) {
   platformName = "darwin";
 }
 platform.isWebApp = true;
+
+export function getModChar(platform = platformName) {
+  return platform === "darwin" ? "⌘" : "Ctrl";
+}
+export function getAltChar(platform = platformName) {
+  return platform === "darwin" ? "⌥" : "Alt";
+}
 
 const utf8Encoder = new TextEncoder(); // perf: a single globar encoder
 
@@ -59,7 +67,7 @@ export function fmtSize(n) {
     [1024, "kB"],
   ];
   for (const el of a) {
-    const size = el[0];
+    const size = Number(el[0]); // cast just to appease TS
     if (n >= size) {
       let s = (n / size).toFixed(2);
       return s.replace(".00", "") + " " + el[1];

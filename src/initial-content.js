@@ -1,8 +1,13 @@
-import { keyHelpStr, modChar } from "../src/key-helper";
+import { getModChar, platformName } from "./utils.js";
 
-import { platformName } from "../src/utils"
+import { keyHelpStr } from "./key-helper.js";
 
-export function getHelp() {
+export function getHelp(platfrom = platformName, forMarkdown = false) {
+  let modChar = getModChar(platfrom);
+  let keyHelp = keyHelpStr(platfrom);
+  if (forMarkdown) {
+    keyHelp = "```\n" + keyHelp + "\n```";
+  }
   const help = `
 ∞∞∞markdown
 # Welcome to Edna
@@ -14,7 +19,7 @@ This is a help note. To switch to a different note, press \`${modChar} + O\`.
 ∞∞∞markdown
 # Keyboard shortcuts
 
-${keyHelpStr(platformName)}
+${keyHelp}
 
 ∞∞∞markdown
 # Why Edna?
@@ -133,7 +138,7 @@ Edna is a for of [Heynote](https://github.com/heyman/heynote) with the following
 There's a spirit of Notational Velocity and Simplenote in Edna in how it allows quickly switching between notes.
 
 Edna is built upon [CodeMirror](https://codemirror.net/), [Vue](https://vuejs.org/), [Math.js](https://mathjs.org/), [Prettier](https://prettier.io/) and other great open-source projects.
-`
+`;
   return help;
 }
 
@@ -163,9 +168,11 @@ In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:
 - [ ] Try out Edna
 - [ ] Do laundry
 ∞∞∞text-a
-`
+`;
 
-  const initialDevContent = initialContent + `
+  const initialDevContent =
+    initialContent +
+    `
 ∞∞∞python-a
 # hmm
 def my_func():
@@ -249,7 +256,7 @@ Shopping list:
 - Milk
 - Eggs
 - Bread
-- Cheese`
+- Cheese`;
 
   const initialJournal = `# Daily Journal
 
@@ -266,7 +273,7 @@ If you don't care about daily journal, \`Ctrl + O\` and delete it.
 You can re-create it in the future as long as you name it 'daily journal'.
 `;
 
-const initialInbox = `# Inbox
+  const initialInbox = `# Inbox
 
 Inbox is for storing links to web pages you want to read later, videos you want to watch later etc.
 
@@ -277,5 +284,5 @@ If you don't care about inbox, \`Ctrl + O\` and delete it.
 You can re-create it in the future.
 `;
 
-  return {initialContent, initialDevContent, initialJournal, initialInbox}
+  return { initialContent, initialDevContent, initialJournal, initialInbox };
 }

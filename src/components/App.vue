@@ -7,7 +7,7 @@ import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes } from '../utils'
 import { fixUpNote, getNoteName, scratchNotePath, helpNotePath } from '../notes'
-import { modChar, altChar } from "../../src/key-helper"
+import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
@@ -45,6 +45,7 @@ export default {
       showSettings: false,
       settings: settings,
       showingMenu: false,
+      showingHelp: false,
     }
   },
 
@@ -98,6 +99,11 @@ export default {
           e.preventDefault()
         }
       }
+      if (e.key == "Escape") {
+        if (this.showingHelp) {
+          this.toggleHelp();
+        }
+      }
     },
 
     async storeNotesOnDisk() {
@@ -123,6 +129,8 @@ export default {
         return
       }
 
+      let modChar = getModChar();
+      let altChar = getAltChar();
       let theme = document.documentElement.getAttribute("theme")
       console.log("theme:", theme)
       let menuTheme = "default"
@@ -208,6 +216,12 @@ export default {
         items.push({
           label: "Store notes on disk",
           onClick: () => { this.storeNotesOnDisk() },
+          shortcut: "",
+        })
+
+        items.push({
+          label: "Show help",
+          onClick: () => { this.toggleHelp() },
           shortcut: "",
         })
       }
@@ -300,8 +314,11 @@ export default {
       this.$refs.editor.openNote(notePath)
     },
 
-    openHelp() {
-      this.$refs.editor.openNote(helpNotePath)
+    toggleHelp() {
+      this.showingHelp = !this.showingHelp
+      if (!this.showingHelp) {
+        this.$refs.editor.focus()
+      }
     },
 
     onCreateNote(name) {
@@ -362,7 +379,7 @@ export default {
     <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
       :language="language" :languageAuto="languageAuto" @openLanguageSelector="openLanguageSelector"
       @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
-      @openSettings="showSettings = true" @openHelp="openHelp" class="status" />
+      @openSettings="showSettings = true" @toggleHelp="toggleHelp" class="status" />
     <div class="overlay">
       <LanguageSelector v-if="showLanguageSelector" @selectLanguage="onSelectLanguage" @close="closeLanguageSelector" />
       <NoteSelector v-if="showNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote" @deleteNote="onDeleteNote"
@@ -373,6 +390,9 @@ export default {
   </div>
   <div style="mcStyle" class="menu-overlay">
     <form class="menu-container" ref="menuContainer" tabIndex="-1"></form>
+  </div>
+  <div v-if="showingHelp" class="fixed bottom-[28px] right-[28px] w-[80%] h-[80%] bg-yellow-50 shadow-md">
+    <iframe src="/help-win.html" width="100%" height="100%"></iframe>
   </div>
 </template>
 
