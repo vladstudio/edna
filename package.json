@@ -6,7 +6,6 @@
   "author": "Krzysztof Kowalczyk (https://blog.kowalczyk.info) based on Jonatan Heyman (https://heyman.info)",
   "license": "Commons Clause MIT",
   "private": true,
-  "type": "module",
   "keywords": [],
   "debug": {
     "env": {
