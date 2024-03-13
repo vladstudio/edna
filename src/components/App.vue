@@ -50,6 +50,10 @@ export default {
   },
 
   mounted() {
+    let editor = this.$refs.editor;
+    console.log("mounted: editor", editor)
+    console.log("ednaCurrentEditor:", window.ednaCurrentEditor)
+
     window.edna.themeMode.get().then((mode) => {
       this.theme = mode.computed
       this.themeSetting = mode.theme
