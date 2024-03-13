@@ -1,7 +1,7 @@
-import fs from "fs";
+import fs from "node:fs";
 import { getHelp } from "./initial-content.js";
 import markdownIt from "markdown-it";
-import path from "path";
+import path from "node:path";
 
 console.log("This is gen script");
 

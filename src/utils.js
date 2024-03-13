@@ -13,7 +13,9 @@ export let platformName;
 
 const uaPlatform =
   typeof window !== "undefined"
-    ? window?.navigator?.userAgentData?.platform || window?.navigator.platform
+    ? window?.navigator?.userAgentData?.platform ||
+      window?.navigator.platform ||
+      "Win" // in Deno there is window.navigator but no window.navigator.platform
     : "Win";
 if (uaPlatform.indexOf("Win") !== -1) {
   platformName = "windows";
