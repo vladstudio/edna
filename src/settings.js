@@ -1,6 +1,12 @@
 import { SETTINGS_CHANGE_EVENT } from "./constants";
 import { ipcRenderer } from "./ipcrenderer";
 
+export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
+
+export let defaultFontFamily = "Hack";
+// TODO: not sure mobile should be so big. Looked big on iPhone
+export let defaultFontSize = isMobileDevice ? 16 : 12;
+
 const settingsPath = "settings.json";
 
 export async function loadSettings() {

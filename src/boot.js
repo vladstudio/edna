@@ -18,8 +18,6 @@ mediaMatch.addEventListener("change", async (event) => {
   }
 });
 
-const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
-
 let currencyData = null;
 
 export async function boot() {
@@ -53,9 +51,6 @@ export async function boot() {
 }
 
 const Edna = {
-  defaultFontFamily: "Hack",
-  defaultFontSize: isMobileDevice ? 16 : 12,
-
   onOpenSettings(callback) {
     ipcRenderer.on(OPEN_SETTINGS_EVENT, callback);
   },

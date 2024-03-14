@@ -1,10 +1,12 @@
+import { defaultFontFamily, defaultFontSize } from "../../settings";
+
 import { EditorView } from "@codemirror/view";
 
 export function getFontTheme(fontFamily, fontSize) {
-  fontSize = fontSize || window.edna.defaultFontSize;
+  fontSize = fontSize || defaultFontSize;
   return EditorView.theme({
     ".cm-scroller": {
-      fontFamily: fontFamily || window.edna.defaultFontFamily,
+      fontFamily: fontFamily || defaultFontFamily,
       fontSize: fontSize + "px",
     },
   });

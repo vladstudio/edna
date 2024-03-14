@@ -2,11 +2,8 @@
 import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { setSettings } from "../../settings.js"
+import { defaultFontFamily, defaultFontSize, setSettings } from "../../settings"
 import { platform } from "../../utils"
-
-const defaultFontFamily = window.edna.defaultFontFamily
-const defaultFontSize = window.edna.defaultFontSize
 
 export default {
   props: {
@@ -55,8 +52,10 @@ export default {
   },
 
   async mounted() {
-    if (window.queryLocalFonts !== undefined) {
-      let localFonts = [... new Set((await window.queryLocalFonts()).map(f => f.family))].filter(f => f !== "Hack")
+    // @ts-ignore
+    let qlf = window.queryLocalFonts;
+    if (qlf !== undefined) {
+      let localFonts = [... new Set((await qlf()).map(f => f.family))].filter(f => f !== "Hack")
       localFonts = [...new Set(localFonts)].map(f => [f, f])
       this.systemFonts = [[defaultFontFamily, defaultFontFamily + " (default)"], ...localFonts]
     }
@@ -106,6 +105,7 @@ export default {
     },
 
     async selectBufferLocation() {
+      // TODO: this must fail because there's no selectLocation
       const path = await window.edna.buffer.selectLocation()
       if (path) {
         this.bufferPath = path

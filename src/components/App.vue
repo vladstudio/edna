@@ -243,7 +243,6 @@ export default {
         getContainer: () => {
           const o = this.$refs.menuContainer;
           // const o = document.body;
-          console.log("getContainer:", o)
           return o
         },
         onClose: (lastClicked) => {
