@@ -249,6 +249,7 @@ export default {
         onClose: (lastClicked) => {
           // console.log("onClose: lastClicked:", lastClicked)
           this.showingMenu = false
+          this.$refs.editor.focus()
         },
         items: items,
       });
