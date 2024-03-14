@@ -11,7 +11,7 @@ import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
-import { onOpenSettings, getSettings, onSettingsChange } from '../settings'
+import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
 import { incNoteCreateCount } from '../state'
 
 export default {
@@ -36,8 +36,8 @@ export default {
       selectionSize: 0,
       language: "plaintext",
       languageAuto: true,
-      theme: window.edna.themeMode.initial,
-      initialTheme: window.edna.themeMode.initial,
+      theme: themeMode.initial,
+      initialTheme: themeMode.initial,
       themeSetting: 'system',
       development: window.location.href.indexOf("dev=1") !== -1,
       showLanguageSelector: false,
@@ -50,7 +50,7 @@ export default {
   },
 
   mounted() {
-    window.edna.themeMode.get().then((mode) => {
+    themeMode.get().then((mode) => {
       this.theme = mode.computed
       this.themeSetting = mode.theme
     })
@@ -62,8 +62,8 @@ export default {
         document.documentElement.setAttribute("theme", theme)
       }
     }
-    onThemeChange(window.edna.themeMode.initial)
-    window.edna.themeMode.onChange(onThemeChange)
+    onThemeChange(themeMode.initial)
+    themeMode.onChange(onThemeChange)
     onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
       this.settings = settings;
@@ -77,7 +77,7 @@ export default {
   },
 
   beforeUnmount() {
-    window.edna.themeMode.removeListener()
+    themeMode.removeListener()
     window.removeEventListener("keydown", this.onKeyDown);
   },
 
@@ -154,26 +154,31 @@ export default {
         },
         {
           label: "And block after current",
+          // @ts-ignore
           onClick: () => { editor.addNewBlockAfterCurrent() },
           shortcut: `${modChar} + Enter`,
         },
         {
           label: "Add block before current",
+          // @ts-ignore
           onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
           shortcut: `${altChar} + Enter`,
         },
         {
           label: "Add block at end",
+          // @ts-ignore
           onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
           shortcut: `${modChar} + Shift + Enter`,
         },
         {
           label: "Add block at start",
+          // @ts-ignore
           onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
           shortcut: `${altChar} + Shift + Enter`,
         },
         {
           label: "Split block at cursor position",
+          // @ts-ignore
           onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
           shortcut: `${modChar} + ${altChar} + Enter`,
         },
@@ -184,6 +189,7 @@ export default {
         },
         {
           label: "Select all text in block",
+          // @ts-ignore
           onClick: () => { this.$refs.editor.selectAll() },
           shortcut: `${modChar} + A`,
         },
@@ -248,6 +254,7 @@ export default {
         onClose: (lastClicked) => {
           // console.log("onClose: lastClicked:", lastClicked)
           this.showingMenu = false
+          // @ts-ignore
           this.$refs.editor.focus()
         },
         items: items,
@@ -267,7 +274,7 @@ export default {
     },
 
     setTheme(newTheme) {
-      window.edna.themeMode.set(newTheme)
+      themeMode.set(newTheme)
       this.themeSetting = newTheme
     },
 
@@ -280,6 +287,7 @@ export default {
         newTheme = this.themeSetting === "system" ? "light" : (this.themeSetting === "light" ? "dark" : "system")
       }
       this.setTheme(newTheme)
+      // @ts-ignore
       this.$refs.editor.focus()
     },
 
@@ -297,11 +305,13 @@ export default {
 
     closeLanguageSelector() {
       this.showLanguageSelector = false
+      // @ts-ignore
       this.$refs.editor.focus()
     },
 
     onSelectLanguage(language) {
       this.showLanguageSelector = false
+      // @ts-ignore
       this.$refs.editor.setLanguage(language)
     },
 
@@ -311,18 +321,21 @@ export default {
 
     closeNoteSelector() {
       this.showNoteSelector = false
+      // @ts-ignore
       this.$refs.editor.focus()
       // console.log("closeNoteSelector")
     },
 
     onOpenNote(notePath) {
       this.showNoteSelector = false
+      // @ts-ignore
       this.$refs.editor.openNote(notePath)
     },
 
     toggleHelp() {
       this.showingHelp = !this.showingHelp
       if (!this.showingHelp) {
+        // @ts-ignore
         this.$refs.editor.focus()
       }
     },
@@ -346,6 +359,7 @@ export default {
       let settings = getSettings()
       if (notePath === settings.currentNotePath) {
         console.log("deleted current note, opening scratch note")
+        // @ts-ignore
         this.$refs.editor.openNote(scratchNotePath)
       }
       // must delete after openNote() because openNote() saves
@@ -357,15 +371,18 @@ export default {
     },
 
     docChanged() {
+      // @ts-ignore
       const c = this.$refs.editor.getContent() || ""
       this.docSize = stringSizeInUtf8Bytes(c);
     },
 
     formatCurrentBlock() {
+      // @ts-ignore
       this.$refs.editor.formatCurrentBlock()
     },
 
     runCurrentBlock() {
+      // @ts-ignore
       this.$refs.editor.runCurrentBlock()
     },
   },

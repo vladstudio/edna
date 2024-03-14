@@ -2,7 +2,7 @@
 import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { defaultFontFamily, defaultFontSize, setSettings, getVersion } from "../../settings"
+import { defaultFontFamily, defaultFontSize, setSettings, getVersion, selectLocation } from "../../settings"
 import { platform } from "../../utils"
 
 export default {
@@ -108,7 +108,7 @@ export default {
     async selectBufferLocation() {
       // TODO: this must fail because there's no selectLocation
       // @ts-ignore
-      const path = await window.edna.buffer.selectLocation()
+      const path = await selectLocation()
       if (path) {
         this.bufferPath = path
         this.updateSettings()

@@ -65,3 +65,42 @@ export function getVersion() {
   // @ts-ignore
   return __APP_VERSION__ + " (" + __GIT_HASH__ + ")";
 }
+
+const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
+let themeCallback = null;
+
+export const themeMode = {
+  set: (mode) => {
+    localStorage.setItem("theme", mode);
+    themeCallback(mode);
+    // console.log("set theme to", mode)
+  },
+  get: async () => {
+    const theme = localStorage.getItem("theme") || "system";
+    const systemTheme = mediaMatch.matches ? "dark" : "light";
+    return {
+      theme: theme,
+      computed: theme === "system" ? systemTheme : theme,
+    };
+  },
+  onChange: (callback) => {
+    themeCallback = callback;
+  },
+  removeListener() {
+    themeCallback = null;
+  },
+  initial: localStorage.getItem("theme") || "system",
+};
+
+mediaMatch.addEventListener("change", async (event) => {
+  if (themeCallback) {
+    themeCallback((await themeMode.get()).computed);
+  }
+});
+
+// only for desktop app to change directory where files are
+// TODO: can delete it because not needed and remove related Settings.vue code
+export async function selectLocation() {
+  //throw new Error("Not implemented.");
+  return "";
+}
