@@ -1,3 +1,24 @@
+import { startTimer } from "./utils";
+
+let currencyData = null;
+
+async function getCurrencyData() {
+  if (currencyData !== null) {
+    return currencyData;
+  }
+  // currencyData = JSON.parse(cachedCurrencies)
+  let durFn = startTimer();
+  const response = await fetch("/api/currency_rates.json", {
+    cache: "no-cache",
+  });
+  let s = await response.text();
+  // console.log(`currencyData: '${s}'`)
+  currencyData = JSON.parse(s);
+  // console.log("currencyData:", currencyData)
+  console.log("got currency data in ", durFn(), "ms");
+  return currencyData;
+}
+
 let currenciesLoaded = false;
 export async function loadCurrencies() {
   // @ts-ignore
@@ -5,7 +26,7 @@ export async function loadCurrencies() {
   let data;
   try {
     // @ts-ignore
-    data = await window.edna.getCurrencyData();
+    data = await getCurrencyData();
   } catch (e) {
     console.log("error getting currency data:", e);
     return;

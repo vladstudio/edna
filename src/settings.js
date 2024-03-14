@@ -1,4 +1,5 @@
-import { SETTINGS_CHANGE_EVENT } from "./constants";
+import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
+
 import { ipcRenderer } from "./ipcrenderer";
 
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
@@ -46,4 +47,21 @@ export async function setSetting(key, value) {
   let s = { ...settings };
   s[key] = value;
   await setSettings(s);
+}
+
+export function onOpenSettings(callback) {
+  ipcRenderer.on(OPEN_SETTINGS_EVENT, callback);
+}
+
+export function onSettingsChange(callback) {
+  console.log("onSettingsChange");
+  ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) =>
+    callback(settings)
+  );
+}
+
+export function getVersion() {
+  // __APP_VERSION__ and __GIT_HASH__ are set in vite.config.js
+  // @ts-ignore
+  return __APP_VERSION__ + " (" + __GIT_HASH__ + ")";
 }

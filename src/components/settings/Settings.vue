@@ -2,7 +2,7 @@
 import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { defaultFontFamily, defaultFontSize, setSettings } from "../../settings"
+import { defaultFontFamily, defaultFontSize, setSettings, getVersion } from "../../settings"
 import { platform } from "../../utils"
 
 export default {
@@ -61,9 +61,10 @@ export default {
     }
 
     window.addEventListener("keydown", this.onKeyDown);
+    // @ts-ignore
     this.$refs.keymapSelector.focus()
 
-    this.appVersion = await window.edna.getVersion()
+    this.appVersion = getVersion()
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.onKeyDown);
@@ -106,6 +107,7 @@ export default {
 
     async selectBufferLocation() {
       // TODO: this must fail because there's no selectLocation
+      // @ts-ignore
       const path = await window.edna.buffer.selectLocation()
       if (path) {
         this.bufferPath = path

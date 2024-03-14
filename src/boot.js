@@ -7,9 +7,6 @@ import {
 } from "../src/notes";
 import { getSettings, loadSettings, setSettings } from "./settings";
 
-import { ipcRenderer } from "./ipcrenderer";
-import { platform } from "../src/utils";
-
 const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 let themeCallback = null;
 mediaMatch.addEventListener("change", async (event) => {
@@ -17,8 +14,6 @@ mediaMatch.addEventListener("change", async (event) => {
     themeCallback((await Edna.themeMode.get()).computed);
   }
 });
-
-let currencyData = null;
 
 export async function boot() {
   let initialSettings = {
@@ -51,17 +46,6 @@ export async function boot() {
 }
 
 const Edna = {
-  onOpenSettings(callback) {
-    ipcRenderer.on(OPEN_SETTINGS_EVENT, callback);
-  },
-
-  onSettingsChange(callback) {
-    console.log("onSettingsChange");
-    ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) =>
-      callback(settings)
-    );
-  },
-
   themeMode: {
     set: (mode) => {
       localStorage.setItem("theme", mode);
@@ -83,26 +67,6 @@ const Edna = {
       themeCallback = null;
     },
     initial: localStorage.getItem("theme") || "system",
-  },
-
-  getCurrencyData: async () => {
-    if (currencyData !== null) {
-      return currencyData;
-    }
-    // currencyData = JSON.parse(cachedCurrencies)
-    const response = await fetch("/api/currency_rates.json", {
-      cache: "no-cache",
-    });
-    let s = await response.text();
-    // console.log(`currencyData: '${s}'`)
-    currencyData = JSON.parse(s);
-    // console.log("currencyData:", currencyData)
-    console.log("got currency data:");
-    return currencyData;
-  },
-
-  async getVersion() {
-    return __APP_VERSION__ + " (" + __GIT_HASH__ + ")";
   },
 };
 

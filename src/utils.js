@@ -12,12 +12,16 @@ export let platform = {
 /** @type {string} */
 export let platformName;
 
-const uaPlatform =
-  typeof window !== "undefined"
-    ? window?.navigator?.userAgentData?.platform ||
-      window?.navigator.platform ||
-      "Win" // in Deno there is window.navigator but no window.navigator.platform
-    : "Win";
+let uadPlat, navPlat;
+let nav = typeof window !== "undefined" ? window.navigator : null;
+if (nav) {
+  // @ts-ignore
+  uadPlat = nav.userAgentData?.platform;
+  navPlat = nav.platform;
+}
+// in Deno there is window.navigator but no window.navigator.platform so we default to "Win"
+// it doesn't matter, it's only so we can run gen.js script in deno because node refuses to run it
+const uaPlatform = uadPlat || navPlat || "Win";
 if (uaPlatform.indexOf("Win") !== -1) {
   platformName = "windows";
 } else if (uaPlatform.indexOf("Linux") !== -1) {
@@ -79,7 +83,10 @@ export function fmtSize(n) {
   return `${n} B`;
 }
 
-// returns a function that, when called, returns number of elapsed milliseconds
+/**
+ * returns a function that, when called, returns number of elapsed milliseconds
+ * @returns {function(): number}
+ */
 export function startTimer() {
   const timeStart = performance.now();
   return function () {

@@ -11,7 +11,7 @@ import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
-import { getSettings } from '../settings'
+import { onOpenSettings, getSettings, onSettingsChange } from '../settings'
 import { incNoteCreateCount } from '../state'
 
 export default {
@@ -64,13 +64,13 @@ export default {
     }
     onThemeChange(window.edna.themeMode.initial)
     window.edna.themeMode.onChange(onThemeChange)
-    window.edna.onSettingsChange((settings) => {
+    onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
       this.settings = settings;
       this.noteName = getNoteName(settings.currentNotePath)
       console.log("noteName", this.noteName)
     })
-    window.edna.onOpenSettings(() => {
+    onOpenSettings(() => {
       this.showSettings = true
     })
     window.addEventListener("keydown", this.onKeyDown)
