@@ -14,12 +14,6 @@ import { ipcRenderer } from "./ipcrenderer";
  * @property {NoteInfo} currentNoteInfo
  * @property {string} [fontFamily]
  * @property {number} [fontSize]
- * @property {boolean} [enableGlobalHotkey]
- * @property {string} [globalHotkey]
- * @property {boolean} [showInDock]
- * @property {boolean} [showInMenu]
- * @property {boolean} [alwaysOnTop]
- * @property {boolean} [autoUpdate]
  */
 
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;

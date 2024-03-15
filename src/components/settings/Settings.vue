@@ -1,5 +1,4 @@
 <script>
-import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
 import { defaultFontFamily, defaultFontSize, setSettings, getVersion } from "../../settings"
@@ -12,7 +11,6 @@ export default {
     initialTheme: String,
   },
   components: {
-    KeyboardHotkey,
     TabListItem,
     TabContent,
   },
@@ -28,11 +26,6 @@ export default {
       isMac: platform.isMac,
       showLineNumberGutter: this.initialSettings.showLineNumberGutter,
       showFoldGutter: this.initialSettings.showFoldGutter,
-      enableGlobalHotkey: this.initialSettings.enableGlobalHotkey,
-      globalHotkey: this.initialSettings.globalHotkey,
-      showInDock: this.initialSettings.showInDock,
-      showInMenu: this.initialSettings.showInMenu,
-      alwaysOnTop: this.initialSettings.alwaysOnTop,
       bracketClosing: this.initialSettings.bracketClosing,
       fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
       fontSize: this.initialSettings.fontSize || defaultFontSize,
@@ -40,7 +33,6 @@ export default {
       themeSetting: this.initialTheme,
 
       activeTab: "general",
-      isWebApp: platform.isWebApp,
       systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
       defaultFontSize: defaultFontSize,
@@ -86,20 +78,11 @@ export default {
         showFoldGutter: this.showFoldGutter,
         keymap: this.keymap,
         emacsMetaKey: platform.isMac ? this.metaKey : "alt",
-        enableGlobalHotkey: this.enableGlobalHotkey,
-        globalHotkey: this.globalHotkey,
-        showInDock: this.showInDock,
-        showInMenu: this.showInMenu || !this.showInDock,
-        alwaysOnTop: this.alwaysOnTop,
-        autoUpdate: this.autoUpdate,
         bracketClosing: this.bracketClosing,
         fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
         fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
         currentNoteInfo: this.currentNoteInfo,
       })
-      if (!this.showInDock) {
-        this.showInMenu = true
-      }
     },
 
   }
@@ -138,39 +121,6 @@ export default {
                   <option :selected="metaKey === 'meta'" value="meta">Command</option>
                   <option :selected="metaKey === 'alt'" value="alt">Option</option>
                 </select>
-              </div>
-            </div>
-            <div class="row" v-if="!isWebApp">
-              <div class="entry">
-                <h2>Global Keyboard Shortcut</h2>
-                <label class="mb-[14px]">
-                  <input type="checkbox" v-model="enableGlobalHotkey" @change="updateSettings" />
-                  Enable Global Hotkey
-                </label>
-
-                <KeyboardHotkey :disabled="!enableGlobalHotkey" v-model="globalHotkey" @change="updateSettings" />
-              </div>
-            </div>
-            <div class="row" v-if="!isWebApp">
-              <div class="entry">
-                <h2>Window / Application</h2>
-                <label v-if="isMac">
-                  <input type="checkbox" v-model="showInDock" @change="updateSettings" />
-                  Show in dock
-                </label>
-                <label>
-                  <input type="checkbox" :disabled="!showInDock" v-model="showInMenu" @change="updateSettings" />
-                  <template v-if="isMac">
-                    Show in menu bar
-                  </template>
-                  <template v-else>
-                    Show in system tray
-                  </template>
-                </label>
-                <label>
-                  <input type="checkbox" v-model="alwaysOnTop" @change="updateSettings" />
-                  Always on top
-                </label>
               </div>
             </div>
           </TabContent>
@@ -235,16 +185,6 @@ export default {
               <div class="entry">
                 <h2>Current Version</h2>
                 <b>{{ appVersion }}</b>
-              </div>
-            </div>
-
-            <div class="row" v-if="!isWebApp">
-              <div class="entry">
-                <h2>Auto Update</h2>
-                <label>
-                  <input type="checkbox" v-model="autoUpdate" @change="updateSettings" />
-                  Periodically check for new updates
-                </label>
               </div>
             </div>
           </TabContent>
@@ -349,27 +289,6 @@ export default {
                                     top: 2px
                                     left: -3px
 
-                        .buffer-location
-                            width: 100%
-                            .file-path
-                                display: flex
-                                > button
-                                    flex-shrink: 0
-                                    padding: 3px 8px
-                                .path
-                                    flex-grow: 1
-                                    margin-left: 10px
-                                    font-size: 12px
-                                    font-family: "Hack"
-                                    padding: 5px 8px
-                                    border-radius: 3px
-                                    background: #f1f1f1
-                                    color: #555
-                                    white-space: nowrap
-                                    overflow-x: auto
-                                    +dark-mode
-                                        background: #222
-                                        color: #aaa
             .bottom-bar
                 border-radius: 0 0 5px 5px
                 background: #eee
