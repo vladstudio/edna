@@ -78,7 +78,7 @@ export const isDev = location.host.startsWith("localhost");
  * returns null if we're storing in localStorage
  * @returns {FileSystemDirectoryHandle | null}
  */
-function getStorageDirHandle() {
+export function getStorageDirHandle() {
   return null;
 }
 export function createDefaultNotes() {
