@@ -4,7 +4,8 @@ function getKeyHelp(platform = platformName) {
   const modChar = getModChar(platform);
   const altChar = getAltChar(platform);
   return [
-    [`${modChar} + O`, "Open, create or delete a note"],
+    [`${modChar} + P`, "Open, create or delete a note"],
+    [`${altChar} + N`, "Create a new scratch note"],
     [`${modChar} + Enter`, "Add new block below the current block"],
     [`${altChar} + Enter`, "Add new block before the current block"],
     [`${modChar} + Shift + Enter`, "Add new block at the end of the buffer"],
@@ -30,6 +31,10 @@ function getKeyHelp(platform = platformName) {
   ];
 }
 
+/**
+ * @param {string} platform
+ * @returns {string}
+ */
 export function keyHelpStr(platform = platformName) {
   const keyHelp = getKeyHelp(platform);
   const keyMaxLength = keyHelp

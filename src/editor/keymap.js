@@ -47,6 +47,9 @@ export function keymapFromSpec(specs) {
   );
 }
 
+/**
+ * @param {import("./editor.js").EdnaEditor} editor
+ */
 export function heynoteKeymap(editor) {
   return keymapFromSpec([
     ["Mod-c", copyCommand(editor)],
@@ -54,6 +57,7 @@ export function heynoteKeymap(editor) {
     ["Mod-x", cutCommand(editor)],
     ["Tab", indentMore],
     ["Shift-Tab", indentLess],
+    ["Alt-n", () => editor.createNewScratchNote()],
     ["Alt-Shift-Enter", addNewBlockBeforeFirst],
     ["Mod-Shift-Enter", addNewBlockAfterLast],
     ["Alt-Enter", addNewBlockBeforeCurrent],

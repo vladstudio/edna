@@ -29,7 +29,7 @@ export async function boot() {
   // console.log("settings:", settings);
   // make sure currentNoteInfopoints to a valid note
   let currentNoteInfo = settings.currentNoteInfo;
-  let noteInfos = loadNoteInfos();
+  let noteInfos = await loadNoteInfos();
   for (let i = 0; i < noteInfos.length; i++) {
     if (isNoteInfoEqual(noteInfos[i], currentNoteInfo)) {
       currentNoteInfo = noteInfos[i];

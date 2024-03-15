@@ -12,6 +12,15 @@ import { getDateYYYYMMDDDay } from "./utils";
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
 
 /**
+ * @param {NoteInfo} a
+ * @param {NoteInfo} b
+ * @returns {boolean}
+ */
+export function isNoteInfoEqual(a, b) {
+  return a.path === b.path && a.name === b.name;
+}
+
+/**
  * @returns {NoteInfo}
  */
 export function getScratchNoteInfo() {
@@ -64,6 +73,14 @@ export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
 export const isDev = location.host.startsWith("localhost");
 
+/**
+ * if we're storing notes on disk, returns dir handle
+ * returns null if we're storing in localStorage
+ * @returns {FileSystemDirectoryHandle | null}
+ */
+function getStorageDirHandle() {
+  return null;
+}
 export function createDefaultNotes() {
   function createNote(notePath, content) {
     if (localStorage.getItem(notePath) === null) {
@@ -114,21 +131,35 @@ function loadNoteInfosLS() {
   return res;
 }
 
+// we must cache those because loadNoteInfos() is async and we can't always call it
+// note: there's a potential of getting out of sync
+/** @type {NoteInfo[]} */
+let latestNoteInfos = [];
+
 /**
- * @param {NoteInfo} a
- * @param {NoteInfo} b
- * @returns {boolean}
+ * @returns {Promise<NoteInfo[]>}
  */
-export function isNoteInfoEqual(a, b) {
-  return a.path === b.path && a.name === b.name;
+export async function loadNoteInfos() {
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    let res = loadNoteInfosLS();
+    latestNoteInfos = res;
+    return res;
+  }
+  throw new Error("unknown storage");
 }
 
 /**
- * @returns {NoteInfo[]}
+ * after creating / deleting / renaming a note we need to update
+ * cached latestNoteInfos
+ * @returns {Promise<NoteInfo[]>}
  */
-export function loadNoteInfos() {
-  // TODO: hanndle directory
-  return loadNoteInfosLS();
+async function updateLatestNoteInfos() {
+  return await loadNoteInfos();
+}
+
+export function getLatestNoteInfos() {
+  return latestNoteInfos;
 }
 
 // in case somehow a note doesn't start with the block header, fix it up
@@ -174,12 +205,17 @@ export function getSystemNoteInfos() {
   ];
 }
 
-export function getSystemNoteContent(notePath) {
-  console.log("getSystemNoteContent:", notePath);
-  if (notePath === "system:help") {
+/**
+ *
+ * @param {NoteInfo} noteInfo
+ * @returns {string}
+ */
+function getSystemNoteContent(noteInfo) {
+  console.log("getSystemNoteContent:", noteInfo);
+  if (noteInfo.path === "system:help") {
     return getHelp();
   }
-  return blockHdrPlainText + "error: unknown system note:" + notePath + "\n";
+  throw new Error("unknown system note:" + noteInfo);
 }
 
 export async function loadCurrentNote() {
@@ -188,8 +224,12 @@ export async function loadCurrentNote() {
   // console.log("Heynote:", settings);
   const noteInfo = settings.currentNoteInfo;
   // console.log("loadCurrentNote: from ", notePath);
-  const s = localStorage.getItem(noteInfo.path);
-  return fixUpNoteContent(s);
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    const s = localStorage.getItem(noteInfo.path);
+    return fixUpNoteContent(s);
+  }
+  throw new Error("unknown storage");
 }
 
 /**
@@ -204,8 +244,12 @@ export async function saveCurrentNote(content) {
     console.log("skipped saving system note", noteInfo.name);
     return;
   }
-  localStorage.setItem(noteInfo.path, content);
-  // TODO: or do it in save.js?
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    localStorage.setItem(noteInfo.path, content);
+  } else {
+    throw new Error("unknown storage");
+  }
   isDocDirty.value = false;
   incSaveCount();
 }
@@ -235,11 +279,16 @@ function createNoteWithNameLS(name) {
  * @returns {Promise<NoteInfo>}
  */
 export async function createNoteWithName(name) {
-  return createNoteWithNameLS(name);
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    let res = createNoteWithNameLS(name);
+    await updateLatestNoteInfos();
+    return res;
+  }
+  throw new Error("unknown storage");
 }
 
 /**
- *
  * @param {NoteInfo} noteInfo
  * @returns {Promise<string>}
  */
@@ -250,7 +299,13 @@ export async function loadNote(noteInfo) {
     return getSystemNoteContent(noteInfo);
   }
   let key = noteInfo.path;
-  let content = localStorage.getItem(key);
+  let content;
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    content = localStorage.getItem(key);
+  } else {
+    throw new Error("unknown storage");
+  }
   await setSetting("currentNoteInfo", noteInfo);
   if (isJournalNote(noteInfo)) {
     console.log("openNote:");
@@ -272,9 +327,34 @@ export async function loadNote(noteInfo) {
 
 /**
  * @param {NoteInfo} noteInfo
+ * @returns {Promise<NoteInfo[]>}
  */
 export async function deleteNote(noteInfo) {
-  // TODO: need layer of indirection when saving to disk
-  localStorage.removeItem(noteInfo.path);
-  // TODO: need to update list of notes?
+  let dh = getStorageDirHandle();
+  if (dh === null) {
+    localStorage.removeItem(noteInfo.path);
+    return await updateLatestNoteInfos();
+  }
+  throw new Error("unknown storage");
+}
+
+/**
+ * creates a new scratch-${N} note
+ * @returns {Promise<NoteInfo>}
+ */
+export async function createNewScratchNote() {
+  console.log("createNewScratchNote");
+  let noteInfos = await loadNoteInfos();
+  // generate a unique "scratch-${N}" note name
+  let scratchNames = noteInfos
+    .filter((ni) => ni.name.startsWith("scratch"))
+    .map((ni) => ni.name);
+  for (let i = 1; i < 99; i++) {
+    let scratchName = "scratch-" + i;
+    if (!scratchNames.includes(scratchName)) {
+      let noteInfo = createNoteWithName(scratchName);
+      return noteInfo;
+    }
+  }
+  return null;
 }

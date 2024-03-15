@@ -1,5 +1,5 @@
 <script>
-import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
+import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
 import { getScratchNoteInfo, isNoteInfoEqual, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
@@ -44,9 +44,9 @@ export default {
   },
 
   mounted() {
-    // @ts-ignore
-    this.$refs.editor.addEventListener("selectionChange", (e) => {
-      // console.log("selectionChange:", e)
+    let editor = /** @type {HTMLElement} */ (this.$refs.editor);
+    editor.addEventListener("selectionChange", (ev) => {
+      let e = /** @type {import("../editor/event.js").SelectionChangeEvent} */ (ev);
       this.$emit("cursorChange", {
         cursorLine: e.cursorLine,
         selectionSize: e.selectionSize,
@@ -55,19 +55,19 @@ export default {
       })
     })
 
-    // @ts-ignore
-    this.$refs.editor.addEventListener(LANGUAGE_SELECTOR_EVENT, (e) => {
-      this.$emit("openLanguageSelector")
+    editor.addEventListener(kEventOpenLanguageSelector, (e) => {
+      this.$emit(kEventOpenLanguageSelector)
     })
-    // @ts-ignore
-    this.$refs.editor.addEventListener(NOTE_SELECTOR_EVENT, (e) => {
-      this.$emit("openNoteSelector")
+    editor.addEventListener(kEventOpenNoteSelector, (e) => {
+      this.$emit(kEventOpenNoteSelector)
     })
-    // @ts-ignore
-    this.$refs.editor.addEventListener(DOC_CHANGED_EVENT, (e) => {
-      this.$emit("docChanged")
+    editor.addEventListener(kEventDocChanged, (e) => {
+      this.$emit(kEventDocChanged)
     })
-    // this.$refs.editor.addEventListener("contextmenu", (e) => {
+    editor.addEventListener(kEventCreateNewScratchNote, (e) => {
+      this.$emit(kEventCreateNewScratchNote)
+    })
+    // editor.addEventListener("contextmenu", (e) => {
     //     console.log("contextmenu:", e)
     //     e.preventDefault()
     //     this.$emit("contextMenu", e)

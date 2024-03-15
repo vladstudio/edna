@@ -1,5 +1,5 @@
 <script>
-import { loadNoteInfos, getSystemNoteInfos } from '../notes'
+import { getSystemNoteInfos, getLatestNoteInfos } from '../notes'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -29,7 +29,7 @@ function mkNoteInfo2(noteInfo) {
  * @returns {NoteInfo2[]}
  */
 function rebuildNotesInfo() {
-  const noteInfos = loadNoteInfos()
+  const noteInfos = getLatestNoteInfos()
   console.log("rebuildNotesInfo, notes", noteInfos.length)
   /** @tpe {NoteInfo2[]} */
   let res = [];
@@ -48,8 +48,9 @@ function rebuildNotesInfo() {
 
 export default {
   data() {
+    let items = rebuildNotesInfo()
     return {
-      items: rebuildNotesInfo(),
+      items: items,
       selected: 0,
       filter: "",
     }

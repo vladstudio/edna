@@ -6,7 +6,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
-import { createNoteWithName, deleteNote, getScratchNoteInfo, isNoteInfoEqual } from '../notes'
+import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, isNoteInfoEqual } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -157,7 +157,7 @@ export default {
       this.showingMenu = true
       let items = [
         {
-          label: "Open note",
+          label: "Open / create / delete note",
           onClick: () => { this.openNoteSelector() },
           shortcut: `${modChar} + P`,
         },
@@ -195,6 +195,11 @@ export default {
           label: "Select all text in block",
           onClick: () => { this.getEditor().selectAll() },
           shortcut: `${modChar} + A`,
+        },
+        {
+          label: "Create new scratch note",
+          onClick: () => { this.createNewScratchNote() },
+          shortcut: `${altChar} + N`,
         },
         // TODO: format if supports format
         // TODO: run  if supports run
@@ -299,6 +304,12 @@ export default {
       this.languageAuto = e.languageAuto
     },
 
+    async createNewScratchNote() {
+      let noteInfo = await createNewScratchNote()
+      this.onOpenNote(noteInfo)
+      // TODO: show a notification that allows to undo creation of the note
+    },
+
     openLanguageSelector() {
       this.showLanguageSelector = true
     },
@@ -345,6 +356,7 @@ export default {
       this.showNoteSelector = false
       let noteInfo = await createNoteWithName(name)
       this.onOpenNote(noteInfo)
+      // TODO: show a notification that allows to undo creation of the note
     },
 
     /**
@@ -360,7 +372,9 @@ export default {
       // must delete after openNote() because openNote() saves
       // current note
       await deleteNote(noteInfo)
+      this.getEditor().focus()
       console.log("deleted note", noteInfo)
+      // TODO: show a notification that allows to undo deletion of the note
     },
 
     docChanged() {
@@ -387,8 +401,8 @@ export default {
       :keymap="settings.keymap" :emacsMetaKey="settings.emacsMetaKey"
       :showLineNumberGutter="settings.showLineNumberGutter" :showFoldGutter="settings.showFoldGutter"
       :bracketClosing="settings.bracketClosing" :fontFamily="settings.fontFamily" :fontSize="settings.fontSize"
-      class="editor" ref="editor" @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
-      @docChanged="docChanged" />
+      class="editor" ref="editor" @openLanguageSelector="openLanguageSelector"
+      @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="docChanged" />
     <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
       :language="language" :languageAuto="languageAuto" @openLanguageSelector="openLanguageSelector"
       @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"

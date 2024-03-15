@@ -39,9 +39,10 @@ import { links } from "./links.js";
 import { markdown } from "@codemirror/lang-markdown";
 import { todoCheckboxPlugin } from "./todo-checkbox";
 
-export const LANGUAGE_SELECTOR_EVENT = "openLanguageSelector";
-export const NOTE_SELECTOR_EVENT = "openNoteSelector";
-export const DOC_CHANGED_EVENT = "docChanged";
+export const kEventOpenLanguageSelector = "openLanguageSelector";
+export const kEventOpenNoteSelector = "openNoteSelector";
+export const kEventDocChanged = "docChanged";
+export const kEventCreateNewScratchNote = "createNewScratchNote";
 
 function getKeymapExtensions(editor, keymap) {
   if (keymap === "emacs") {
@@ -82,7 +83,7 @@ export class EdnaEditor {
     let updateListenerExtension = EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         // console.log("docChanged:", update)
-        this.element.dispatchEvent(new Event(DOC_CHANGED_EVENT));
+        this.element.dispatchEvent(new Event(kEventDocChanged));
       }
     });
     this.createState = (content) => {
@@ -250,12 +251,17 @@ export class EdnaEditor {
     });
   }
 
+  createNewScratchNote() {
+    console.log("createNewScratchNote");
+    this.element.dispatchEvent(new Event(kEventCreateNewScratchNote));
+  }
+
   openLanguageSelector() {
-    this.element.dispatchEvent(new Event(LANGUAGE_SELECTOR_EVENT));
+    this.element.dispatchEvent(new Event(kEventOpenLanguageSelector));
   }
 
   openNoteSelector() {
-    this.element.dispatchEvent(new Event(NOTE_SELECTOR_EVENT));
+    this.element.dispatchEvent(new Event(kEventOpenNoteSelector));
   }
 
   setCurrentLanguage(lang, auto = false) {
