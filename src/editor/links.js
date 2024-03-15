@@ -30,7 +30,7 @@ export const links = ViewPlugin.fromClass(
     decorations: (instance) => instance.links,
     eventHandlers: {
       click: (e, view) => {
-        let target = e.target;
+        let target = /** @type {HTMLElement} */ (e.target);
         if (
           target.closest(".heynote-link")?.classList.contains("heynote-link") &&
           e[eventKeyModAttribute]

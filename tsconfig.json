@@ -16,7 +16,10 @@
     "jsx": "preserve",
     "lib": ["ESNext", "DOM"],
     "noEmit": true,
-    "allowJs": true
+    "allowJs": true,
+
+    // https://twitter.com/housecor/status/1768283265889136835
+    "noUncheckedIndexedAccess": true
   },
   "include": ["./src"],
   "references": [

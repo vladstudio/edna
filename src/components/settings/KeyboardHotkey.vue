@@ -47,7 +47,7 @@ export default {
       shift: false,
       alt: false,
       altGr: false,
-      super: false,
+      superKey: false,
       key: "",
       keys: keys,
     }
@@ -64,7 +64,7 @@ export default {
           this.shift = keys.includes("Shift")
           this.alt = keys.includes("Alt")
           this.altGr = !this.isMac && !this.isWindows && keys.includes("AltGr")
-          this.super = keys.includes("Super")
+          this.superKey = keys.includes("Super")
           this.key = keys[keys.length - 1]
         }
       }
@@ -99,7 +99,7 @@ export default {
       if (this.altGr) {
         acceleratorKeys.push("AltGr")
       }
-      if (this.super) {
+      if (this.superKey) {
         acceleratorKeys.push("Super")
       }
       if (this.key) {
@@ -140,7 +140,7 @@ export default {
       <span class="text">AltGr</span>
     </label>
     <label v-if="!isMac" class="modifier">
-      <input type="checkbox" v-model="super" @change="onChange" />
+      <input type="checkbox" v-model="superKey" @change="onChange" />
       <span class="text">Win</span>
     </label>
     <select v-model="key" @change="onChange">
