@@ -1,12 +1,18 @@
 import { ref } from "vue";
 
 /**
+ * @template T
+ * @typedef {import('vue').Ref<T>} Ref<T>
+ */
+
+/**
  * @typedef {Object} NoteInfo
  * @property {string} name
  * @property {string} path
  */
 
 export let isDocDirty = ref(false);
+/** @type {Ref<NoteInfo[]>} */
 export let noteInfos = ref([]);
 
 const keyOpenCount = "edna:openCount";

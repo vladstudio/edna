@@ -1,30 +1,68 @@
 import { getHelp, getInitialContent } from "./initial-content";
-import { getOpenCount, incSaveCount, isDocDirty } from "./state";
+import {
+  getOpenCount,
+  incNoteCreateCount,
+  incSaveCount,
+  isDocDirty,
+} from "./state";
 import { getSettings, setSetting } from "./settings";
 
 import { getDateYYYYMMDDDay } from "./utils";
 
-export const scratchNotePath = "note:scratch";
-export const journalNotePath = "note:daily journal";
-export const inboxNotePath = "note:inbox";
-export const helpNotePath = "system:help";
+/** @typedef {import("./state.js").NoteInfo} NoteInfo */
 
-export const blockHdrPlainTex = "\n∞∞∞text-a\n";
+/**
+ * @returns {NoteInfo}
+ */
+export function getScratchNoteInfo() {
+  /** @type {NoteInfo} */
+  const scratchNoteInfo = {
+    path: "note:scratch",
+    name: "scratch",
+  };
+  return scratchNoteInfo;
+}
+
+/**
+ * @returns {NoteInfo}
+ */
+export function getJournalNoteInfo() {
+  /** @type {NoteInfo} */
+  const journalNoteInfo = {
+    path: "note:daily journal",
+    name: "daily journal",
+  };
+  return journalNoteInfo;
+}
+
+/**
+ * @returns {NoteInfo}
+ */
+export function getInboxNoteInfo() {
+  /** @type {NoteInfo} */
+  const inboxNoteInfo = {
+    path: "note:inbox",
+    name: "inbox",
+  };
+  return inboxNoteInfo;
+}
+
+/**
+ * @returns {NoteInfo}
+ */
+export function getHelpNoteInfo() {
+  /** @type {NoteInfo} */
+  const helpNoteInfo = {
+    path: "system:help",
+    name: "help",
+  };
+  return helpNoteInfo;
+}
+
+export const blockHdrPlainText = "\n∞∞∞text-a\n";
 export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
 export const isDev = location.host.startsWith("localhost");
-
-// migrate "buffer" (Heynote) => "note:scratch"
-// TODO: probably not needed anymore because no-one has used Edna
-// when we used "buffer"
-export function migrateDefaultNote() {
-  const d = localStorage.getItem("buffer");
-  if (d !== null) {
-    localStorage.setItem(scratchNotePath, d);
-    localStorage.removeItem("buffer");
-    console.log("migrated default note from buffer to note:scratch");
-  }
-}
 
 export function createDefaultNotes() {
   function createNote(notePath, content) {
@@ -35,7 +73,7 @@ export function createDefaultNotes() {
   const { initialContent, initialDevContent, initialJournal, initialInbox } =
     getInitialContent();
   const s = isDev ? initialDevContent : initialContent;
-  createNote(scratchNotePath, s);
+  createNote(getScratchNoteInfo().path, s);
 
   // scratch note must always exist but the user can delete inbox / daily journal notes
   let n = getOpenCount();
@@ -43,58 +81,97 @@ export function createDefaultNotes() {
     // console.log("skipping creating inbox / journal because openCount:", n);
     return;
   }
-  createNote(journalNotePath, blockHdrMarkdown + initialJournal);
-  createNote(inboxNotePath, blockHdrMarkdown + initialInbox);
+  createNote(getJournalNoteInfo().path, blockHdrMarkdown + initialJournal);
+  createNote(getInboxNoteInfo().path, blockHdrMarkdown + initialInbox);
 }
 
-export function loadNotePaths() {
+/**
+ * @returns {NoteInfo[]}
+ */
+function loadNoteInfosLS() {
+  /**
+   * @param {string} notePath
+   * @returns {string}
+   */
+  function getNoteNameLS(notePath) {
+    const i = notePath.indexOf(":");
+    return notePath.substring(i + 1);
+  }
+
   const res = [];
   let nKeys = localStorage.length;
   for (let i = 0; i < nKeys; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("note:")) {
-      res.push(key);
+      /** @type {NoteInfo} */
+      let o = {
+        path: key,
+        name: getNoteNameLS(key),
+      };
+      res.push(o);
     }
   }
   return res;
 }
 
+/**
+ * @param {NoteInfo} a
+ * @param {NoteInfo} b
+ * @returns {boolean}
+ */
+export function isNoteInfoEqual(a, b) {
+  return a.path === b.path && a.name === b.name;
+}
+
+/**
+ * @returns {NoteInfo[]}
+ */
+export function loadNoteInfos() {
+  // TODO: hanndle directory
+  return loadNoteInfosLS();
+}
+
 // in case somehow a note doesn't start with the block header, fix it up
-export function fixUpNote(content) {
+export function fixUpNoteContent(s) {
   // console.log("fixUpNote:", content)
-  if (content === null) {
+  if (s === null) {
     // console.log("fixUpNote: null content")
-    return blockHdrPlainTex;
+    return blockHdrPlainText;
   }
-  if (!content.startsWith("\n∞∞∞")) {
-    content = blockHdrPlainTex + content;
+  if (!s.startsWith("\n∞∞∞")) {
+    s = blockHdrPlainText + s;
     // console.log('fixUpNote: added block to content', content)
   }
-  return content;
+  return s;
 }
 
-export function splitNotePath(notePath) {
-  const i = notePath.indexOf(":");
-  return [notePath.substring(0, i), notePath.substring(i + 1)];
-}
-
-export function getNoteName(notePath) {
-  console.log("getNoteName:", notePath);
-  const i = notePath.indexOf(":");
-  return notePath.substring(i + 1);
-}
-
-export function isSystemNote(notePath) {
+/**
+ * @param {NoteInfo} noteInfo
+ * @returns {boolean}
+ */
+export function isSystemNote(noteInfo) {
   // console.log("isSystemNote:", notePath)
-  return notePath.startsWith("system:");
+  return noteInfo.path.startsWith("system:");
 }
 
-export function isJournalNote(notePath) {
-  return notePath === journalNotePath;
+/**
+ * @param {NoteInfo} noteInfo
+ * @returns {boolean}
+ */
+export function isJournalNote(noteInfo) {
+  return noteInfo.name == "daily journal";
 }
 
-export function getSystemNotes() {
-  return ["system:help"];
+/**
+ * @returns {NoteInfo[]}
+ */
+export function getSystemNoteInfos() {
+  return [
+    {
+      path: "system:help",
+      name: "help",
+    },
+  ];
 }
 
 export function getSystemNoteContent(notePath) {
@@ -102,55 +179,102 @@ export function getSystemNoteContent(notePath) {
   if (notePath === "system:help") {
     return getHelp();
   }
-  return blockHdrPlainTex + "error: unknown system note:" + notePath + "\n";
+  return blockHdrPlainText + "error: unknown system note:" + notePath + "\n";
 }
 
 export async function loadCurrentNote() {
   // let self = Heynote;
   let settings = getSettings();
   // console.log("Heynote:", settings);
-  const notePath = settings.currentNotePath;
+  const noteInfo = settings.currentNoteInfo;
   // console.log("loadCurrentNote: from ", notePath);
-  const content = localStorage.getItem(notePath);
-  return fixUpNote(content);
+  const s = localStorage.getItem(noteInfo.path);
+  return fixUpNoteContent(s);
 }
 
+/**
+ * @param {string} content
+ * @returns
+ */
 export async function saveCurrentNote(content) {
   let settings = getSettings();
-  const notePath = settings.currentNotePath;
-  console.log("notePath:", notePath);
-  if (isSystemNote(notePath)) {
-    console.log("skipped saving system note");
+  const noteInfo = settings.currentNoteInfo;
+  console.log("notePath:", noteInfo);
+  if (isSystemNote(noteInfo)) {
+    console.log("skipped saving system note", noteInfo.name);
     return;
   }
-  localStorage.setItem(notePath, content);
+  localStorage.setItem(noteInfo.path, content);
   // TODO: or do it in save.js?
   isDocDirty.value = false;
   incSaveCount();
 }
 
-export async function loadNote(notePath) {
-  console.log("openNote:", notePath);
-  if (isSystemNote(notePath)) {
-    await setSetting("currentNotePath", notePath);
-    return getSystemNoteContent(notePath);
+/**
+ * @param {string} name
+ * @returns {NoteInfo}
+ */
+function createNoteWithNameLS(name) {
+  // TODO: do I need to sanitize name for localStorage keys?
+  const path = "note:" + name;
+  if (localStorage.getItem(path) == null) {
+    localStorage.setItem(path, fixUpNoteContent(null));
+    console.log("created note", name);
+    incNoteCreateCount();
+  } else {
+    console.log("note already exists", name);
   }
-  let content = localStorage.getItem(notePath);
-  await setSetting("currentNotePath", notePath);
-  if (isJournalNote(notePath)) {
+  return {
+    path: path,
+    name: name,
+  };
+}
+
+/**
+ * @param {string} name
+ * @returns {Promise<NoteInfo>}
+ */
+export async function createNoteWithName(name) {
+  return createNoteWithNameLS(name);
+}
+
+/**
+ *
+ * @param {NoteInfo} noteInfo
+ * @returns {Promise<string>}
+ */
+export async function loadNote(noteInfo) {
+  console.log("openNote:", noteInfo);
+  if (isSystemNote(noteInfo)) {
+    await setSetting("currentNoteInfo", noteInfo);
+    return getSystemNoteContent(noteInfo);
+  }
+  let key = noteInfo.path;
+  let content = localStorage.getItem(key);
+  await setSetting("currentNoteInfo", noteInfo);
+  if (isJournalNote(noteInfo)) {
     console.log("openNote:");
     // create block for a current day
     const dt = getDateYYYYMMDDDay();
     console.log("openNote: dt:", dt);
     if (content === null) {
-      content = "\n∞∞∞markdown\n" + "# " + dt + "\n";
+      content = blockHdrMarkdown + "# " + dt + "\n";
       // console.log("openNote: content:", content)
     } else {
       if (!content.includes(dt)) {
-        content = "\n∞∞∞markdown\n" + "# " + dt + "\n" + content;
+        content = blockHdrMarkdown + "# " + dt + "\n" + content;
         // console.log("openNote: content:", content)
       }
     }
   }
-  return fixUpNote(content);
+  return fixUpNoteContent(content);
+}
+
+/**
+ * @param {NoteInfo} noteInfo
+ */
+export async function deleteNote(noteInfo) {
+  // TODO: need layer of indirection when saving to disk
+  localStorage.removeItem(noteInfo.path);
+  // TODO: need to update list of notes?
 }

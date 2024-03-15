@@ -6,13 +6,14 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
-import { fixUpNote, getNoteName, scratchNotePath } from '../notes'
+import { createNoteWithName, deleteNote, getScratchNoteInfo, isNoteInfoEqual } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
-import { incNoteCreateCount } from '../state'
+
+/** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
 export default {
   components: {
@@ -29,7 +30,7 @@ export default {
     let settings = getSettings()
     // console.log("setting:", settings)
     return {
-      noteName: getNoteName(settings.currentNotePath),
+      noteName: settings.currentNoteInfo.name,
       line: 1,
       column: 1,
       docSize: 0,
@@ -67,7 +68,7 @@ export default {
     onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
       this.settings = settings;
-      this.noteName = getNoteName(settings.currentNotePath)
+      this.noteName = settings.currentNoteInfo.name
       console.log("noteName", this.noteName)
     })
     onOpenSettings(() => {
@@ -96,6 +97,14 @@ export default {
   },
 
   methods: {
+    /**
+     * @returns {Editor}
+    */
+    getEditor() {
+      // @ts-ignore
+      return this.$refs.editor
+    },
+
     onKeyDown(e) {
       // hack: stop Ctrl + O unless it originates from code mirror (because then it
       // triggers NoteSelector.vue)
@@ -154,32 +163,27 @@ export default {
         },
         {
           label: "And block after current",
-          // @ts-ignore
-          onClick: () => { editor.addNewBlockAfterCurrent() },
+          onClick: () => { this.getEditor().addNewBlockAfterCurrent() },
           shortcut: `${modChar} + Enter`,
         },
         {
           label: "Add block before current",
-          // @ts-ignore
-          onClick: () => { this.$refs.editor.addNewBlockBeforeCurrent() },
+          onClick: () => { this.getEditor().addNewBlockBeforeCurrent() },
           shortcut: `${altChar} + Enter`,
         },
         {
           label: "Add block at end",
-          // @ts-ignore
-          onClick: () => { this.$refs.editor.addNewBlockAfterLast() },
+          onClick: () => { this.getEditor().addNewBlockAfterLast() },
           shortcut: `${modChar} + Shift + Enter`,
         },
         {
           label: "Add block at start",
-          // @ts-ignore
-          onClick: () => { this.$refs.editor.addNewBlockBeforeFirst() },
+          onClick: () => { this.getEditor().addNewBlockBeforeFirst() },
           shortcut: `${altChar} + Shift + Enter`,
         },
         {
           label: "Split block at cursor position",
-          // @ts-ignore
-          onClick: () => { this.$refs.editor.insertNewBlockAtCursor() },
+          onClick: () => { this.getEditor().insertNewBlockAtCursor() },
           shortcut: `${modChar} + ${altChar} + Enter`,
         },
         {
@@ -189,8 +193,7 @@ export default {
         },
         {
           label: "Select all text in block",
-          // @ts-ignore
-          onClick: () => { this.$refs.editor.selectAll() },
+          onClick: () => { this.getEditor().selectAll() },
           shortcut: `${modChar} + A`,
         },
         // TODO: format if supports format
@@ -198,17 +201,17 @@ export default {
         // TODO: set plain text, markdown
         // {
         //     label: "Goto next block",
-        //     onClick: () => { this.$refs.editor.gotoNextBlock() },
+        //     onClick: () => {this.getEditor().gotoNextBlock() },
         //     shortcut: `${modChar} + Down`,
         // },
         // {
         //     label: "Goto previous block",
-        //     onClick: () => { this.$refs.editor.gotoPreviousBlock() },
+        //     onClick: () => {this.getEditor().gotoPreviousBlock() },
         //     shortcut: `${modChar} + Up`,
         // },
         // {
         //     label: "Format",
-        //     onClick: () => { this.$refs.editor.formatCurrentBlock() }
+        //     onClick: () => {this.getEditor().formatCurrentBlock() }
         // },
         // {
         //     label: "Execute block code",
@@ -254,8 +257,7 @@ export default {
         onClose: (lastClicked) => {
           // console.log("onClose: lastClicked:", lastClicked)
           this.showingMenu = false
-          // @ts-ignore
-          this.$refs.editor.focus()
+          this.getEditor().focus()
         },
         items: items,
       });
@@ -269,8 +271,7 @@ export default {
     },
     closeSettings() {
       this.showSettings = false
-      // @ts-ignore
-      this.$refs.editor.focus()
+      this.getEditor().focus()
     },
 
     setTheme(newTheme) {
@@ -287,8 +288,7 @@ export default {
         newTheme = this.themeSetting === "system" ? "light" : (this.themeSetting === "light" ? "dark" : "system")
       }
       this.setTheme(newTheme)
-      // @ts-ignore
-      this.$refs.editor.focus()
+      this.getEditor().focus()
     },
 
     onCursorChange(e) {
@@ -305,14 +305,12 @@ export default {
 
     closeLanguageSelector() {
       this.showLanguageSelector = false
-      // @ts-ignore
-      this.$refs.editor.focus()
+      this.getEditor().focus()
     },
 
     onSelectLanguage(language) {
       this.showLanguageSelector = false
-      // @ts-ignore
-      this.$refs.editor.setLanguage(language)
+      this.getEditor().setLanguage(language)
     },
 
     openNoteSelector() {
@@ -321,69 +319,61 @@ export default {
 
     closeNoteSelector() {
       this.showNoteSelector = false
-      // @ts-ignore
-      this.$refs.editor.focus()
+      this.getEditor().focus()
       // console.log("closeNoteSelector")
     },
 
-    onOpenNote(notePath) {
+    /**
+     * @param {NoteInfo} noteInfo
+     */
+    onOpenNote(noteInfo) {
       this.showNoteSelector = false
-      // @ts-ignore
-      this.$refs.editor.openNote(notePath)
+      this.getEditor().openNote(noteInfo)
     },
 
     toggleHelp() {
       this.showingHelp = !this.showingHelp
       if (!this.showingHelp) {
-        // @ts-ignore
-        this.$refs.editor.focus()
+        this.getEditor().focus()
       }
     },
 
-    onCreateNote(name) {
+    /**
+     * @param {string} name
+     */
+    async onCreateNote(name) {
       this.showNoteSelector = false
-      // TODO: do I need to sanitize name for localStorage keys?
-      const notePath = "note:" + name
-      if (localStorage.getItem(notePath) == null) {
-        localStorage.setItem(notePath, fixUpNote(null))
-        console.log("created note", name)
-        incNoteCreateCount();
-      } else {
-        console.log("note already exists", name)
-      }
-      this.onOpenNote(notePath)
+      let noteInfo = await createNoteWithName(name)
+      this.onOpenNote(noteInfo)
     },
 
-    onDeleteNote(notePath) {
+    /**
+     * @param {NoteInfo} noteInfo
+     */
+    async onDeleteNote(noteInfo) {
       this.showNoteSelector = false
       let settings = getSettings()
-      if (notePath === settings.currentNotePath) {
+      if (isNoteInfoEqual(noteInfo, settings.currentNoteInfo)) {
         console.log("deleted current note, opening scratch note")
-        // @ts-ignore
-        this.$refs.editor.openNote(scratchNotePath)
+        this.getEditor().openNote(getScratchNoteInfo())
       }
       // must delete after openNote() because openNote() saves
       // current note
-      // TODO: could pass a "doNotSave" flag
-      // TODO: need layer of indirection when saving to disk
-      localStorage.removeItem(notePath)
-      console.log("deleted note", notePath)
+      await deleteNote(noteInfo)
+      console.log("deleted note", noteInfo)
     },
 
     docChanged() {
-      // @ts-ignore
-      const c = this.$refs.editor.getContent() || ""
+      const c = this.getEditor().getContent() || ""
       this.docSize = stringSizeInUtf8Bytes(c);
     },
 
     formatCurrentBlock() {
-      // @ts-ignore
-      this.$refs.editor.formatCurrentBlock()
+      this.getEditor().formatCurrentBlock()
     },
 
     runCurrentBlock() {
-      // @ts-ignore
-      this.$refs.editor.runCurrentBlock()
+      this.getEditor().runCurrentBlock()
     },
   },
 }

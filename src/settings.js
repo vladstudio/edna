@@ -2,6 +2,27 @@ import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
 
 import { ipcRenderer } from "./ipcrenderer";
 
+/** @typedef {import("./state.js").NoteInfo} NoteInfo */
+
+/**
+ * @typedef {Object} Settings
+ * @property {string} keymap
+ * @property {string} emacsMetaKey
+ * @property {boolean} showLineNumberGutter
+ * @property {boolean} showFoldGutter
+ * @property {boolean} bracketClosing
+ * @property {NoteInfo} currentNoteInfo
+ * @property {string} [fontFamily]
+ * @property {number} [fontSize]
+ * @property {boolean} [enableGlobalHotkey]
+ * @property {string} [globalHotkey]
+ * @property {boolean} [showInDock]
+ * @property {boolean} [showInMenu]
+ * @property {boolean} [alwaysOnTop]
+ * @property {boolean} [autoUpdate]
+ * @property {string} [bufferPath] // TODO: remove
+ */
+
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 
 export let defaultFontFamily = "Hack";
@@ -16,20 +37,28 @@ export async function loadSettings() {
 }
 
 /**
- * @param {Object} settings
+ * @param {Settings} settings
  */
 async function saveSettings(settings) {
+  // TODO: save on disk if using disks
   localStorage.setItem(settingsPath, JSON.stringify(settings));
 }
 
 // current settings, kept in sync with persisted settings
 // shouldn't be modified directly but via setSetting)
+/** @type {Settings} */
 let settings;
 
+/**
+ * @returns {Settings}
+ */
 export function getSettings() {
   return settings;
 }
 
+/**
+ * @param {Settings} newSettings
+ */
 export async function setSettings(newSettings) {
   // console.log("setSettings:", newSettings);
   await saveSettings(newSettings);
@@ -60,6 +89,9 @@ export function onSettingsChange(callback) {
   );
 }
 
+/**
+ * @returns {string}
+ */
 export function getVersion() {
   // __APP_VERSION__ and __GIT_HASH__ are set in vite.config.js
   // @ts-ignore

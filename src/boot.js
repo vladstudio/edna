@@ -1,20 +1,21 @@
-import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "../src/constants";
 import {
   createDefaultNotes,
-  loadNotePaths,
-  migrateDefaultNote,
-  scratchNotePath,
+  getScratchNoteInfo,
+  isNoteInfoEqual,
+  loadNoteInfos,
 } from "../src/notes";
 import { getSettings, loadSettings, setSettings } from "./settings";
 
+/** @typedef {import("./settings").Settings} Settings */
 export async function boot() {
+  /** @type {Settings} */
   let initialSettings = {
     keymap: "default",
     emacsMetaKey: "alt",
     showLineNumberGutter: true,
     showFoldGutter: true,
     bracketClosing: false,
-    currentNotePath: scratchNotePath,
+    currentNoteInfo: getScratchNoteInfo(),
   };
 
   let s = await loadSettings();
@@ -22,17 +23,19 @@ export async function boot() {
   s = Object.assign(initialSettings, s);
   await setSettings(s);
 
-  migrateDefaultNote();
   createDefaultNotes();
 
   let settings = getSettings();
   // console.log("settings:", settings);
-  // make sure currentNotePath points to a valid note
-  let currentNotePath = settings.currentNotePath;
-  let notePaths = loadNotePaths();
-  if (!notePaths.includes(currentNotePath)) {
-    currentNotePath = scratchNotePath;
-    initialSettings.currentNotePath = currentNotePath;
+  // make sure currentNoteInfopoints to a valid note
+  let currentNoteInfo = settings.currentNoteInfo;
+  let noteInfos = loadNoteInfos();
+  for (let i = 0; i < noteInfos.length; i++) {
+    if (isNoteInfoEqual(noteInfos[i], currentNoteInfo)) {
+      currentNoteInfo = noteInfos[i];
+      initialSettings.currentNoteInfo = currentNoteInfo;
+      break;
+    }
   }
-  console.log("currentNotePath:", currentNotePath);
+  console.log("currentNoteInfo:", currentNoteInfo);
 }

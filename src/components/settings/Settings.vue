@@ -47,7 +47,7 @@ export default {
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
       defaultFontSize: defaultFontSize,
       appVersion: "",
-      currentNotePath: this.initialSettings.currentNotePath,
+      currentNoteInfo: this.initialSettings.currentNoteInfo,
     }
   },
 
@@ -98,7 +98,7 @@ export default {
         bufferPath: this.bufferPath,
         fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
         fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
-        currentNotePath: this.currentNotePath,
+        currentNoteInfo: this.currentNoteInfo,
       })
       if (!this.showInDock) {
         this.showInMenu = true

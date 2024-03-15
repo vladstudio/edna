@@ -1,9 +1,10 @@
 <script>
 import { DOC_CHANGED_EVENT, EdnaEditor, LANGUAGE_SELECTOR_EVENT, NOTE_SELECTOR_EVENT } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { EditorState, EditorSelection } from "@codemirror/state"
-import { loadCurrentNote, loadNote, saveCurrentNote, scratchNotePath } from '../notes.js'
+import { getScratchNoteInfo, isNoteInfoEqual, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
+
+/** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
 export default {
   props: {
@@ -228,19 +229,22 @@ export default {
       return this.editor.getContent()
     },
 
-    openNote(notePath) {
-      console.log("openNote:", notePath)
+    /**
+     * @param {NoteInfo} noteInfo
+     */
+    openNote(noteInfo) {
+      console.log("openNote:", noteInfo)
       // saving is debounced so ensure we save before opening a new note
       // TODO: we'll have a spurious save if there was a debounce, because
       // the debounce is still in progress, I think
       this.editor.saveFunction(this.editor.getContent())
-      loadNote(notePath).then((content) => {
+      loadNote(noteInfo).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // a bit magic: sometimes we open at the beginning, sometimes at the end
         // TODO: remember selection in memory so that we can restore during a session
         let pos = 0;
-        if (notePath === scratchNotePath) {
+        if (isNoteInfoEqual(noteInfo, getScratchNoteInfo())) {
           pos = content.length
         }
         this.editor.view.dispatch({
