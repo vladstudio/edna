@@ -20,7 +20,6 @@ import { ipcRenderer } from "./ipcrenderer";
  * @property {boolean} [showInMenu]
  * @property {boolean} [alwaysOnTop]
  * @property {boolean} [autoUpdate]
- * @property {string} [bufferPath] // TODO: remove
  */
 
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
@@ -129,10 +128,3 @@ mediaMatch.addEventListener("change", async (event) => {
     themeCallback((await themeMode.get()).computed);
   }
 });
-
-// only for desktop app to change directory where files are
-// TODO: can delete it because not needed and remove related Settings.vue code
-export async function selectLocation() {
-  //throw new Error("Not implemented.");
-  return "";
-}

@@ -2,7 +2,7 @@
 import KeyboardHotkey from "./KeyboardHotkey.vue"
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { defaultFontFamily, defaultFontSize, setSettings, getVersion, selectLocation } from "../../settings"
+import { defaultFontFamily, defaultFontSize, setSettings, getVersion } from "../../settings"
 import { platform } from "../../utils"
 
 export default {
@@ -34,7 +34,6 @@ export default {
       showInMenu: this.initialSettings.showInMenu,
       alwaysOnTop: this.initialSettings.alwaysOnTop,
       bracketClosing: this.initialSettings.bracketClosing,
-      bufferPath: this.initialSettings.bufferPath,
       fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
       fontSize: this.initialSettings.fontSize || defaultFontSize,
       // theme: this.initialSettings.theme,
@@ -42,7 +41,6 @@ export default {
 
       activeTab: "general",
       isWebApp: platform.isWebApp,
-      customBufferLocation: !!this.initialSettings.bufferPath,
       systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
       defaultFontSize: defaultFontSize,
@@ -95,7 +93,6 @@ export default {
         alwaysOnTop: this.alwaysOnTop,
         autoUpdate: this.autoUpdate,
         bracketClosing: this.bracketClosing,
-        bufferPath: this.bufferPath,
         fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
         fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
         currentNoteInfo: this.currentNoteInfo,
@@ -105,22 +102,6 @@ export default {
       }
     },
 
-    async selectBufferLocation() {
-      // TODO: this must fail because there's no selectLocation
-      // @ts-ignore
-      const path = await selectLocation()
-      if (path) {
-        this.bufferPath = path
-        this.updateSettings()
-      }
-    },
-
-    onCustomBufferLocationChange() {
-      if (!this.customBufferLocation) {
-        this.bufferPath = ""
-        this.updateSettings()
-      }
-    },
   }
 }
 </script>
@@ -190,21 +171,6 @@ export default {
                   <input type="checkbox" v-model="alwaysOnTop" @change="updateSettings" />
                   Always on top
                 </label>
-              </div>
-            </div>
-            <div class="row" v-if="!isWebApp">
-              <div class="entry buffer-location">
-                <h2>Buffer File Path</h2>
-                <label class="mb-[14px]">
-                  <input type="checkbox" v-model="customBufferLocation" @change="onCustomBufferLocationChange" />
-                  Use custom buffer file location
-                </label>
-                <div class="file-path">
-                  <button :disabled="!customBufferLocation" @click="selectBufferLocation">Select
-                    Directory</button>
-                  <span class="path" v-show="customBufferLocation && bufferPath">{{ bufferPath
-                    }}</span>
-                </div>
               </div>
             </div>
           </TabContent>
