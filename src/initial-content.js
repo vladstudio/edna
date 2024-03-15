@@ -130,7 +130,7 @@ To report a bug or request a feature, please use https://github.com/kjk/edna
 ∞∞∞markdown
 # Credits
 
-Edna is a for of [Heynote](https://github.com/heyman/heynote) with the following differences:
+Edna is a fork of [Heynote](https://github.com/heyman/heynote) with the following differences:
 * web first (no desktop apps)
 * multiple notes
 * ability to access notes on multiple devices by storing them in GitHub Gists
