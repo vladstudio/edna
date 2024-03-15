@@ -7,8 +7,9 @@ import { ref } from "vue";
 
 /**
  * @typedef {Object} NoteInfo
- * @property {string} name
  * @property {string} path
+ * @property {string} name
+ * @property {string} [nameLC]
  */
 
 export let isDocDirty = ref(false);

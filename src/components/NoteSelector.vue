@@ -1,43 +1,32 @@
 <script>
-import { getSystemNoteInfos, getLatestNoteInfos } from '../notes'
+import { getSystemNoteInfos, getLatestNoteInfos, isSystemNote } from '../notes'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
 /**
  * @param {NoteInfo} noteInfo
- * @returns {NoteInfo2}
- */
-
-/**
- * @typedef {Object} NoteInfo2
- * @property {string} nameLC
- * @property {NoteInfo} noteInfo
- */
-
-/**
- * @param {NoteInfo} noteInfo
- * @returns {NoteInfo2}
+ * @returns {NoteInfo}
  */
 function mkNoteInfo2(noteInfo) {
-  return {
-    "noteInfo": noteInfo,
-    "nameLC": noteInfo.name.toLowerCase(),
+  if (noteInfo.nameLC === undefined) {
+    noteInfo.nameLC = noteInfo.name.toLowerCase()
   }
+  return noteInfo
 }
 
 /**
- * @returns {NoteInfo2[]}
+ * @returns {NoteInfo[]}
  */
 function rebuildNotesInfo() {
   const noteInfos = getLatestNoteInfos()
   console.log("rebuildNotesInfo, notes", noteInfos.length)
-  /** @tpe {NoteInfo2[]} */
+  /** @type {NoteInfo[]} */
   let res = [];
   for (let noteInfo of noteInfos) {
     res.push(mkNoteInfo2(noteInfo))
   }
   res.sort((a, b) => {
-    return a.noteInfo.name.localeCompare(b.noteInfo.name)
+    return a.name.localeCompare(b.name)
   })
   const systemNotes = getSystemNoteInfos()
   for (let ni of systemNotes) {
@@ -70,6 +59,25 @@ export default {
         return noteInfo.nameLC.indexOf(nameLC) !== -1
       })
     },
+    /**
+     * @returns {NoteInfo | null}
+     */
+    selectedNote() {
+      if (this.filteredItems.length === 0) {
+        return null
+      }
+      if (this.selected >= 0 && this.selected < this.filteredItems.length) {
+        return this.filteredItems[this.selected]
+      }
+      return null;
+    },
+    selectedName() {
+      let selected = this.selectedNote
+      if (selected === null) {
+        return ""
+      }
+      return selected.name
+    },
     canOpenSelected() {
       if (this.filteredItems.length === 0) {
         return false
@@ -86,7 +94,7 @@ export default {
         return false
       }
       for (let item of this.items) {
-        if (item.noteInfo.name === name) {
+        if (item.name === name) {
           return false
         }
       }
@@ -101,17 +109,16 @@ export default {
       }
       return !this.canOpenSelected;
     },
-    // TODO: filter help note
     canDeleteSelected() {
       if (!this.canOpenSelected) {
         return false
       }
       const item = this.filteredItems[this.selected]
       // can't delete scratch note
-      if (item.noteInfo.name === "scratch") {
+      if (item.name === "scratch") {
         return false
       }
-      if (item.noteInfo.path.startsWith("system:")) {
+      if (isSystemNote(item)) {
         return false
       }
       return true
@@ -165,18 +172,21 @@ export default {
         }
         const selected = this.filteredItems[this.selected]
         if (selected) {
-          this.openNote(selected.noteInfo)
+          this.openNote(selected)
         } else {
           this.$emit("close")
         }
       } else if (this.isCtrlDelete(event)) {
-        const selected = this.filteredItems[this.selected]
+        event.preventDefault()
+        if (!this.canDeleteSelected) {
+          return
+        }
+        const selected = this.selectedNote;
         if (selected) {
-          this.deleteNote(selected.noteInfo)
+          this.deleteNote(selected)
         } else {
           this.$emit("close")
         }
-        event.preventDefault()
       } else if (event.key === "Escape") {
         // TODO: we also call onFocusOut() and emit "close" event twice
         this.$emit("close")
@@ -225,16 +235,16 @@ export default {
     <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
       <ul class="items">
-        <li v-for="item, idx in filteredItems" :key="item.noteInfo.path" :class="idx === selected ? 'selected' : ''"
-          @click="openNote(item.noteInfo)" ref="item">
-          {{ item.noteInfo.name }}
+        <li v-for="item, idx in filteredItems" :key="item.path" :class="idx === selected ? 'selected' : ''"
+          @click="openNote(item)" ref="item">
+          {{ item.name }}
         </li>
       </ul>
-      <hr v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
+      <hr class="mt-1 mb-1 border-gray-400" v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
       <div class="kbd-grid">
         <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
         <div v-if="canOpenSelected">open note</div>
-        <div v-if="canOpenSelected" class="bold truncate">{{ cleanNoteName(filteredItems[selected].noteInfo.name) }}
+        <div v-if="canOpenSelected" class="bold truncate">{{ cleanNoteName(selectedName) }}
         </div>
 
         <div v-if="canCreateWithEnter"><span class="kbd">Enter</span></div>
@@ -245,11 +255,11 @@ export default {
         <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
         <div v-if="showDelete" class="red">delete note</div>
         <div v-if="showDelete && canDeleteSelected" class="bold truncate">{{
-      cleanNoteName(filteredItems[selected].noteInfo.name)
+      cleanNoteName(selectedName)
     }}
         </div>
-        <div v-if="showDelete && !canDeleteSelected">can't delete <span class="bold truncate">{{
-      cleanNoteName(filteredItems[selected].noteInfo.name) }}</span></div>
+        <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="bold truncate">{{
+      cleanNoteName(selectedName) }}</span></span></div>
 
         <div><span class="kbd">Esc</span></div>
         <div>dismiss</div>
