@@ -365,7 +365,7 @@ func mkServeFileOptions(fsys fs.FS) *hutil.ServeFileOptions {
 		FS:                   fsys,
 		DirPrefix:            "dist/",
 		LongLivedURLPrefixes: []string{"/assets/"},
-		//ServeCompressed:  true,
+		ServeCompressed:      true,
 	}
 }
 
