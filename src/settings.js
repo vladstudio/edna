@@ -1,7 +1,7 @@
 import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
 import { fsReadTextFile, fsWriteTextFile } from "./fileutil";
 
-import { getStorageDirHandle } from "./notes";
+import { getStorageFS } from "./notes";
 import { ipcRenderer } from "./ipcrenderer";
 
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
@@ -71,7 +71,7 @@ export function getSettings() {
  */
 export async function setSettings(newSettings) {
   // console.log("setSettings:", newSettings);
-  let dh = getStorageDirHandle();
+  let dh = getStorageFS();
   await saveSettings(newSettings, dh);
   settings = newSettings;
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);

@@ -46,11 +46,32 @@ export function isNoteInfoEqual(a, b) {
   return a.path === b.path && a.name === b.name;
 }
 
+const kEdnaFileExt = ".edna.txt";
+const kEdnaEncrFileExt = ".edna.encr.txt";
+
+/**
+ * @param {string} name
+ * @returns {boolean}
+ */
+function isEdnaFile(name) {
+  return name.endsWith(kEdnaFileExt) || name.endsWith(kEdnaEncrFileExt);
+}
+
+function notePathFromNameFS(name, encrypted = false) {
+  if (encrypted) {
+    return name + kEdnaEncrFileExt;
+  }
+  return name + kEdnaFileExt;
+}
+
 // TODO: take encyrption into account
-export function notePathFromName(name) {
-  let dh = getStorageDirHandle();
+export function notePathFromName(name, encrypted = false) {
+  let dh = getStorageFS();
   if (dh) {
-    return name + ".edna.txt";
+    return notePathFromNameFS(name, encrypted);
+  }
+  if (encrypted) {
+    return "note.encr:" + name;
   }
   return "note:" + name;
 }
@@ -67,25 +88,29 @@ function mkNoteInfoFromName(name) {
   };
 }
 
+export const kSractNoteName = "scratch";
+export const kDailyJournalNoteName = "daily journal";
+export const kInboxNoteName = "inbox";
+
 /**
  * @returns {NoteInfo}
  */
 export function getScratchNoteInfo() {
-  return mkNoteInfoFromName("scratch");
+  return mkNoteInfoFromName(kSractNoteName);
 }
 
 /**
  * @returns {NoteInfo}
  */
 export function getJournalNoteInfo() {
-  return mkNoteInfoFromName("daily journal");
+  return mkNoteInfoFromName(kDailyJournalNoteName);
 }
 
 /**
  * @returns {NoteInfo}
  */
 export function getInboxNoteInfo() {
-  return mkNoteInfoFromName("inbox");
+  return mkNoteInfoFromName(kInboxNoteName);
 }
 
 /**
@@ -105,42 +130,51 @@ export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
 export const isDev = location.host.startsWith("localhost");
 
-// set if we store
+// is set if we store notes on disk, null if in localStorage
 /** @type {FileSystemDirectoryHandle | null} */
-let storageDirHandle = null;
+let storageFS = null;
 
 /**
  * if we're storing notes on disk, returns dir handle
  * returns null if we're storing in localStorage
  * @returns {FileSystemDirectoryHandle | null}
  */
-export function getStorageDirHandle() {
-  return storageDirHandle;
+export function getStorageFS() {
+  return storageFS;
 }
 
-export function setStorageDirHandle(dh) {
-  storageDirHandle = dh;
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ */
+export function setStorageFS(dh) {
+  storageFS = dh;
 }
 
-export function createDefaultNotes() {
-  function createNote(notePath, content) {
-    if (localStorage.getItem(notePath) === null) {
-      localStorage.setItem(notePath, content);
+/**
+ * @param {NoteInfo[]} existingNoteInfos
+ * @returns
+ */
+export function createDefaultNotes(existingNoteInfos) {
+  function createIfNotExists(name, md) {
+    if (existingNoteInfos.some((ni) => ni.name === name)) {
+      console.log("skipping creating note", name);
+      return;
     }
+    let content = blockHdrMarkdown + md;
+    createNoteWithName(name, content);
   }
   const { initialContent, initialDevContent, initialJournal, initialInbox } =
     getInitialContent();
   const s = isDev ? initialDevContent : initialContent;
-  createNote(getScratchNoteInfo().path, s);
-
+  createIfNotExists(kSractNoteName, s);
   // scratch note must always exist but the user can delete inbox / daily journal notes
   let n = getOpenCount();
   if (n > 1) {
     // console.log("skipping creating inbox / journal because openCount:", n);
     return;
   }
-  createNote(getJournalNoteInfo().path, blockHdrMarkdown + initialJournal);
-  createNote(getInboxNoteInfo().path, blockHdrMarkdown + initialInbox);
+  createIfNotExists(kDailyJournalNoteName, initialJournal);
+  createIfNotExists(kInboxNoteName, initialInbox);
 }
 
 /**
@@ -179,31 +213,35 @@ function loadNoteInfosLS() {
 /** @type {NoteInfo[]} */
 let latestNoteInfos = [];
 
-// strip .enda.txt or .edna.encr.txt
 function nameFromFileName(name) {
-  let pos = name.lastIndexOf(".edna.");
-  throwIf(pos === -1, `invalid file name '${name}'`);
-  return name.substring(0, pos);
+  // strip edna file extensions
+  if (name.endsWith(kEdnaFileExt)) {
+    return name.substring(0, name.length - kEdnaFileExt.length);
+  }
+  if (name.endsWith(kEdnaEncrFileExt)) {
+    return name.substring(0, name.length - kEdnaEncrFileExt.length);
+  }
+  throwIf(true, `invalid file name '${name}'`);
 }
 
-async function loadNoteInfosDirHandle(dh = null) {
+async function loadNoteInfosFS(dh = null) {
   if (dh === null) {
-    dh = getStorageDirHandle();
+    dh = getStorageFS();
     throwIf(dh === null, "unknown storage");
   }
   let skipEntryFn = (entry, dir) => {
     if (entry.kind === "directory") {
       return true;
     }
-    let name = entry.name.toLowerCase();
-    return !(name.endsWith(".edna.txt") || name.endsWith(".edna.encr.txt"));
+    let name = entry.name;
+    return !isEdnaFile(name);
   };
   let fsEntries = await readDir(dh, skipEntryFn);
   console.log("files", fsEntries);
 
   /** @type {NoteInfo[]} */
   let res = [];
-  for (let e of fsEntries) {
+  for (let e of fsEntries.dirEntries) {
     let fileName = e.name;
     let name = nameFromFileName(fileName);
     let o = {
@@ -220,13 +258,13 @@ async function loadNoteInfosDirHandle(dh = null) {
  * @returns {Promise<NoteInfo[]>}
  */
 export async function loadNoteInfos() {
-  let dh = getStorageDirHandle();
+  let dh = getStorageFS();
   if (dh === null) {
     let res = loadNoteInfosLS();
     latestNoteInfos = res;
     return res;
   }
-  return await loadNoteInfosDirHandle(dh);
+  return await loadNoteInfosFS(dh);
 }
 
 /**
@@ -247,11 +285,11 @@ export function fixUpNoteContent(s) {
   // console.log("fixUpNote:", content)
   if (s === null) {
     // console.log("fixUpNote: null content")
-    return blockHdrPlainText;
+    return blockHdrMarkdown;
   }
   if (!s.startsWith("\n∞∞∞")) {
-    s = blockHdrPlainText + s;
-    // console.log('fixUpNote: added block to content', content)
+    s = blockHdrMarkdown + s;
+    console.log("fixUpNote: added header to content", s);
   }
   return s;
 }
@@ -328,7 +366,7 @@ export async function loadCurrentNote() {
   // console.log("Heynote:", settings);
   const noteInfo = settings.currentNoteInfo;
   // console.log("loadCurrentNote: from ", notePath);
-  let dh = getStorageDirHandle();
+  let dh = getStorageFS();
   let s;
   if (dh === null) {
     s = localStorage.getItem(noteInfo.path);
@@ -350,7 +388,7 @@ export async function saveCurrentNote(content) {
     console.log("skipped saving system note", noteInfo.name);
     return;
   }
-  let dh = getStorageDirHandle();
+  let dh = getStorageFS();
   if (dh === null) {
     localStorage.setItem(noteInfo.path, content);
   } else {
@@ -362,16 +400,18 @@ export async function saveCurrentNote(content) {
 
 /**
  * @param {string} name
+ * @param {string} content
  * @returns {Promise<NoteInfo>}
  */
-export async function createNoteWithName(name) {
-  let dh = getStorageDirHandle();
-  let content = fixUpNoteContent(null);
+export async function createNoteWithName(name, content = null) {
+  let dh = getStorageFS();
+  content = fixUpNoteContent(content);
   if (dh === null) {
     // TODO: do I need to sanitize name for localStorage keys?
     const path = "note:" + name;
+    // TODO: should it happen that note already exists?
     if (localStorage.getItem(path) == null) {
-      localStorage.setItem(path, fixUpNoteContent(null));
+      localStorage.setItem(path, content);
       console.log("created note", name);
       incNoteCreateCount();
     } else {
@@ -385,7 +425,7 @@ export async function createNoteWithName(name) {
     };
   }
 
-  let fileName = name + ".edna.txt";
+  let fileName = notePathFromName(name);
   // TODO: check if exists
   await fsWriteTextFile(dh, fileName, content);
   incNoteCreateCount();
@@ -420,23 +460,39 @@ function autoCreateDayInJournal(noteInfo, content) {
 
 /**
  * @param {NoteInfo} noteInfo
+ * @returns {string}
+ */
+function loadNoteLS(noteInfo) {
+  return localStorage.getItem(noteInfo.path);
+}
+
+async function loadNoteFS(dh, noteInfo) {
+  return await fsReadTextFile(dh, noteInfo.path);
+}
+
+/**
+ * @param {NoteInfo} noteInfo
+ * @returns {Promise<string>}
+ */
+async function loadNoteRaw(noteInfo) {
+  console.log("loadNoteRaw:", noteInfo);
+  if (isSystemNote(noteInfo)) {
+    return getSystemNoteContent(noteInfo);
+  }
+  let dh = getStorageFS();
+  if (dh === null) {
+    return loadNoteLS(noteInfo);
+  }
+  return await loadNoteFS(dh, noteInfo);
+}
+
+/**
+ * @param {NoteInfo} noteInfo
  * @returns {Promise<string>}
  */
 export async function loadNote(noteInfo) {
-  console.log("openNote:", noteInfo);
-  if (isSystemNote(noteInfo)) {
-    await setSetting("currentNoteInfo", noteInfo);
-    return getSystemNoteContent(noteInfo);
-  }
-  let content;
-  let dh = getStorageDirHandle();
-  if (dh === null) {
-    let key = noteInfo.path;
-    content = localStorage.getItem(key);
-  } else {
-    let fileName = noteInfo.path;
-    content = await fsReadTextFile(dh, fileName);
-  }
+  console.log("loadNote:", noteInfo);
+  let content = await loadNoteRaw(noteInfo);
   await setSetting("currentNoteInfo", noteInfo);
   content = autoCreateDayInJournal(noteInfo, content);
   return fixUpNoteContent(content);
@@ -447,7 +503,7 @@ export async function loadNote(noteInfo) {
  * @returns {Promise<NoteInfo[]>}
  */
 export async function deleteNote(noteInfo) {
-  let dh = getStorageDirHandle();
+  let dh = getStorageFS();
   if (dh === null) {
     let key = noteInfo.path;
     localStorage.removeItem(key);
@@ -487,11 +543,17 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
       break;
     }
   }
-  let content = localStorage.getItem(noteInfo.path);
+  let content = loadNoteLS(noteInfo);
   if (!noteInfoOnDisk) {
     // didn't find a note with the same name so create
-    let fileName = name + ".edna.txt";
+    let fileName = notePathFromNameFS(name);
     await fsWriteTextFile(dh, fileName, content);
+    console.log(
+      "migrateNote: created new note",
+      fileName,
+      "from note with name",
+      name
+    );
     return;
   }
   let diskContent = await fsReadTextFile(dh, noteInfoOnDisk.path);
@@ -501,7 +563,7 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
   }
   // if the content is different, create a new note with a different name
   let newName = pickUniqueNameInNoteInfos(name, diskNoteInfos);
-  let fileName = newName + ".edna.txt";
+  let fileName = notePathFromName(newName);
   await fsWriteTextFile(dh, fileName, content);
   console.log(
     "migrateNote: created new note",
@@ -516,7 +578,7 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
  */
 export async function switchToStoringNotesOnDisk(dh) {
   console.log("switchToStoringNotesOnDisk");
-  let diskNoteInfos = await loadNoteInfosDirHandle(dh);
+  let diskNoteInfos = await loadNoteInfosFS(dh);
 
   // migrate notes
   for (let ni of latestNoteInfos) {
@@ -532,14 +594,22 @@ export async function switchToStoringNotesOnDisk(dh) {
     }
     localStorage.removeItem(ni.path);
   }
-  // migrate settings
-  let settings = await loadSettings(null);
-  await saveSettings(settings, dh);
-  storageDirHandle = dh;
 
+  storageFS = dh;
   // save in indexedDb so that it persists across sessions
   await dbSetDirHandle(dh);
-
   let noteInfos = await updateLatestNoteInfos();
+
+  // migrate settings, update currentNoteInfo
+  let settings = await loadSettings(null);
+  let currNote = settings.currentNoteInfo;
+  let newCurrNote = noteInfos.filter((ni) => ni.name === currNote.name)[0];
+  if (newCurrNote) {
+    settings.currentNoteInfo = newCurrNote;
+  } else {
+    settings.currentNoteInfo = getScratchNoteInfo();
+  }
+  await saveSettings(settings, dh);
+
   return noteInfos;
 }

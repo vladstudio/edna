@@ -6,7 +6,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
-import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, getStorageDirHandle, isNoteInfoEqual, switchToStoringNotesOnDisk } from '../notes'
+import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, getStorageFS, isNoteInfoEqual, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -127,7 +127,11 @@ export default {
         return;
       }
       await switchToStoringNotesOnDisk(dh);
-      // TODO: open a note from the new storage
+      let settings = getSettings();
+      let noteInfo = settings.currentNoteInfo
+      console.log("storeNotesOnDisk: noteInfo:", noteInfo)
+      this.getEditor().openNote(noteInfo)
+      this.getEditor().focus()
     },
 
     onContextMenu(e) {
@@ -224,7 +228,7 @@ export default {
         // },
       ]
 
-      if (supportsFileSystem && (getStorageDirHandle() == null)) {
+      if (supportsFileSystem && (getStorageFS() == null)) {
         items.push({
           label: "Store notes on disk",
           onClick: () => { this.storeNotesOnDisk() },
