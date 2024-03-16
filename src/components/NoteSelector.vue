@@ -38,6 +38,7 @@ function rebuildNotesInfo() {
 export default {
   data() {
     let items = rebuildNotesInfo()
+    console.log("NoteSelector data", items)
     return {
       items: items,
       selected: 0,

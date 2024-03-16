@@ -259,12 +259,15 @@ async function loadNoteInfosFS(dh = null) {
  */
 export async function loadNoteInfos() {
   let dh = getStorageFS();
+  /** @type {NoteInfo[]} */
+  let res = [];
   if (dh === null) {
-    let res = loadNoteInfosLS();
-    latestNoteInfos = res;
-    return res;
+    res = loadNoteInfosLS();
+  } else {
+    res = await loadNoteInfosFS(dh);
   }
-  return await loadNoteInfosFS(dh);
+  latestNoteInfos = res;
+  return res;
 }
 
 /**
