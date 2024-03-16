@@ -1,8 +1,9 @@
 <script>
 import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
+import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, isSystemNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
+import { getSettings } from '../settings.js'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -95,6 +96,10 @@ export default {
         fontFamily: this.fontFamily,
         fontSize: this.fontSize,
       })
+      let settings = getSettings();
+      let name = settings.currentNoteName;
+      let readOnly = isSystemNoteName(name)
+      this.editor.setReadOnly(readOnly);
       rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
       this.$emit("docChanged")

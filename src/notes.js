@@ -384,6 +384,10 @@ function pickUniqueNameInNoteInfos(base, noteInfos) {
   return pickUniqueName(base, names);
 }
 
+/**
+ * @param {string} name
+ * @returns {NoteInfo}
+ */
 export function findNoteInfoByName(name) {
   for (let ni of latestNoteInfos) {
     if (ni.name === name) {
@@ -392,22 +396,6 @@ export function findNoteInfoByName(name) {
   }
   throwIf(true, "note not found:" + name);
   return null;
-}
-
-export async function loadCurrentNote() {
-  // let self = Heynote;
-  let settings = getSettings();
-  // console.log("Heynote:", settings);
-  const noteInfo = findNoteInfoByName(settings.currentNoteName);
-  // console.log("loadCurrentNote: from ", notePath);
-  let dh = getStorageFS();
-  let s;
-  if (dh === null) {
-    s = localStorage.getItem(noteInfo.path);
-  } else {
-    s = await fsReadTextFile(dh, noteInfo.path);
-  }
-  return fixUpNoteContent(s);
 }
 
 /**
@@ -422,7 +410,7 @@ export async function saveCurrentNote(content) {
     console.log("skipped saving system note", name);
     return;
   }
-  const noteInfo = findNoteInfoByName();
+  const noteInfo = findNoteInfoByName(name);
   let dh = getStorageFS();
   if (dh === null) {
     localStorage.setItem(noteInfo.path, content);
@@ -519,6 +507,15 @@ async function loadNoteRaw(noteInfo) {
     return loadNoteLS(noteInfo);
   }
   return await loadNoteFS(dh, noteInfo);
+}
+
+export async function loadCurrentNote() {
+  let settings = getSettings();
+  let name = settings.currentNoteName;
+  console.log("loadCurrentNote:", name);
+  const noteInfo = findNoteInfoByName(name);
+  let s = await loadNoteRaw(noteInfo);
+  return fixUpNoteContent(s);
 }
 
 /**
