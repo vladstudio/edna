@@ -126,7 +126,7 @@ export default {
       if (!dh) {
         return;
       }
-      await switchToStoringNotesOnDisk(dh);
+      await switchToStoringNotesOnDisk(dh); f
       let settings = getSettings();
       let noteInfo = findNoteInfoByName(settings.currentNoteName)
       console.log("storeNotesOnDisk: noteInfo:", noteInfo)
@@ -148,7 +148,6 @@ export default {
       if (theme == "dark") {
         menuTheme = "default dark"
       }
-      let editor = this.$refs.editor;
       e.preventDefault();
       this.showingMenu = true
       let items = [
@@ -158,39 +157,44 @@ export default {
           shortcut: `${modChar} + P`,
         },
         {
-          label: "And block after current",
-          onClick: () => { this.getEditor().addNewBlockAfterCurrent() },
-          shortcut: `${modChar} + Enter`,
-        },
-        {
-          label: "Add block before current",
-          onClick: () => { this.getEditor().addNewBlockBeforeCurrent() },
-          shortcut: `${altChar} + Enter`,
-        },
-        {
-          label: "Add block at end",
-          onClick: () => { this.getEditor().addNewBlockAfterLast() },
-          shortcut: `${modChar} + Shift + Enter`,
-        },
-        {
-          label: "Add block at start",
-          onClick: () => { this.getEditor().addNewBlockBeforeFirst() },
-          shortcut: `${altChar} + Shift + Enter`,
-        },
-        {
-          label: "Split block at cursor position",
-          onClick: () => { this.getEditor().insertNewBlockAtCursor() },
-          shortcut: `${modChar} + ${altChar} + Enter`,
-        },
-        {
-          label: "Change block language",
-          onClick: () => { this.openLanguageSelector() },
-          shortcut: `${modChar} + L`,
-        },
-        {
-          label: "Select all text in block",
-          onClick: () => { this.getEditor().selectAll() },
-          shortcut: `${modChar} + A`,
+          label: "Block",
+          children: [
+            {
+              label: "And after current",
+              onClick: () => { this.getEditor().addNewBlockAfterCurrent() },
+              shortcut: `${modChar} + Enter`,
+            },
+            {
+              label: "Add before current",
+              onClick: () => { this.getEditor().addNewBlockBeforeCurrent() },
+              shortcut: `${altChar} + Enter`,
+            },
+            {
+              label: "Add at end",
+              onClick: () => { this.getEditor().addNewBlockAfterLast() },
+              shortcut: `${modChar} + Shift + Enter`,
+            },
+            {
+              label: "Add at start",
+              onClick: () => { this.getEditor().addNewBlockBeforeFirst() },
+              shortcut: `${altChar} + Shift + Enter`,
+            },
+            {
+              label: "Split at cursor position",
+              onClick: () => { this.getEditor().insertNewBlockAtCursor() },
+              shortcut: `${modChar} + ${altChar} + Enter`,
+            },
+            {
+              label: "Change language",
+              onClick: () => { this.openLanguageSelector() },
+              shortcut: `${modChar} + L`,
+            },
+            {
+              label: "Select all text",
+              onClick: () => { this.getEditor().selectAll() },
+              shortcut: `${modChar} + A`,
+            },
+          ]
         },
         {
           label: "Create new scratch note",
@@ -218,14 +222,6 @@ export default {
         //     label: "Execute block code",
         //     onClick: () => { this.openNoteSelector() }
         // },
-        // {
-        // label: "A submenu",
-        //     children: [
-        //         { label: "Item1" },
-        //         { label: "Item2" },
-        //         { label: "Item3" },
-        //     ]
-        // },
       ]
 
       if (supportsFileSystem && (getStorageFS() == null)) {
@@ -234,13 +230,12 @@ export default {
           onClick: () => { this.storeNotesOnDisk() },
           shortcut: "",
         })
-
-        items.push({
-          label: "Show help",
-          onClick: () => { this.toggleHelp() },
-          shortcut: "",
-        })
       }
+      items.push({
+        label: "Show help",
+        onClick: () => { this.toggleHelp() },
+        shortcut: "",
+      })
 
       ContextMenu.showContextMenu({
         x: e.x,
@@ -414,7 +409,7 @@ export default {
     </div>
   </div>
   <div style="mcStyle" class="menu-overlay">
-    <form class="menu-container" ref="menuContainer" tabIndex="-1"></form>
+    <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
   <div v-if="showingHelp" class="fixed bottom-[28px] right-[28px] w-[80%] h-[80%] bg-yellow-50 shadow-md">
     <iframe :src="helpURL" width="100%" height="100%"></iframe>
@@ -436,6 +431,7 @@ export default {
             height: 100%
             pointer-events: none
             z-index: 45
+            font-size: 8px
     .app-container
         width: 100%
         height: 100%
