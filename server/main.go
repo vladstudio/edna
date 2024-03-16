@@ -1,9 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"flag"
+	"io/fs"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
+
+	"github.com/dustin/go-humanize"
+	"github.com/klauspost/compress/gzip"
+	"github.com/klauspost/compress/zstd"
 
 	"github.com/kjk/common/u"
 )
@@ -105,6 +113,7 @@ func main() {
 		flgSetupAndRun    bool
 		flgBuildLocalProd bool
 		flgUpdateGoDeps   bool
+		flgAdHoc          bool
 	)
 	{
 		flag.BoolVar(&flgRunDev, "run-dev", false, "run the server in dev mode")
@@ -114,8 +123,15 @@ func main() {
 		flag.BoolVar(&flgBuildLocalProd, "build-local-prod", false, "build for production run locally")
 		flag.BoolVar(&flgSetupAndRun, "setup-and-run", false, "setup and run on the server")
 		flag.BoolVar(&flgUpdateGoDeps, "update-go-deps", false, "update go dependencies")
+		flag.BoolVar(&flgAdHoc, "ad-hoc", false, "run ad-hoc code")
 		flag.Parse()
 	}
+
+	if flgAdHoc {
+		testCompress()
+		return
+	}
+
 	if GitCommitHash != "" {
 		uriBase := "https://github.com/kjk/edna/commit/"
 		logf("edna.arslexis.io, build: %s (%s)\n", GitCommitHash, uriBase+GitCommitHash)
@@ -181,4 +197,73 @@ func main() {
 
 	flag.Usage()
 
+}
+
+func benchFileCompress(path string) {
+	d, err := os.ReadFile(path)
+	panicIfErr(err)
+
+	gzipCompress := func(d []byte) []byte {
+		var buf bytes.Buffer
+		w, err := gzip.NewWriterLevel(&buf, gzip.BestCompression)
+		panicIfErr(err)
+		_, err = w.Write(d)
+		panicIfErr(err)
+		return buf.Bytes()
+	}
+
+	zstdCompress := func(d []byte, level zstd.EncoderLevel) []byte {
+		var buf bytes.Buffer
+		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level))
+		panicIfErr(err)
+		_, err = w.Write(d)
+		panicIfErr(err)
+		return buf.Bytes()
+	}
+
+	logf("compressing with gzip\n")
+	t := time.Now()
+	gzData := gzipCompress(d)
+	gzDur := time.Since(t)
+
+	logf("compressing with zstd level: better\n")
+	t = time.Now()
+	zstdBetter := zstdCompress(d, zstd.SpeedBetterCompression)
+	zstdBetterDur := time.Since(t)
+
+	logf("compressing with zstd level: best\n")
+	t = time.Now()
+	zstdBest := zstdCompress(d, zstd.SpeedBestCompression)
+	zstdBestDur := time.Since(t)
+
+	logf("gzip       : %d (%s) in %s\n", len(gzData), humanSize(len(gzData)), gzDur)
+	logf("zstd better: %d (%s) in %s\n", len(zstdBetter), humanSize(len(zstdBetter)), zstdBetterDur)
+	logf("zstd best  : %d (%s) in %s\n", len(zstdBest), humanSize(len(zstdBest)), zstdBestDur)
+}
+
+func humanSize(n int) string {
+	un := uint64(n)
+	return humanize.Bytes(un)
+}
+
+func testCompress() {
+	emptyFrontEndBuildDir()
+	u.RunLoggedInDirMust(".", "yarn")
+	u.RunLoggedInDirMust(".", "yarn", "build")
+
+	dir := filepath.Join("webapp", "dist", "assets")
+	files, err := os.ReadDir(dir)
+	panicIfErr(err)
+	var e fs.DirEntry
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), "index-") && strings.HasSuffix(f.Name(), ".js") {
+			e = f
+			break
+		}
+	}
+
+	info, _ := e.Info()
+	logf("found %s of size %d (%s)\n", e.Name(), info.Size(), humanSize(int(info.Size())))
+	path := filepath.Join(dir, e.Name())
+	benchFileCompress(path)
 }

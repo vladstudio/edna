@@ -2,7 +2,6 @@ import {
   createDefaultNotes,
   dbGetDirHandle,
   getScratchNoteInfo,
-  getStorageDirHandle,
   isNoteInfoEqual,
   loadNoteInfos,
   setStorageDirHandle,
