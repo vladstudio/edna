@@ -6,7 +6,7 @@ import {
   loadNoteInfos,
   setStorageFS,
 } from "../src/notes";
-import { getSettings, loadSettings, setSettings } from "./settings";
+import { getSettings, loadSettings, saveSettings } from "./settings";
 
 /** @typedef {import("./settings").Settings} Settings */
 
@@ -21,22 +21,22 @@ export async function boot() {
 
   /** @type {Settings} */
   let initialSettings = {
-    keymap: "default",
-    emacsMetaKey: "alt",
-    showLineNumberGutter: true,
-    showFoldGutter: true,
     bracketClosing: false,
     currentNoteInfo: getScratchNoteInfo(),
+    emacsMetaKey: "alt",
+    keymap: "default",
+    showFoldGutter: true,
+    showLineNumberGutter: true,
   };
-
-  let s = await loadSettings(dh);
+  let settings = await loadSettings(dh);
   // console.log("settings loaded:", s);
-  s = Object.assign(initialSettings, s);
-  await setSettings(s);
+  let updatedSettings = Object.assign(initialSettings, settings);
+  await saveSettings(updatedSettings);
+
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);
 
-  let settings = getSettings();
+  settings = getSettings();
   // console.log("settings:", settings);
   // make sure currentNoteInfopoints to a valid note
   let currentNoteInfo = settings.currentNoteInfo;

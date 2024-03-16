@@ -3,56 +3,28 @@ import { fsReadTextFile, fsWriteTextFile } from "./fileutil";
 
 import { getStorageFS } from "./notes";
 import { ipcRenderer } from "./ipcrenderer";
+import { objectEqual } from "./utils";
 
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
 
 /**
  * @typedef {Object} Settings
- * @property {string} keymap
- * @property {string} emacsMetaKey
- * @property {boolean} showLineNumberGutter
- * @property {boolean} showFoldGutter
  * @property {boolean} bracketClosing
  * @property {NoteInfo} currentNoteInfo
+ * @property {string} emacsMetaKey
  * @property {string} [fontFamily]
  * @property {number} [fontSize]
+ * @property {string} keymap
+ * @property {boolean} showFoldGutter
+ * @property {boolean} showLineNumberGutter
  */
 
-export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
-
-export let defaultFontFamily = "Hack";
+export let kDefaultFontFamily = "Hack";
 // TODO: not sure mobile should be so big. Looked big on iPhone
-export let defaultFontSize = isMobileDevice ? 16 : 12;
+export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
+export let kDefaultFontSize = isMobileDevice ? 16 : 12;
 
-const settingsPath = "settings.json";
-
-// TODO: not happy have to pass dh but don't want circular imports
-/**
- * @param {FileSystemDirectoryHandle} dh
- * @returns {Promise<Settings>}
- */
-export async function loadSettings(dh) {
-  let d = null;
-  if (dh) {
-    d = await fsReadTextFile(dh, settingsPath);
-  } else {
-    d = localStorage.getItem(settingsPath);
-  }
-  return d === null ? {} : JSON.parse(d);
-}
-
-/**
- * @param {FileSystemDirectoryHandle} dh
- * @param {Settings} settings
- */
-export async function saveSettings(settings, dh) {
-  let s = JSON.stringify(settings);
-  if (dh) {
-    await fsWriteTextFile(dh, settingsPath, s);
-  } else {
-    localStorage.setItem(settingsPath, s);
-  }
-}
+const kSettingsPath = "settings.json";
 
 // current settings, kept in sync with persisted settings
 // shouldn't be modified directly but via setSetting)
@@ -66,13 +38,42 @@ export function getSettings() {
   return settings;
 }
 
+// TODO: not happy have to pass dh but don't want circular imports
 /**
+ * @param {FileSystemDirectoryHandle} dh
+ * @returns {Promise<Settings>}
+ */
+export async function loadSettings(dh) {
+  let d = null;
+  if (dh) {
+    d = await fsReadTextFile(dh, kSettingsPath);
+  } else {
+    d = localStorage.getItem(kSettingsPath);
+  }
+  // also set settings to the latest version
+  settings = d === null ? {} : JSON.parse(d);
+  return settings;
+}
+
+/**
+ * @param {FileSystemDirectoryHandle} dh
  * @param {Settings} newSettings
  */
-export async function setSettings(newSettings) {
+export async function saveSettings(newSettings, dh = null) {
   // console.log("setSettings:", newSettings);
-  let dh = getStorageFS();
-  await saveSettings(newSettings, dh);
+  if (objectEqual(settings, newSettings)) {
+    console.log("setSettings: no change");
+    return;
+  }
+  let s = JSON.stringify(newSettings, null, 2);
+  if (!dh) {
+    dh = getStorageFS();
+  }
+  if (dh) {
+    await fsWriteTextFile(dh, kSettingsPath, s);
+  } else {
+    localStorage.setItem(kSettingsPath, s);
+  }
   settings = newSettings;
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
 }
@@ -81,7 +82,7 @@ export async function setSetting(key, value) {
   console.log("setSetting:", key, value);
   let s = { ...settings };
   s[key] = value;
-  await setSettings(s);
+  await saveSettings(s);
 }
 
 export function onOpenSettings(callback) {

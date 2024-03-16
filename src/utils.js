@@ -12,6 +12,10 @@ export function throwIf(cond, msg) {
   }
 }
 
+export function objectEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 export let platform = {
   // default to windows
   isMac: false,

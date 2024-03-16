@@ -1,7 +1,7 @@
 <script>
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { defaultFontFamily, defaultFontSize, setSettings, getVersion } from "../../settings"
+import { kDefaultFontFamily, kDefaultFontSize, getVersion, saveSettings } from "../../settings"
 import { platform } from "../../utils"
 
 export default {
@@ -27,15 +27,15 @@ export default {
       showLineNumberGutter: this.initialSettings.showLineNumberGutter,
       showFoldGutter: this.initialSettings.showFoldGutter,
       bracketClosing: this.initialSettings.bracketClosing,
-      fontFamily: this.initialSettings.fontFamily || defaultFontFamily,
-      fontSize: this.initialSettings.fontSize || defaultFontSize,
+      fontFamily: this.initialSettings.fontFamily || kDefaultFontFamily,
+      fontSize: this.initialSettings.fontSize || kDefaultFontSize,
       // theme: this.initialSettings.theme,
       themeSetting: this.initialTheme,
 
       activeTab: "general",
-      systemFonts: [[defaultFontFamily, defaultFontFamily + " (default)"]],
+      systemFonts: [[kDefaultFontFamily, kDefaultFontFamily + " (default)"]],
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
-      defaultFontSize: defaultFontSize,
+      defaultFontSize: kDefaultFontSize,
       appVersion: "",
       currentNoteInfo: this.initialSettings.currentNoteInfo,
     }
@@ -47,7 +47,7 @@ export default {
     if (qlf !== undefined) {
       let localFonts = [... new Set((await qlf()).map(f => f.family))].filter(f => f !== "Hack")
       localFonts = [...new Set(localFonts)].map(f => [f, f])
-      this.systemFonts = [[defaultFontFamily, defaultFontFamily + " (default)"], ...localFonts]
+      this.systemFonts = [[kDefaultFontFamily, kDefaultFontFamily + " (default)"], ...localFonts]
     }
 
     window.addEventListener("keydown", this.onKeyDown);
@@ -73,18 +73,17 @@ export default {
     },
 
     updateSettings() {
-      setSettings({
-        showLineNumberGutter: this.showLineNumberGutter,
-        showFoldGutter: this.showFoldGutter,
-        keymap: this.keymap,
-        emacsMetaKey: platform.isMac ? this.metaKey : "alt",
+      saveSettings({
         bracketClosing: this.bracketClosing,
-        fontFamily: this.fontFamily === defaultFontFamily ? undefined : this.fontFamily,
-        fontSize: this.fontSize === defaultFontSize ? undefined : this.fontSize,
         currentNoteInfo: this.currentNoteInfo,
+        emacsMetaKey: platform.isMac ? this.metaKey : "alt",
+        fontFamily: this.fontFamily === kDefaultFontFamily ? undefined : this.fontFamily,
+        fontSize: this.fontSize === kDefaultFontSize ? undefined : this.fontSize,
+        keymap: this.keymap,
+        showFoldGutter: this.showFoldGutter,
+        showLineNumberGutter: this.showLineNumberGutter,
       })
     },
-
   }
 }
 </script>

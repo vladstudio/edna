@@ -1,12 +1,12 @@
-import { defaultFontFamily, defaultFontSize } from "../../settings";
+import { kDefaultFontFamily, kDefaultFontSize } from "../../settings";
 
 import { EditorView } from "@codemirror/view";
 
 export function getFontTheme(fontFamily, fontSize) {
-  fontSize = fontSize || defaultFontSize;
+  fontSize = fontSize || kDefaultFontSize;
   return EditorView.theme({
     ".cm-scroller": {
-      fontFamily: fontFamily || defaultFontFamily,
+      fontFamily: fontFamily || kDefaultFontFamily,
       fontSize: fontSize + "px",
     },
   });
