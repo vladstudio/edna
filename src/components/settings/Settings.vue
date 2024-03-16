@@ -37,7 +37,7 @@ export default {
       themes: [["system", "System"], ["light", "Light"], ["dark", "Dark"]],
       defaultFontSize: kDefaultFontSize,
       appVersion: "",
-      currentNoteInfo: this.initialSettings.currentNoteInfo,
+      currentNoteName: this.initialSettings.currentNoteName,
     }
   },
 
@@ -75,7 +75,7 @@ export default {
     updateSettings() {
       saveSettings({
         bracketClosing: this.bracketClosing,
-        currentNoteInfo: this.currentNoteInfo,
+        currentNoteName: this.currentNoteName,
         emacsMetaKey: platform.isMac ? this.metaKey : "alt",
         fontFamily: this.fontFamily === kDefaultFontFamily ? undefined : this.fontFamily,
         fontSize: this.fontSize === kDefaultFontSize ? undefined : this.fontSize,

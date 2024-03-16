@@ -1,5 +1,5 @@
 <script>
-import { getSystemNoteInfos, getLatestNoteInfos, isSystemNote } from '../notes'
+import { getLatestNoteInfos, isSystemNote } from '../notes'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -28,10 +28,6 @@ function rebuildNotesInfo() {
   res.sort((a, b) => {
     return a.name.localeCompare(b.name)
   })
-  const systemNotes = getSystemNoteInfos()
-  for (let ni of systemNotes) {
-    res.push(mkNoteInfo2(ni))
-  }
   return res
 }
 

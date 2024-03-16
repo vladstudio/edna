@@ -6,7 +6,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
-import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, getStorageFS, isNoteInfoEqual, switchToStoringNotesOnDisk } from '../notes'
+import { createNewScratchNote, createNoteWithName, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -30,7 +30,7 @@ export default {
     let settings = getSettings()
     // console.log("setting:", settings)
     return {
-      noteName: settings.currentNoteInfo.name,
+      noteName: settings.currentNoteName,
       line: 1,
       column: 1,
       docSize: 0,
@@ -68,7 +68,7 @@ export default {
     onSettingsChange((settings) => {
       console.log("onSettingsChange callback", settings)
       this.settings = settings;
-      this.noteName = settings.currentNoteInfo.name
+      this.noteName = settings.currentNoteName
       console.log("noteName", this.noteName)
     })
     onOpenSettings(() => {
@@ -128,7 +128,7 @@ export default {
       }
       await switchToStoringNotesOnDisk(dh);
       let settings = getSettings();
-      let noteInfo = settings.currentNoteInfo
+      let noteInfo = findNoteInfoByName(settings.currentNoteName)
       console.log("storeNotesOnDisk: noteInfo:", noteInfo)
       this.getEditor().openNote(noteInfo)
       this.getEditor().focus()
@@ -361,7 +361,9 @@ export default {
     async onDeleteNote(noteInfo) {
       this.showNoteSelector = false
       let settings = getSettings()
-      if (isNoteInfoEqual(noteInfo, settings.currentNoteInfo)) {
+      // if deleting current note, first switch to scratch note
+      // TODO: maybe switch to the most recently opened
+      if (noteInfo.name === settings.currentNoteName) {
         console.log("deleted current note, opening scratch note")
         this.getEditor().openNote(getScratchNoteInfo())
       }

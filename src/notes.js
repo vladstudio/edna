@@ -88,7 +88,7 @@ function mkNoteInfoFromName(name) {
   };
 }
 
-export const kSractNoteName = "scratch";
+export const kScratchNoteName = "scratch";
 export const kDailyJournalNoteName = "daily journal";
 export const kInboxNoteName = "inbox";
 
@@ -96,7 +96,7 @@ export const kInboxNoteName = "inbox";
  * @returns {NoteInfo}
  */
 export function getScratchNoteInfo() {
-  return mkNoteInfoFromName(kSractNoteName);
+  return mkNoteInfoFromName(kScratchNoteName);
 }
 
 /**
@@ -111,6 +111,44 @@ export function getJournalNoteInfo() {
  */
 export function getInboxNoteInfo() {
   return mkNoteInfoFromName(kInboxNoteName);
+}
+
+/**
+ * @param {NoteInfo} noteInfo
+ * @returns {boolean}
+ */
+export function isSystemNote(noteInfo) {
+  // console.log("isSystemNote:", notePath)
+  return noteInfo.path.startsWith("system:");
+}
+
+/**
+ *
+ * @param {string} name
+ * @returns {boolean}
+ */
+export function isSystemNoteName(name) {
+  return name === "help";
+}
+
+/**
+ * @param {NoteInfo} noteInfo
+ * @returns {boolean}
+ */
+export function isJournalNote(noteInfo) {
+  return noteInfo.name == "daily journal";
+}
+
+/**
+ * @returns {NoteInfo[]}
+ */
+function getSystemNoteInfos() {
+  return [
+    {
+      path: "system:help",
+      name: "help",
+    },
+  ];
 }
 
 /**
@@ -152,29 +190,39 @@ export function setStorageFS(dh) {
 
 /**
  * @param {NoteInfo[]} existingNoteInfos
- * @returns
+ * @returns {Promise<NoteInfo[]>}
  */
-export function createDefaultNotes(existingNoteInfos) {
-  function createIfNotExists(name, md) {
+export async function createDefaultNotes(existingNoteInfos) {
+  /**
+   * @param {string} name
+   * @param {string} md
+   * @returns {Promise<number>}
+   */
+  async function createIfNotExists(name, md) {
     if (existingNoteInfos.some((ni) => ni.name === name)) {
       console.log("skipping creating note", name);
-      return;
+      return 0;
     }
     let content = blockHdrMarkdown + md;
-    createNoteWithName(name, content);
+    await createNoteWithName(name, content);
+    return 1;
   }
+
   const { initialContent, initialDevContent, initialJournal, initialInbox } =
     getInitialContent();
+
   const s = isDev ? initialDevContent : initialContent;
-  createIfNotExists(kSractNoteName, s);
+  let nCreated = await createIfNotExists(kScratchNoteName, s);
   // scratch note must always exist but the user can delete inbox / daily journal notes
   let n = getOpenCount();
-  if (n > 1) {
-    // console.log("skipping creating inbox / journal because openCount:", n);
-    return;
+  if (n === 0) {
+    nCreated += await createIfNotExists(kDailyJournalNoteName, initialJournal);
+    nCreated += await createIfNotExists(kInboxNoteName, initialInbox);
   }
-  createIfNotExists(kDailyJournalNoteName, initialJournal);
-  createIfNotExists(kInboxNoteName, initialInbox);
+  if (nCreated > 0) {
+    await updateLatestNoteInfos();
+  }
+  return latestNoteInfos;
 }
 
 /**
@@ -266,6 +314,8 @@ export async function loadNoteInfos() {
   } else {
     res = await loadNoteInfosFS(dh);
   }
+  const systemNotes = getSystemNoteInfos();
+  res = res.concat(systemNotes);
   latestNoteInfos = res;
   return res;
 }
@@ -295,35 +345,6 @@ export function fixUpNoteContent(s) {
     console.log("fixUpNote: added header to content", s);
   }
   return s;
-}
-
-/**
- * @param {NoteInfo} noteInfo
- * @returns {boolean}
- */
-export function isSystemNote(noteInfo) {
-  // console.log("isSystemNote:", notePath)
-  return noteInfo.path.startsWith("system:");
-}
-
-/**
- * @param {NoteInfo} noteInfo
- * @returns {boolean}
- */
-export function isJournalNote(noteInfo) {
-  return noteInfo.name == "daily journal";
-}
-
-/**
- * @returns {NoteInfo[]}
- */
-export function getSystemNoteInfos() {
-  return [
-    {
-      path: "system:help",
-      name: "help",
-    },
-  ];
 }
 
 /**
@@ -363,11 +384,21 @@ function pickUniqueNameInNoteInfos(base, noteInfos) {
   return pickUniqueName(base, names);
 }
 
+export function findNoteInfoByName(name) {
+  for (let ni of latestNoteInfos) {
+    if (ni.name === name) {
+      return ni;
+    }
+  }
+  throwIf(true, "note not found:" + name);
+  return null;
+}
+
 export async function loadCurrentNote() {
   // let self = Heynote;
   let settings = getSettings();
   // console.log("Heynote:", settings);
-  const noteInfo = settings.currentNoteInfo;
+  const noteInfo = findNoteInfoByName(settings.currentNoteName);
   // console.log("loadCurrentNote: from ", notePath);
   let dh = getStorageFS();
   let s;
@@ -385,12 +416,13 @@ export async function loadCurrentNote() {
  */
 export async function saveCurrentNote(content) {
   let settings = getSettings();
-  const noteInfo = settings.currentNoteInfo;
-  console.log("notePath:", noteInfo);
-  if (isSystemNote(noteInfo)) {
-    console.log("skipped saving system note", noteInfo.name);
+  let name = settings.currentNoteName;
+  console.log("note name:", name);
+  if (isSystemNoteName(name)) {
+    console.log("skipped saving system note", name);
     return;
   }
+  const noteInfo = findNoteInfoByName();
   let dh = getStorageFS();
   if (dh === null) {
     localStorage.setItem(noteInfo.path, content);
@@ -496,7 +528,7 @@ async function loadNoteRaw(noteInfo) {
 export async function loadNote(noteInfo) {
   console.log("loadNote:", noteInfo);
   let content = await loadNoteRaw(noteInfo);
-  await setSetting("currentNoteInfo", noteInfo);
+  await setSetting("currentNoteName", noteInfo.name);
   content = autoCreateDayInJournal(noteInfo, content);
   return fixUpNoteContent(content);
 }
@@ -603,14 +635,14 @@ export async function switchToStoringNotesOnDisk(dh) {
   await dbSetDirHandle(dh);
   let noteInfos = await updateLatestNoteInfos();
 
-  // migrate settings, update currentNoteInfo
+  // migrate settings, update currentNoteName
   let settings = await loadSettings(null);
-  let currNote = settings.currentNoteInfo;
-  let newCurrNote = noteInfos.filter((ni) => ni.name === currNote.name)[0];
+  let name = settings.currentNoteName;
+  let newCurrNote = noteInfos.filter((ni) => ni.name === name)[0];
   if (newCurrNote) {
-    settings.currentNoteInfo = newCurrNote;
+    settings.currentNoteName = newCurrNote.name;
   } else {
-    settings.currentNoteInfo = getScratchNoteInfo();
+    settings.currentNoteName = kScratchNoteName;
   }
   await saveSettings(settings, dh);
 

@@ -1,7 +1,7 @@
 <script>
 import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { getScratchNoteInfo, isNoteInfoEqual, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
+import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
@@ -251,6 +251,8 @@ export default {
           selection: { anchor: pos, head: pos },
           scrollIntoView: true,
         })
+        let readOnly = isSystemNote(noteInfo)
+        this.editor.setReadOnly(readOnly)
         this.$emit("docChanged")
         this.focus()
       })

@@ -10,7 +10,7 @@ import { objectEqual } from "./utils";
 /**
  * @typedef {Object} Settings
  * @property {boolean} bracketClosing
- * @property {NoteInfo} currentNoteInfo
+ * @property {string} currentNoteName
  * @property {string} emacsMetaKey
  * @property {string} [fontFamily]
  * @property {number} [fontSize]

@@ -1,8 +1,6 @@
 import {
   createDefaultNotes,
   dbGetDirHandle,
-  getScratchNoteInfo,
-  isNoteInfoEqual,
   loadNoteInfos,
   setStorageFS,
 } from "../src/notes";
@@ -22,7 +20,7 @@ export async function boot() {
   /** @type {Settings} */
   let initialSettings = {
     bracketClosing: false,
-    currentNoteInfo: getScratchNoteInfo(),
+    currentNoteName: "scratch",
     emacsMetaKey: "alt",
     keymap: "default",
     showFoldGutter: true,
@@ -38,15 +36,15 @@ export async function boot() {
 
   settings = getSettings();
   // console.log("settings:", settings);
-  // make sure currentNoteInfopoints to a valid note
-  let currentNoteInfo = settings.currentNoteInfo;
+  // make sure currentNoteName points to a valid note
+  let name = settings.currentNoteName;
   noteInfos = await loadNoteInfos(); // re-do because could have created default notes
-  for (let i = 0; i < noteInfos.length; i++) {
-    if (isNoteInfoEqual(noteInfos[i], currentNoteInfo)) {
-      currentNoteInfo = noteInfos[i];
-      initialSettings.currentNoteInfo = currentNoteInfo;
-      break;
+  for (let ni of noteInfos) {
+    if (ni.name === name) {
+      console.log("currentNoteName:", name);
+      return;
     }
   }
-  console.log("currentNoteInfo:", currentNoteInfo);
+  initialSettings.currentNoteName = "scratch";
+  console.log(`didn't find currentNoteName '${name}' so set to 'scratch'`);
 }
