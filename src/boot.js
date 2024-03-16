@@ -1,13 +1,25 @@
 import {
   createDefaultNotes,
+  dbGetDirHandle,
   getScratchNoteInfo,
+  getStorageDirHandle,
   isNoteInfoEqual,
   loadNoteInfos,
+  setStorageDirHandle,
 } from "../src/notes";
 import { getSettings, loadSettings, setSettings } from "./settings";
 
 /** @typedef {import("./settings").Settings} Settings */
+
 export async function boot() {
+  let dh = await dbGetDirHandle();
+  if (dh) {
+    console.log("we're storing data in the file system");
+    setStorageDirHandle(dh);
+  } else {
+    console.log("we're storing data in localStorage");
+  }
+
   /** @type {Settings} */
   let initialSettings = {
     keymap: "default",
@@ -18,7 +30,7 @@ export async function boot() {
     currentNoteInfo: getScratchNoteInfo(),
   };
 
-  let s = await loadSettings();
+  let s = await loadSettings(dh);
   // console.log("settings loaded:", s);
   s = Object.assign(initialSettings, s);
   await setSettings(s);

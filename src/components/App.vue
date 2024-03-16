@@ -6,7 +6,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
-import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, getStorageDirHandle, isNoteInfoEqual } from '../notes'
+import { createNewScratchNote, createNoteWithName, deleteNote, getScratchNoteInfo, getStorageDirHandle, isNoteInfoEqual, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -122,20 +122,12 @@ export default {
     },
 
     async storeNotesOnDisk() {
-      console.log("storeNotesOnDisk")
       let dh = await openDirPicker(true)
       if (!dh) {
         return;
       }
-      let skipEntryFn = (entry, dir) => {
-        if (entry.kind === "directory") {
-          return true
-        }
-        let name = entry.name.toLowerCase()
-        return !(name.endsWith(".edna.txt") || name.endsWith("edna.encr.txt"))
-      }
-      let files = await readDir(dh, skipEntryFn)
-      console.log("files", files)
+      await switchToStoringNotesOnDisk(dh);
+      // TODO: open a note from the new storage
     },
 
     onContextMenu(e) {

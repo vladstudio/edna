@@ -1,12 +1,4 @@
-/**
- * @param {boolean} cond
- * @param {string} [msg]
- */
-export function throwIf(cond, msg) {
-  if (cond) {
-    throw new Error(msg || "invalid condition");
-  }
-}
+import { throwIf } from "./utils";
 
 /**
  * @param {any} fileHandle
@@ -321,4 +313,32 @@ export async function openDirPicker(writeAccess) {
 export function supportsFileSystem() {
   const ok = "showDirectoryPicker" in window && !isIFrame();
   return ok;
+}
+
+/**
+ * chatgpt says the string is saved in utf-8
+ * @param {FileSystemDirectoryHandle} dh
+ * @param {string} fileName
+ * @param {string} content
+ */
+export async function fsWriteTextFile(dh, fileName, content) {
+  console.log("writing to file:", fileName, content.length);
+  let fileHandle = await dh.getFileHandle(fileName, { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(content);
+  await writable.close();
+}
+
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ * @param {string} fileName
+ * @returns {Promise<string>}
+ */
+export async function fsReadTextFile(dh, fileName) {
+  console.log("reading file:", fileName);
+  let fileHandle = await dh.getFileHandle(fileName, { create: false });
+  const file = await fileHandle.getFile();
+  // I assume this reads utf-8
+  const content = await file.text();
+  return content;
 }

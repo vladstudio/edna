@@ -2,6 +2,16 @@ export function len(o) {
   return o ? o.length : 0;
 }
 
+/**
+ * @param {boolean} cond
+ * @param {string} [msg]
+ */
+export function throwIf(cond, msg) {
+  if (cond) {
+    throw new Error(msg || "invalid condition");
+  }
+}
+
 export let platform = {
   // default to windows
   isMac: false,

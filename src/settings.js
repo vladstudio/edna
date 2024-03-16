@@ -1,5 +1,7 @@
 import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
+import { fsReadTextFile, fsWriteTextFile } from "./fileutil";
 
+import { getStorageDirHandle } from "./notes";
 import { ipcRenderer } from "./ipcrenderer";
 
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
@@ -24,17 +26,32 @@ export let defaultFontSize = isMobileDevice ? 16 : 12;
 
 const settingsPath = "settings.json";
 
-export async function loadSettings() {
-  let d = localStorage.getItem(settingsPath);
+// TODO: not happy have to pass dh but don't want circular imports
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ * @returns {Promise<Settings>}
+ */
+export async function loadSettings(dh) {
+  let d = null;
+  if (dh) {
+    d = await fsReadTextFile(dh, settingsPath);
+  } else {
+    d = localStorage.getItem(settingsPath);
+  }
   return d === null ? {} : JSON.parse(d);
 }
 
 /**
+ * @param {FileSystemDirectoryHandle} dh
  * @param {Settings} settings
  */
-async function saveSettings(settings) {
-  // TODO: save on disk if using disks
-  localStorage.setItem(settingsPath, JSON.stringify(settings));
+export async function saveSettings(settings, dh) {
+  let s = JSON.stringify(settings);
+  if (dh) {
+    await fsWriteTextFile(dh, settingsPath, s);
+  } else {
+    localStorage.setItem(settingsPath, s);
+  }
 }
 
 // current settings, kept in sync with persisted settings
@@ -54,15 +71,11 @@ export function getSettings() {
  */
 export async function setSettings(newSettings) {
   // console.log("setSettings:", newSettings);
-  await saveSettings(newSettings);
+  let dh = getStorageDirHandle();
+  await saveSettings(newSettings, dh);
   settings = newSettings;
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
 }
-
-// export async function setSetting(key, value) {
-//   settings[key] = value;
-//   await saveSettings(settings);
-// }
 
 export async function setSetting(key, value) {
   console.log("setSetting:", key, value);
