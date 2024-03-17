@@ -14,6 +14,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
 import { boot } from '../webapp-boot'
+import { langSupportsFormat, langSupportsRun } from '../editor/languages'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -167,7 +168,6 @@ export default {
       }
       e.preventDefault();
       this.showingMenu = true
-      let o;
       /** @type {MenuItem[]} */
       let items = [
         {
@@ -204,6 +204,16 @@ export default {
               shortcut: `${modChar} + ${altChar} + Enter`,
             },
             {
+              label: "Goto next block",
+              onClick: () => { this.getEditor().gotoNextBlock() },
+              shortcut: `${modChar} + Down`,
+            },
+            {
+              label: "Goto previous block",
+              onClick: () => { this.getEditor().gotoPreviousBlock() },
+              shortcut: `${modChar} + Up`,
+            },
+            {
               label: "Change language",
               onClick: () => { this.openLanguageSelector() },
               shortcut: `${modChar} + L`,
@@ -224,16 +234,6 @@ export default {
         // TODO: run  if supports run
         // TODO: set plain text, markdown
         // {
-        //     label: "Goto next block",
-        //     onClick: () => {this.getEditor().gotoNextBlock() },
-        //     shortcut: `${modChar} + Down`,
-        // },
-        // {
-        //     label: "Goto previous block",
-        //     onClick: () => {this.getEditor().gotoPreviousBlock() },
-        //     shortcut: `${modChar} + Up`,
-        // },
-        // {
         //     label: "Format",
         //     onClick: () => {this.getEditor().formatCurrentBlock() }
         // },
@@ -242,6 +242,20 @@ export default {
         //     onClick: () => { this.openNoteSelector() }
         // },
       ]
+      if (langSupportsFormat(this.language)) {
+        items[1].children.push({
+          label: "Format " + this.language,
+          onClick: () => { this.getEditor().formatCurrentBlock() },
+          shortcut: `${altChar} + Shift + F`,
+        })
+      }
+      if (langSupportsRun(this.language)) {
+        items[1].children.push({
+          label: "Run " + this.language,
+          onClick: () => { this.getEditor().runCurrentBlock() },
+          shortcut: `${altChar} + Shift + R`,
+        })
+      }
 
       if (supportsFileSystem) {
         /** @type {MenuItem[]} */
