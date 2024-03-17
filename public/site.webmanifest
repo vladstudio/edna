@@ -1,11 +1,12 @@
 {
-    "name": "Edna",
-    "short_name": "Edna",
-    "icons": [
-        {
-            "src": "/icon.ico",
-            "sizes": "256x256"
-        }
-    ],
-    "display": "standalone"
+  "name": "Edna",
+  "short_name": "Edna",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/"
 }
