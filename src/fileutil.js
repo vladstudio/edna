@@ -1,35 +1,6 @@
 import { throwIf } from "./utils";
 
 /**
- * permissions expire after a while, so we need to re-check them before doing file operations
- * otherwise the operation might fail with an exception
- * if permissions are still valid, this is a no-op (from user point of view)
- * if permissions expired, this shows the "can I read/write here" dialog
- * @param {any} fileHandle
- * @param {boolean} withWrite
- * @returns {Promise<boolean>}
- */
-export async function verifyHandlePermission(fileHandle, withWrite) {
-  const opts = {};
-  if (withWrite) {
-    opts.mode = "readwrite";
-  }
-
-  // Check if we already have permission, if so, return true.
-  if ((await fileHandle.queryPermission(opts)) === "granted") {
-    return true;
-  }
-
-  // Request permission to the file, if the user grants permission, return true.
-  if ((await fileHandle.requestPermission(opts)) === "granted") {
-    return true;
-  }
-
-  // The user did not grant permission, return false.
-  return false;
-}
-
-/**
  * @param {any} fileHandle
  * @param {boolean} withWrite
  * @returns {Promise<boolean>}
@@ -356,8 +327,6 @@ export function supportsFileSystem() {
  */
 export async function fsWriteTextFile(dh, fileName, content) {
   console.log("writing to file:", fileName, content.length);
-  let ok = verifyHandlePermission(dh, true);
-  throwIf(!ok, "no permission to write files in directory" + dh.name);
   let fileHandle = await dh.getFileHandle(fileName, { create: true });
   const writable = await fileHandle.createWritable();
   await writable.write(content);
@@ -371,8 +340,6 @@ export async function fsWriteTextFile(dh, fileName, content) {
  */
 export async function fsReadTextFile(dh, fileName) {
   console.log("reading file:", fileName);
-  let ok = verifyHandlePermission(dh, true);
-  throwIf(!ok, "no permission to write files in directory" + dh.name);
   let fileHandle = await dh.getFileHandle(fileName, { create: false });
   const file = await fileHandle.getFile();
   // I assume this reads utf-8
