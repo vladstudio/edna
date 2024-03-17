@@ -1,12 +1,22 @@
+import "./css/tailwind.css";
+import "./css/application.sass";
+
 import {
   createDefaultNotes,
   dbGetDirHandle,
   loadNoteInfos,
   setStorageFS,
-} from "../src/notes";
-import { getSettings, loadInitialSettings, saveSettings } from "./settings";
+} from "./notes";
+import { getSettings, loadInitialSettings } from "./settings";
+
+import App from "./components/App.vue";
+import { createApp } from "vue";
+import { loadCurrencies } from "./currency";
 
 /** @typedef {import("./settings").Settings} Settings */
+
+loadCurrencies();
+setInterval(loadCurrencies, 1000 * 3600 * 4);
 
 export async function boot() {
   let dh = await dbGetDirHandle();
@@ -22,7 +32,7 @@ export async function boot() {
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);
 
-  settings = getSettings();
+  let settings = getSettings();
   // console.log("settings:", settings);
   // make sure currentNoteName points to a valid note
   let name = settings.currentNoteName;
@@ -33,6 +43,11 @@ export async function boot() {
       return;
     }
   }
-  initialSettings.currentNoteName = "scratch";
+  // initialSettings.currentNoteName = "scratch";
   console.log(`didn't find currentNoteName '${name}' so set to 'scratch'`);
 }
+
+boot().then(() => {
+  const app = createApp(App);
+  app.mount("#app");
+});

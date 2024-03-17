@@ -6,34 +6,27 @@ import { throwIf } from "./utils";
  * if permissions are still valid, this is a no-op (from user point of view)
  * if permissions expired, this shows the "can I read/write here" dialog
  * @param {any} fileHandle
- * @param {boolean} readWrite
+ * @param {boolean} withWrite
  * @returns {Promise<boolean>}
  */
-export async function verifyHandlePermissionRaw(fileHandle, readWrite) {
-  const options = {};
-  if (readWrite) {
-    options.mode = "readwrite";
+export async function verifyHandlePermission(fileHandle, withWrite) {
+  const opts = {};
+  if (withWrite) {
+    opts.mode = "readwrite";
   }
-  // Check if permission was already granted. If so, return true.
-  if ((await fileHandle.queryPermission(options)) === "granted") {
-    return true;
-  }
-  // Request permission. If the user grants permission, return true.
-  if ((await fileHandle.requestPermission(options)) === "granted") {
-    return true;
-  }
-  // The user didn't grant permission, so return false.
-  return false;
-}
 
-export async function verifyHandlePermission(fileHandle, readWrite) {
-  try {
-    return await verifyHandlePermissionRaw(fileHandle, readWrite);
-  } catch (e) {
-    console.log("verifyHandlePermission: e:", e);
+  // Check if we already have permission, if so, return true.
+  if ((await fileHandle.queryPermission(opts)) === "granted") {
+    return true;
   }
-  window.alert("Please allow access to the file system");
-  return await verifyHandlePermissionRaw(fileHandle, readWrite);
+
+  // Request permission to the file, if the user grants permission, return true.
+  if ((await fileHandle.requestPermission(opts)) === "granted") {
+    return true;
+  }
+
+  // The user did not grant permission, return false.
+  return false;
 }
 
 /**
