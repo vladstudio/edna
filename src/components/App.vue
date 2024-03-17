@@ -1,9 +1,11 @@
 <script>
-import TopNav from './TopNav.vue'
-import StatusBar from './StatusBar.vue'
 import Editor from './Editor.vue'
+import Help from './Help.vue'
 import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
+import StatusBar from './StatusBar.vue'
+import TopNav from './TopNav.vue'
+
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
 import { createNewScratchNote, createNoteWithName, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, switchToStoringNotesOnDisk } from '../notes'
@@ -16,13 +18,14 @@ import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../set
 
 export default {
   components: {
-    TopNav,
+    ContextMenu,
     Editor,
-    StatusBar,
+    Help,
     LanguageSelector,
     NoteSelector,
     Settings,
-    ContextMenu,
+    StatusBar,
+    TopNav,
   },
 
   data() {
@@ -41,9 +44,9 @@ export default {
       settings: settings,
       showingHelp: false,
       showingMenu: false,
-      showLanguageSelector: false,
-      showNoteSelector: false,
-      showSettings: false,
+      showingLanguageSelector: false,
+      showingNoteSelector: false,
+      showingSettings: false,
       theme: themeMode.initial,
       themeSetting: 'system',
     }
@@ -70,7 +73,7 @@ export default {
       console.log("onSettingsChange callback, noteName:", this.noteName)
     })
     onOpenSettings(() => {
-      this.showSettings = true
+      this.showingSettings = true
     })
     window.addEventListener("keydown", this.onKeyDown)
   },
@@ -86,12 +89,6 @@ export default {
         display: this.showingMenu ? "block" : "none"
       }
     },
-    helpURL() {
-      if (platformName === "mac") {
-        return "/help-mac.html"
-      }
-      return "/help-win.html"
-    }
   },
 
   methods: {
@@ -134,7 +131,7 @@ export default {
 
     onContextMenu(e) {
       // console.log("onContextMenu")
-      if (this.showNoteSelector || this.showLanguageSelector || this.showSettings) {
+      if (this.showingNoteSelector || this.showingLanguageSelector || this.showingSettings) {
         return
       }
 
@@ -261,10 +258,10 @@ export default {
     },
 
     openSettings() {
-      this.showSettings = true
+      this.showingSettings = true
     },
     closeSettings() {
-      this.showSettings = false
+      this.showingSettings = false
       this.getEditor().focus()
     },
 
@@ -300,25 +297,25 @@ export default {
     },
 
     openLanguageSelector() {
-      this.showLanguageSelector = true
+      this.showingLanguageSelector = true
     },
 
     closeLanguageSelector() {
-      this.showLanguageSelector = false
+      this.showingLanguageSelector = false
       this.getEditor().focus()
     },
 
     onSelectLanguage(language) {
-      this.showLanguageSelector = false
+      this.showingLanguageSelector = false
       this.getEditor().setLanguage(language)
     },
 
     openNoteSelector() {
-      this.showNoteSelector = true
+      this.showingNoteSelector = true
     },
 
     closeNoteSelector() {
-      this.showNoteSelector = false
+      this.showingNoteSelector = false
       this.getEditor().focus()
       // console.log("closeNoteSelector")
     },
@@ -327,7 +324,7 @@ export default {
      * @param {NoteInfo} noteInfo
      */
     onOpenNote(noteInfo) {
-      this.showNoteSelector = false
+      this.showingNoteSelector = false
       this.getEditor().openNote(noteInfo)
     },
 
@@ -342,7 +339,7 @@ export default {
      * @param {string} name
      */
     async onCreateNote(name) {
-      this.showNoteSelector = false
+      this.showingNoteSelector = false
       let noteInfo = await createNoteWithName(name)
       this.onOpenNote(noteInfo)
       // TODO: show a notification that allows to undo creation of the note
@@ -352,7 +349,7 @@ export default {
      * @param {NoteInfo} noteInfo
      */
     async onDeleteNote(noteInfo) {
-      this.showNoteSelector = false
+      this.showingNoteSelector = false
       let settings = getSettings()
       // if deleting current note, first switch to scratch note
       // TODO: maybe switch to the most recently opened
@@ -397,21 +394,20 @@ export default {
     <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
       :language="language" :languageAuto="languageAuto" @openLanguageSelector="openLanguageSelector"
       @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
-      @openSettings="showSettings = true" @toggleHelp="toggleHelp" class="status" />
+      @openSettings="showingSettings = true" @toggleHelp="toggleHelp" class="status" />
     <div class="overlay">
-      <LanguageSelector v-if="showLanguageSelector" @selectLanguage="onSelectLanguage" @close="closeLanguageSelector" />
-      <NoteSelector v-if="showNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote" @deleteNote="onDeleteNote"
-        @close="closeNoteSelector" />
-      <Settings v-if="showSettings" :initialSettings="settings" :initialTheme="themeSetting" @setTheme="setTheme"
+      <LanguageSelector v-if="showingLanguageSelector" @selectLanguage="onSelectLanguage"
+        @close="closeLanguageSelector" />
+      <NoteSelector v-if="showingNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote"
+        @deleteNote="onDeleteNote" @close="closeNoteSelector" />
+      <Settings v-if="showingSettings" :initialSettings="settings" :initialTheme="themeSetting" @setTheme="setTheme"
         @closeSettings="closeSettings" />
     </div>
   </div>
   <div style="mcStyle" class="menu-overlay">
     <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
-  <div v-if="showingHelp" class="fixed bottom-[28px] right-[28px] w-[80%] h-[80%] bg-yellow-50 shadow-md">
-    <iframe :src="helpURL" width="100%" height="100%"></iframe>
-  </div>
+  <Help v-if="showingHelp" />
 </template>
 
 <style scoped lang="sass">

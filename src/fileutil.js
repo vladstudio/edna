@@ -9,7 +9,7 @@ import { throwIf } from "./utils";
  * @param {boolean} readWrite
  * @returns {Promise<boolean>}
  */
-export async function verifyHandlePermission(fileHandle, readWrite) {
+export async function verifyHandlePermissionRaw(fileHandle, readWrite) {
   const options = {};
   if (readWrite) {
     options.mode = "readwrite";
@@ -24,6 +24,16 @@ export async function verifyHandlePermission(fileHandle, readWrite) {
   }
   // The user didn't grant permission, so return false.
   return false;
+}
+
+export async function verifyHandlePermission(fileHandle, readWrite) {
+  try {
+    return await verifyHandlePermissionRaw(fileHandle, readWrite);
+  } catch (e) {
+    console.log("verifyHandlePermission: e:", e);
+  }
+  window.alert("Please allow access to the file system");
+  return await verifyHandlePermissionRaw(fileHandle, readWrite);
 }
 
 /**

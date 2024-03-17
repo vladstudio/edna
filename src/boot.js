@@ -4,7 +4,7 @@ import {
   loadNoteInfos,
   setStorageFS,
 } from "../src/notes";
-import { getSettings, loadSettings, saveSettings } from "./settings";
+import { getSettings, loadInitialSettings, saveSettings } from "./settings";
 
 /** @typedef {import("./settings").Settings} Settings */
 
@@ -17,22 +17,7 @@ export async function boot() {
     console.log("we're storing data in localStorage");
   }
 
-  /** @type {Settings} */
-  let initialSettings = {
-    bracketClosing: false,
-    currentNoteName: "scratch",
-    emacsMetaKey: "alt",
-    keymap: "default",
-    showFoldGutter: true,
-    showLineNumberGutter: true,
-  };
-  let settings = await loadSettings(dh);
-  // console.log("settings loaded:", s);
-  let updatedSettings = Object.assign(initialSettings, settings);
-  if (updatedSettings.currentNoteInfo) {
-    updatedSettings.currentNoteInfo = undefined; // temporary, delete obsolete field
-  }
-  await saveSettings(updatedSettings);
+  await loadInitialSettings(dh);
 
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);

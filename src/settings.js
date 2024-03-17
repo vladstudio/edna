@@ -79,6 +79,28 @@ export async function saveSettings(newSettings, dh = null) {
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
 }
 
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ */
+export async function loadInitialSettings(dh) {
+  /** @type {Settings} */
+  let initialSettings = {
+    bracketClosing: false,
+    currentNoteName: "scratch",
+    emacsMetaKey: "alt",
+    keymap: "default",
+    showFoldGutter: true,
+    showLineNumberGutter: true,
+  };
+  let settings = await loadSettings(dh);
+  // console.log("settings loaded:", s);
+  let updatedSettings = Object.assign(initialSettings, settings);
+  if (updatedSettings.currentNoteInfo) {
+    updatedSettings.currentNoteInfo = undefined; // temporary, delete obsolete field
+  }
+  await saveSettings(updatedSettings);
+}
+
 export async function setSetting(key, value) {
   console.log("setSetting:", key, value);
   let s = { ...settings };
