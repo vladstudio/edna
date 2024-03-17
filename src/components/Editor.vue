@@ -260,6 +260,8 @@ export default {
         this.editor.setReadOnly(readOnly)
         this.$emit("docChanged")
         this.focus()
+        let title = noteInfo.name + " - Edna"
+        window.document.title = title
       })
     }
   },
