@@ -1,5 +1,5 @@
 <script>
-import { dbGetDirHandle, dbDelDirHandle, dbSetDirHandle } from '../notes';
+import { dbGetDirHandle, dbDelDirHandle, dbSetDirHandle, pickAnotherDirectory } from '../notes';
 import App from "./App.vue";
 import { createApp } from "vue";
 import { requestHandlePermission, openDirPicker } from '../fileutil';
@@ -31,22 +31,15 @@ export default {
     },
 
     async pickAnotherDirectory() {
-      let dh = await dbGetDirHandle();
-      try {
-        let newDh = await openDirPicker(true);
-        if (newDh === null) {
-          return;
-        }
-        await dbSetDirHandle(newDh);
+      let ok = pickAnotherDirectory();
+      if (ok) {
         boot()
-      } catch (e) {
-        console.error("pickAnotherDirectory", e)
       }
     },
 
     async switchToBrowserStorage() {
       await dbDelDirHandle();
-      boot()
+      boot();
     },
   },
 

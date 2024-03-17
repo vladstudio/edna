@@ -1,4 +1,9 @@
-import { fsReadTextFile, fsWriteTextFile, readDir } from "./fileutil";
+import {
+  fsReadTextFile,
+  fsWriteTextFile,
+  openDirPicker,
+  readDir,
+} from "./fileutil";
 import { getDateYYYYMMDDDay, throwIf } from "./utils";
 import { getHelp, getInitialContent } from "./initial-content";
 import {
@@ -651,4 +656,18 @@ export async function switchToStoringNotesOnDisk(dh) {
   saveSettings(settings);
 
   return noteInfos;
+}
+
+export async function pickAnotherDirectory() {
+  try {
+    let newDh = await openDirPicker(true);
+    if (newDh === null) {
+      return;
+    }
+    await dbSetDirHandle(newDh);
+    return true;
+  } catch (e) {
+    console.error("pickAnotherDirectory", e);
+  }
+  return false;
 }

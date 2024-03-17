@@ -8,11 +8,12 @@ import TopNav from './TopNav.vue'
 
 import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, switchToStoringNotesOnDisk } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
+import { boot } from '../webapp-boot'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -138,6 +139,18 @@ export default {
       this.getEditor().focus()
     },
 
+    async pickAnotherDirectory() {
+      let ok = pickAnotherDirectory();
+      if (ok) {
+        boot()
+      }
+    },
+
+    async switchToBrowserStorage() {
+      await dbDelDirHandle();
+      boot();
+    },
+
     onContextMenu(e) {
       // console.log("onContextMenu")
       if (this.showingNoteSelector || this.showingLanguageSelector || this.showingSettings) {
@@ -243,7 +256,7 @@ export default {
             },
             {
               label: "Open directory with notes",
-              onClick: () => { this.storeNotesOnDisk() },
+              onClick: () => { this.pickAnotherDirectory() },
               shortcut: "",
             }
           ]
@@ -251,13 +264,12 @@ export default {
           children = [
             {
               label: "Switch to storing in browser",
-              // TODO: fix the call
-              onClick: () => { this.storeNotesOnDisk() },
+              onClick: () => { this.switchToBrowserStorage() },
               shortcut: "",
             },
             {
               label: "Open directory with notes",
-              onClick: () => { this.storeNotesOnDisk() },
+              onClick: () => { this.pickAnotherDirectory() },
               shortcut: "",
             }
           ]
