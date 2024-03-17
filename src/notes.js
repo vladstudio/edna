@@ -10,6 +10,7 @@ import {
 import {
   getStats,
   incNoteCreateCount,
+  incNoteDeleteCount,
   incNoteSaveCount,
   isDocDirty,
 } from "./state";
@@ -548,6 +549,7 @@ export async function deleteNote(noteInfo) {
     let fileName = noteInfo.path;
     await dh.removeEntry(fileName);
   }
+  incNoteDeleteCount();
   return await updateLatestNoteInfos();
 }
 
