@@ -436,7 +436,7 @@ export default {
         height: 100%
         position: relative
         .editor
-            height: calc(100% - 21px - 21px)
+            height: calc(100% - 21px) // TODO: better way than hardccoding height of status bar
         .status
             position: absolute
             bottom: 0
