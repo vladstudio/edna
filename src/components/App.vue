@@ -7,11 +7,11 @@ import StatusBar from './StatusBar.vue'
 import TopNav from './TopNav.vue'
 
 import Settings from './settings/Settings.vue'
-import { stringSizeInUtf8Bytes, platformName } from '../utils'
+import { stringSizeInUtf8Bytes } from '../utils'
 import { createNewScratchNote, createNoteWithName, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
-import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
+import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
@@ -92,7 +92,7 @@ export default {
   },
 
   methods: {
-    /**
+    /**@c
      * @returns {Editor}
     */
     getEditor() {

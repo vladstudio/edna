@@ -30,6 +30,32 @@ export async function verifyHandlePermission(fileHandle, withWrite) {
 }
 
 /**
+ * @param {any} fileHandle
+ * @param {boolean} withWrite
+ * @returns {Promise<boolean>}
+ */
+export async function requestHandlePermission(fileHandle, withWrite) {
+  const opts = {};
+  if (withWrite) {
+    opts.mode = "readwrite";
+  }
+  return (await fileHandle.requestPermission(opts)) === "granted";
+}
+
+/**
+ * @param {any} fileHandle
+ * @param {boolean} withWrite
+ * @returns {Promise<boolean>}
+ */
+export async function hasHandlePermission(fileHandle, withWrite) {
+  const opts = {};
+  if (withWrite) {
+    opts.mode = "readwrite";
+  }
+  return (await fileHandle.queryPermission(opts)) === "granted";
+}
+
+/**
  * @returns {boolean}
  */
 export function isIFrame() {
