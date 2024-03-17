@@ -224,16 +224,52 @@ export default {
         // },
       ]
 
-      if (supportsFileSystem && (getStorageFS() == null)) {
-        items.push({
-          label: "Store notes on disk",
-          onClick: () => { this.storeNotesOnDisk() },
+      if (supportsFileSystem) {
+        let children;
+        if (getStorageFS() == null) {
+          // if currently storing in browser
+          children = [
+            {
+              label: "Move from browser to directory",
+              onClick: () => { this.storeNotesOnDisk() },
+              shortcut: "",
+            },
+            {
+              label: "Open directory with notes",
+              onClick: () => { this.storeNotesOnDisk() },
+              shortcut: "",
+            }
+          ]
+        } else {
+          children = [
+            {
+              label: "Switch to storing in browser",
+              // TODO: fix the call
+              onClick: () => { this.storeNotesOnDisk() },
+              shortcut: "",
+            },
+            {
+              label: "Open directory with notes",
+              onClick: () => { this.storeNotesOnDisk() },
+              shortcut: "",
+            }
+          ]
+        }
+        children.push({
+          label: "Show help",
+          onClick: () => { this.toggleHelp(true) },
+          divided: "up",
           shortcut: "",
+        })
+        items.push({
+          label: "Notes storage",
+          children: children,
         })
       }
       items.push({
         label: "Show help",
         onClick: () => { this.toggleHelp() },
+        divided: "up",
         shortcut: "",
       })
 
@@ -333,7 +369,7 @@ export default {
       this.getEditor().openNote(noteInfo)
     },
 
-    toggleHelp() {
+    toggleHelp(forStorage = false) {
       this.showingHelp = !this.showingHelp
       if (!this.showingHelp) {
         this.getEditor().focus()
