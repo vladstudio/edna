@@ -1,7 +1,5 @@
 import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
-import { fsReadTextFile, fsWriteTextFile } from "./fileutil";
 
-import { getStorageFS } from "./notes";
 import { ipcRenderer } from "./ipcrenderer";
 import { objectEqual } from "./utils";
 
@@ -39,50 +37,32 @@ export function getSettings() {
   return settings;
 }
 
-// TODO: not happy have to pass dh but don't want circular imports
 /**
- * @param {FileSystemDirectoryHandle} dh
- * @returns {Promise<Settings>}
+ * @returns {Settings}
  */
-export async function loadSettings(dh) {
-  let d = null;
-  if (dh) {
-    d = await fsReadTextFile(dh, kSettingsPath);
-  } else {
-    d = localStorage.getItem(kSettingsPath);
-  }
+export function loadSettings() {
+  let d = localStorage.getItem(kSettingsPath) || "{}";
   // also set settings to the latest version
-  settings = d === null ? {} : JSON.parse(d);
+  let settings = d === null ? {} : JSON.parse(d);
   return settings;
 }
 
 /**
- * @param {FileSystemDirectoryHandle} dh
  * @param {Settings} newSettings
  */
-export async function saveSettings(newSettings, dh = null) {
+export function saveSettings(newSettings) {
   // console.log("saveSettings:", newSettings);
   if (objectEqual(settings, newSettings)) {
     console.log("saveSettings: no change");
     return;
   }
   let s = JSON.stringify(newSettings, null, 2);
-  if (!dh) {
-    dh = getStorageFS();
-  }
-  if (dh) {
-    await fsWriteTextFile(dh, kSettingsPath, s);
-  } else {
-    localStorage.setItem(kSettingsPath, s);
-  }
+  localStorage.setItem(kSettingsPath, s);
   settings = newSettings;
   ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
 }
 
-/**
- * @param {FileSystemDirectoryHandle} dh
- */
-export async function loadInitialSettings(dh) {
+export function loadInitialSettings() {
   /** @type {Settings} */
   let initialSettings = {
     bracketClosing: false,
@@ -92,20 +72,24 @@ export async function loadInitialSettings(dh) {
     showFoldGutter: true,
     showLineNumberGutter: true,
   };
-  let settings = await loadSettings(dh);
+  let settings = loadSettings();
   // console.log("settings loaded:", s);
   let updatedSettings = Object.assign(initialSettings, settings);
   if (updatedSettings.currentNoteInfo) {
     updatedSettings.currentNoteInfo = undefined; // temporary, delete obsolete field
   }
-  await saveSettings(updatedSettings);
+  saveSettings(updatedSettings);
 }
 
-export async function setSetting(key, value) {
+/**
+ * @param {string} key
+ * @param {any} value
+ */
+export function setSetting(key, value) {
   console.log("setSetting:", key, value);
   let s = { ...settings };
   s[key] = value;
-  await saveSettings(s);
+  saveSettings(s);
 }
 
 export function onOpenSettings(callback) {

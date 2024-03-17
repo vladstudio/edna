@@ -37,7 +37,7 @@ export async function boot() {
     console.log("we're storing data in localStorage");
   }
 
-  await loadInitialSettings(dh);
+  loadInitialSettings();
 
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);

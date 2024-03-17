@@ -530,7 +530,7 @@ export async function loadCurrentNote() {
 export async function loadNote(noteInfo) {
   console.log("loadNote:", noteInfo);
   let content = await loadNoteRaw(noteInfo);
-  await setSetting("currentNoteName", noteInfo.name);
+  setSetting("currentNoteName", noteInfo.name);
   content = autoCreateDayInJournal(noteInfo, content);
   return fixUpNoteContent(content);
 }
@@ -638,7 +638,7 @@ export async function switchToStoringNotesOnDisk(dh) {
   let noteInfos = await updateLatestNoteInfos();
 
   // migrate settings, update currentNoteName
-  let settings = await loadSettings(null);
+  let settings = loadSettings();
   let name = settings.currentNoteName;
   let newCurrNote = noteInfos.filter((ni) => ni.name === name)[0];
   if (newCurrNote) {
@@ -646,7 +646,7 @@ export async function switchToStoringNotesOnDisk(dh) {
   } else {
     settings.currentNoteName = kScratchNoteName;
   }
-  await saveSettings(settings, dh);
+  saveSettings(settings);
 
   return noteInfos;
 }
