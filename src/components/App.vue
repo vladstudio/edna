@@ -116,6 +116,11 @@ export default {
       }
     },
 
+    onCloseHelp(e) {
+      this.showingHelp = false
+      this.getEditor().focus()
+    },
+
     async storeNotesOnDisk() {
       let dh = await openDirPicker(true)
       if (!dh) {
@@ -407,7 +412,7 @@ export default {
   <div style="mcStyle" class="menu-overlay">
     <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
-  <Help v-if="showingHelp" />
+  <Help @close="onCloseHelp" v-if="showingHelp" />
 </template>
 
 <style scoped lang="sass">
