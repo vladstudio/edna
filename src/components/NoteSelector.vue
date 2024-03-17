@@ -1,5 +1,6 @@
 <script>
 import { getLatestNoteInfos, isSystemNote } from '../notes'
+import sanitize from "sanitize-filename"
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -49,8 +50,12 @@ export default {
   },
 
   computed: {
+    sanitizedFilter() {
+      return sanitize(this.filter).trim()
+    },
+
     filteredItems() {
-      const nameLC = this.filter.toLowerCase().trim()
+      const nameLC = this.sanitizedFilter.toLowerCase()
       return this.items.filter((noteInfo) => {
         return noteInfo.nameLC.indexOf(nameLC) !== -1
       })
@@ -85,7 +90,7 @@ export default {
     },
     canCreate() {
       // TODO: use lowerCase name?
-      let name = this.filter.trim()
+      let name = this.sanitizedFilter
       if (name.length === 0) {
         return false
       }
@@ -99,7 +104,7 @@ export default {
     canCreateWithEnter() {
       // if there are no matches for the filter, we can create with just Enter
       // otherwise we need Ctrl + Enter
-      let name = this.filter.trim()
+      let name = this.sanitizedFilter
       if (name.length === 0) {
         return false
       }
@@ -125,9 +130,14 @@ export default {
   },
 
   methods: {
+    sanitizeNoteName(name) {
+      let res = sanitize(name);
+      // console.log(`sanitizeNoteName: ${name} -> ${res}`);
+      return res;
+    },
+
     cleanNoteName(name) {
-      // TODO: sanitize for file name
-      return `"` + name.trim() + `"`
+      return `"` + this.sanitizeNoteName(name) + `"`
     },
 
     isCtrlDelete(event) {
@@ -156,14 +166,14 @@ export default {
         }
       } else if (event.key === "Enter") {
         event.preventDefault()
-        let name = this.filter.trim();
+        let name = this.sanitizedFilter;
         console.log("selected:", this.selected, "name:", name);
         if (this.canCreateWithEnter) {
           this.createNote(name);
           return;
         }
         if (event.ctrlKey && this.canCreate) {
-          this.createNote(this.filter)
+          this.createNote(this.sanitizedFilter)
           return;
         }
         const selected = this.filteredItems[this.selected]
