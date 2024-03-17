@@ -698,6 +698,7 @@ export async function loadNotesMetadata() {
 }
 
 export function getNotesMetadata() {
+  console.log("getNotesMetadata:", notesMetadata);
   return notesMetadata;
 }
 
@@ -726,9 +727,16 @@ export async function reassignNoteShortcut(name, altShortcut) {
   for (let o of m) {
     if (o.altShortcut === altShortcut) {
       if (o.name === name) {
-        console.log("reassignNoteShortcut: no change");
-        // no change
-        return;
+        o.altShortcut = undefined;
+        console.log(
+          "reassignNoteShortcut: removed shortcut",
+          altShortcut,
+          "from",
+          o.name
+        );
+        m = m.filter((o) => o.altShortcut);
+        await saveNotesMetadata(m);
+        return m;
       } else {
         o.altShortcut = undefined;
         console.log(

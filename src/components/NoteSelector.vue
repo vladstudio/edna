@@ -147,6 +147,18 @@ export default {
       return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
     },
 
+    noteShortcut(note) {
+      let name = note.name
+      for (let o of this.notesMetadata) {
+        if (o.name === name) {
+          if (o.altShortcut) {
+            return "Alt + " + o.altShortcut
+          }
+        }
+      }
+      return null;
+    },
+
     onKeydown(event) {
       let altN = isAltNumEvent(event)
       if (altN !== null) {
@@ -154,7 +166,10 @@ export default {
         if (note) {
           event.preventDefault()
           console.log("altN", altN, "n", note);
-          reassignNoteShortcut(note.name, altN); // this is async but that's fine
+          reassignNoteShortcut(note.name, altN).then(meta => {
+            console.log("onKeydown", meta)
+            this.notesMetadata = meta
+          })
           return;
         }
       }
@@ -255,9 +270,13 @@ export default {
     <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
       <ul class="items">
-        <li v-for="item, idx in filteredItems" :key="item.path" :class="idx === selected ? 'selected' : ''"
+        <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
           @click="openNote(item)" ref="item">
-          {{ item.name }}
+          <div>
+            {{ item.name }}
+          </div>
+          <div class="flex-grow"></div>
+          <div>{{ noteShortcut(item) }}</div>
         </li>
       </ul>
       <hr class="mt-1 mb-1 border-gray-400" v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
@@ -280,6 +299,10 @@ export default {
         </div>
         <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="bold truncate">{{
       cleanNoteName(selectedName) }}</span></span></div>
+
+        <div><span class="kbd">Alt + 0...9</span></div>
+        <div>assign hotkey</div>
+        <div></div>
 
         <div><span class="kbd">Esc</span></div>
         <div>dismiss</div>

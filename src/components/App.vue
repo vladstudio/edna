@@ -7,8 +7,8 @@ import StatusBar from './StatusBar.vue'
 import TopNav from './TopNav.vue'
 
 import Settings from './settings/Settings.vue'
-import { stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk } from '../notes'
+import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -107,6 +107,22 @@ export default {
     },
 
     onKeyDown(e) {
+      let altN = isAltNumEvent(e)
+      if (altN) {
+        let meta = getNotesMetadata()
+        for (let o of meta) {
+          if (o.altShortcut == altN && o.name !== this.noteName) {
+            console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
+            let noteInfo = findNoteInfoByName(o.name)
+            console.log("onKeyDown: noteInfo:", noteInfo)
+            this.getEditor().openNote(noteInfo)
+            this.getEditor().focus()
+            e.preventDefault()
+            return
+          }
+        }
+      }
+
       // hack: stop Ctrl + O unless it originates from code mirror (because then it
       // triggers NoteSelector.vue)
       if (e.key == "o" && e.ctrlKey && !e.altKey && !e.shiftKey) {
