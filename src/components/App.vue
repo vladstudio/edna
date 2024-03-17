@@ -8,7 +8,6 @@ import Settings from './settings/Settings.vue'
 import { stringSizeInUtf8Bytes, platformName } from '../utils'
 import { createNewScratchNote, createNoteWithName, deleteNote, findNoteInfoByName, getScratchNoteInfo, getStorageFS, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
-import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker, readDir } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
@@ -30,23 +29,23 @@ export default {
     let settings = getSettings()
     // console.log("setting:", settings)
     return {
-      noteName: settings.currentNoteName,
-      line: 1,
       column: 1,
+      development: window.location.href.indexOf("dev=1") !== -1,
       docSize: 0,
-      selectionSize: 0,
+      initialTheme: themeMode.initial,
       language: "plaintext",
       languageAuto: true,
-      theme: themeMode.initial,
-      initialTheme: themeMode.initial,
-      themeSetting: 'system',
-      development: window.location.href.indexOf("dev=1") !== -1,
+      line: 1,
+      noteName: settings.currentNoteName,
+      selectionSize: 0,
+      settings: settings,
+      showingHelp: false,
+      showingMenu: false,
       showLanguageSelector: false,
       showNoteSelector: false,
       showSettings: false,
-      settings: settings,
-      showingMenu: false,
-      showingHelp: false,
+      theme: themeMode.initial,
+      themeSetting: 'system',
     }
   },
 
@@ -66,10 +65,9 @@ export default {
     onThemeChange(themeMode.initial)
     themeMode.onChange(onThemeChange)
     onSettingsChange((settings) => {
-      console.log("onSettingsChange callback", settings)
       this.settings = settings;
       this.noteName = settings.currentNoteName
-      console.log("noteName", this.noteName)
+      console.log("onSettingsChange callback, noteName:", this.noteName)
     })
     onOpenSettings(() => {
       this.showSettings = true
@@ -126,7 +124,7 @@ export default {
       if (!dh) {
         return;
       }
-      await switchToStoringNotesOnDisk(dh); f
+      await switchToStoringNotesOnDisk(dh);
       let settings = getSettings();
       let noteInfo = findNoteInfoByName(settings.currentNoteName)
       console.log("storeNotesOnDisk: noteInfo:", noteInfo)

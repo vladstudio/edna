@@ -29,6 +29,9 @@ export async function boot() {
   let settings = await loadSettings(dh);
   // console.log("settings loaded:", s);
   let updatedSettings = Object.assign(initialSettings, settings);
+  if (updatedSettings.currentNoteInfo) {
+    updatedSettings.currentNoteInfo = undefined; // temporary, delete obsolete field
+  }
   await saveSettings(updatedSettings);
 
   let noteInfos = await loadNoteInfos();

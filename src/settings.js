@@ -17,6 +17,7 @@ import { objectEqual } from "./utils";
  * @property {string} keymap
  * @property {boolean} showFoldGutter
  * @property {boolean} showLineNumberGutter
+ * @property {NoteInfo} [currentNoteInfo] // TODO: obsolete, delete
  */
 
 export let kDefaultFontFamily = "Hack";
@@ -60,9 +61,9 @@ export async function loadSettings(dh) {
  * @param {Settings} newSettings
  */
 export async function saveSettings(newSettings, dh = null) {
-  // console.log("setSettings:", newSettings);
+  // console.log("saveSettings:", newSettings);
   if (objectEqual(settings, newSettings)) {
-    console.log("setSettings: no change");
+    console.log("saveSettings: no change");
     return;
   }
   let s = JSON.stringify(newSettings, null, 2);
@@ -90,7 +91,6 @@ export function onOpenSettings(callback) {
 }
 
 export function onSettingsChange(callback) {
-  console.log("onSettingsChange");
   ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) =>
     callback(settings)
   );
