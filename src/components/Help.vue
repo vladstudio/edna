@@ -2,8 +2,16 @@
 import { platformName } from "../utils"
 
 export default {
+  props: [
+    "anchor",
+  ],
+
   data() {
     let helpURL = platformName === "mac" ? "/help-mac.html" : "/help-win.html"
+    if (this.anchor) {
+      helpURL += `#${this.anchor}`
+    }
+    console.log("Help URL", helpURL)
     return {
       helpURL: helpURL,
     }
@@ -17,6 +25,7 @@ export default {
 
   methods: {
     onFocusOut(event) {
+      console.log("Help: onFocusOut", event.relatedTarget)
       let container = this.$refs.container
       // @ts-ignore
       if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {

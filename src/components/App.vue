@@ -37,6 +37,7 @@ export default {
       column: 1,
       development: window.location.href.indexOf("dev=1") !== -1,
       docSize: 0,
+      helpAnchor: "",
       initialTheme: themeMode.initial,
       language: "plaintext",
       languageAuto: true,
@@ -98,6 +99,7 @@ export default {
      * @returns {Editor}
     */
     getEditor() {
+      console.log("getEditor")
       // @ts-ignore
       return this.$refs.editor
     },
@@ -262,7 +264,7 @@ export default {
         }
         children.push({
           label: "Show help",
-          onClick: () => { this.toggleHelp(true) },
+          onClick: () => { this.toggleHelp("storage") },
           divided: "up",
           shortcut: "",
         })
@@ -294,7 +296,7 @@ export default {
         onClose: (lastClicked) => {
           // console.log("onClose: lastClicked:", lastClicked)
           this.showingMenu = false
-          this.getEditor().focus()
+          // this.getEditor().focus()
         },
         items: items,
       });
@@ -374,11 +376,15 @@ export default {
       this.getEditor().openNote(noteInfo)
     },
 
-    toggleHelp(forStorage = false) {
-      this.showingHelp = !this.showingHelp
-      if (!this.showingHelp) {
-        this.getEditor().focus()
+    toggleHelp(anchor = "") {
+      let willHide = this.showingHelp;
+      if (willHide) {
+        this.showingHelp = false;
+        // this.getEditor().focus()
+        return;
       }
+      this.helpAnchor = anchor
+      this.showingHelp = true
     },
 
     /**
@@ -453,7 +459,7 @@ export default {
   <div style="mcStyle" class="menu-overlay">
     <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
-  <Help @close="onCloseHelp" v-if="showingHelp" />
+  <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
 </template>
 
 <style scoped lang="sass">
@@ -477,7 +483,7 @@ export default {
         height: 100%
         position: relative
         .editor
-            height: calc(100% - 21px) // TODO: better way than hardccoding height of status bar
+            height: calc(100% - 21px) // TODO: better way than hardcoding height of status bar
         .status
             position: absolute
             bottom: 0

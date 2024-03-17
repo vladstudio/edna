@@ -1,5 +1,3 @@
-import { OPEN_SETTINGS_EVENT, SETTINGS_CHANGE_EVENT } from "./constants";
-
 import { ipcRenderer } from "./ipcrenderer";
 import { objectEqual } from "./utils";
 
@@ -17,6 +15,9 @@ import { objectEqual } from "./utils";
  * @property {boolean} showLineNumberGutter
  * @property {NoteInfo} [currentNoteInfo] // TODO: obsolete, delete
  */
+
+export const kEventOpenSettings = "open-settings";
+export const kEventSettingsChange = "settings-change";
 
 export let kDefaultFontFamily = "Hack";
 // TODO: not sure mobile should be so big. Looked big on iPhone
@@ -59,7 +60,7 @@ export function saveSettings(newSettings) {
   let s = JSON.stringify(newSettings, null, 2);
   localStorage.setItem(kSettingsPath, s);
   settings = newSettings;
-  ipcRenderer.send(SETTINGS_CHANGE_EVENT, newSettings);
+  ipcRenderer.send(kEventSettingsChange, newSettings);
 }
 
 export function loadInitialSettings() {
@@ -93,13 +94,11 @@ export function setSetting(key, value) {
 }
 
 export function onOpenSettings(callback) {
-  ipcRenderer.on(OPEN_SETTINGS_EVENT, callback);
+  ipcRenderer.on(kEventOpenSettings, callback);
 }
 
 export function onSettingsChange(callback) {
-  ipcRenderer.on(SETTINGS_CHANGE_EVENT, (event, settings) =>
-    callback(settings)
-  );
+  ipcRenderer.on(kEventSettingsChange, (event, settings) => callback(settings));
 }
 
 /**
