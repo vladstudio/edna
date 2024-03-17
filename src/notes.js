@@ -37,6 +37,10 @@ export async function dbSetDirHandle(dh) {
   await db.set(kStorageDirHandleKey, dh);
 }
 
+export async function dbDelDirHandle() {
+  await db.del(kStorageDirHandleKey);
+}
+
 /**
  * @param {NoteInfo} a
  * @param {NoteInfo} b

@@ -1,8 +1,8 @@
 <script>
-import { dbGetDirHandle } from '../notes';
+import { dbGetDirHandle, dbDelDirHandle, dbSetDirHandle } from '../notes';
 import App from "./App.vue";
 import { createApp } from "vue";
-import { requestHandlePermission } from '../fileutil';
+import { requestHandlePermission, openDirPicker } from '../fileutil';
 import { boot } from '../webapp-boot';
 
 export default {
@@ -29,6 +29,25 @@ export default {
         boot()
       }
     },
+
+    async pickAnotherDirectory() {
+      let dh = await dbGetDirHandle();
+      try {
+        let newDh = await openDirPicker(true);
+        if (newDh === null) {
+          return;
+        }
+        await dbSetDirHandle(newDh);
+        boot()
+      } catch (e) {
+        console.error("pickAnotherDirectory", e)
+      }
+    },
+
+    async switchToBrowserStorage() {
+      await dbDelDirHandle();
+      boot()
+    },
   },
 
 }
@@ -46,9 +65,11 @@ export default {
       <button @click="requestPermissions()" class="mt-4 px-4 py-1 border border-black hover:bg-gray-100">Request
         permission for directory <span class="font-bold">{{
       dirName
-          }}</span></button>
-      <button class="mt-4 px-2 py-1 border border-black hover:bg-gray-100">Pick another directory with notes</button>
-      <button class="mt-4 px-2 py-1 border border-black hover:bg-gray-100">Switch to storing notes in browser</button>
+    }}</span></button>
+      <button @click="pickAnotherDirectory()" class="mt-4 px-2 py-1 border border-black hover:bg-gray-100">Pick another
+        directory with notes</button>
+      <button @click="switchToBrowserStorage()" class="mt-4 px-2 py-1 border border-black hover:bg-gray-100">Switch to
+        storing notes in browser</button>
       <a class="mt-4 self-center underline" target="_blank" href="/help-storage.html">learn more</a>
     </div>
   </div>
