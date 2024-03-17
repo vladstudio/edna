@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { getHelp } from "./initial-content.js";
 import markdownIt from "markdown-it";
+import markdownItAnchor from "markdown-it-anchor";
 import path from "node:path";
 
 console.log("This is gen script");
@@ -35,6 +36,12 @@ let htmlEnd = `
 `;
 function genHTMLFromMarkdown() {
   let md = markdownIt();
+  md.use(markdownItAnchor, {
+    // Here you can pass options to markdown-it-anchor
+    // For example, setting the permalink option:
+    permalink: markdownItAnchor.permalink.headerLink(),
+  });
+
   {
     let mdText = cleanMd(getHelp("windows", true));
     let htmlText = md.render(mdText);
