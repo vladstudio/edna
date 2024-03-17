@@ -204,12 +204,12 @@ export default {
               shortcut: `${modChar} + ${altChar} + Enter`,
             },
             {
-              label: "Goto next block",
+              label: "Goto next",
               onClick: () => { this.getEditor().gotoNextBlock() },
               shortcut: `${modChar} + Down`,
             },
             {
-              label: "Goto previous block",
+              label: "Goto previous",
               onClick: () => { this.getEditor().gotoPreviousBlock() },
               shortcut: `${modChar} + Up`,
             },
@@ -230,17 +230,7 @@ export default {
           onClick: () => { this.createNewScratchNote() },
           shortcut: `${altChar} + N`,
         },
-        // TODO: format if supports format
-        // TODO: run  if supports run
         // TODO: set plain text, markdown
-        // {
-        //     label: "Format",
-        //     onClick: () => {this.getEditor().formatCurrentBlock() }
-        // },
-        // {
-        //     label: "Execute block code",
-        //     onClick: () => { this.openNoteSelector() }
-        // },
       ]
       if (langSupportsFormat(this.language)) {
         items[1].children.push({

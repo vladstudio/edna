@@ -671,3 +671,92 @@ export async function pickAnotherDirectory() {
   }
   return false;
 }
+
+// meta-data about notes
+const kMetadataName = "notes.metadata.edna.json";
+
+/**
+ * @typedef {Object} NoteMedata
+ * @property {string} name
+ * @property {string} [altShortcut]
+ */
+
+/** @type {NoteMedata[]} */
+let notesMetadata = [];
+
+export async function loadNotesMetadata() {
+  let dh = getStorageFS();
+  let s;
+  if (dh === null) {
+    s = localStorage.getItem(kMetadataName);
+  } else {
+    s = await fsReadTextFile(dh, kMetadataName);
+  }
+  s = s || "[]";
+  notesMetadata = JSON.parse(s);
+  return notesMetadata;
+}
+
+export function getNotesMetadata() {
+  return notesMetadata;
+}
+
+/**
+ * @param {NoteMedata[]} m
+ */
+export function saveNotesMetadata(m) {
+  let s = JSON.stringify(m, null, 2);
+  let dh = getStorageFS();
+  if (dh === null) {
+    localStorage.setItem(kMetadataName, s);
+  } else {
+    fsWriteTextFile(dh, kMetadataName, s);
+  }
+  notesMetadata = m;
+}
+
+/**
+ * @param {string} name
+ * @param {string} altShortcut
+ * @returns {Promise<NoteMedata[]>}
+ */
+export async function reassignNoteShortcut(name, altShortcut) {
+  console.log("reassignNoteShortcut:", name, altShortcut);
+  let m = getNotesMetadata();
+  for (let o of m) {
+    if (o.altShortcut === altShortcut) {
+      if (o.name === name) {
+        console.log("reassignNoteShortcut: no change");
+        // no change
+        return;
+      } else {
+        o.altShortcut = undefined;
+        console.log(
+          "reassignNoteShortcut: removed shortcut",
+          altShortcut,
+          "from",
+          o.name
+        );
+      }
+    }
+  }
+
+  /** @type {NoteMedata} */
+  let found;
+  for (let o of m) {
+    if (o.name === name) {
+      found = o;
+      console.log("reassignNoteShortcut: found note", name);
+      break;
+    }
+  }
+  if (!found) {
+    found = { name: name };
+    m.push(found);
+    console.log("reassignNoteShortcut: created for note", name);
+  }
+  found.altShortcut = altShortcut;
+  m = m.filter((o) => o.altShortcut);
+  await saveNotesMetadata(m);
+  return m;
+}

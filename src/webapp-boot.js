@@ -5,6 +5,7 @@ import {
   createDefaultNotes,
   dbGetDirHandle,
   loadNoteInfos,
+  loadNotesMetadata,
   setStorageFS,
 } from "./notes";
 import { getSettings, loadInitialSettings } from "./settings";
@@ -41,6 +42,7 @@ export async function boot() {
 
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);
+  await loadNotesMetadata(); // pre-load
 
   let settings = getSettings();
   // console.log("settings:", settings);

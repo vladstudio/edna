@@ -1,6 +1,7 @@
 <script>
-import { getLatestNoteInfos, isSystemNote } from '../notes'
+import { getLatestNoteInfos, getNotesMetadata, isSystemNote, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
+import { isAltNumEvent } from '../utils'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
@@ -35,10 +36,12 @@ function rebuildNotesInfo() {
 export default {
   data() {
     let items = rebuildNotesInfo()
+    let meta = getNotesMetadata()
     return {
       items: items,
       selected: 0,
       filter: "",
+      notesMetadata: meta,
     }
   },
 
@@ -145,6 +148,17 @@ export default {
     },
 
     onKeydown(event) {
+      let altN = isAltNumEvent(event)
+      if (altN !== null) {
+        let note = this.selectedNote
+        if (note) {
+          event.preventDefault()
+          console.log("altN", altN, "n", note);
+          reassignNoteShortcut(note.name, altN); // this is async but that's fine
+          return;
+        }
+      }
+
       if (event.key === "ArrowDown") {
         this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
         event.preventDefault()

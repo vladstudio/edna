@@ -151,3 +151,17 @@ export function fileExt(fileName) {
   const ext = fileName.substring(idx);
   return ext.toLowerCase();
 }
+
+/**
+ * @param {KeyboardEvent} e
+ * @returns {string|null} - returns "1" - "9" or null
+ */
+export function isAltNumEvent(e) {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || !e.altKey) {
+    return null;
+  }
+  if (e.key < "0" || e.key > "9") {
+    return null;
+  }
+  return e.key;
+}
