@@ -16,6 +16,8 @@ import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../set
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
+/** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
+
 export default {
   components: {
     ContextMenu,
@@ -150,6 +152,8 @@ export default {
       }
       e.preventDefault();
       this.showingMenu = true
+      let o;
+      /** @type {MenuItem[]} */
       let items = [
         {
           label: "Open / create / delete note",
@@ -225,7 +229,8 @@ export default {
       ]
 
       if (supportsFileSystem) {
-        let children;
+        /** @type {MenuItem[]} */
+        let children = [];
         if (getStorageFS() == null) {
           // if currently storing in browser
           children = [

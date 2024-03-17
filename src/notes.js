@@ -2,17 +2,17 @@ import { fsReadTextFile, fsWriteTextFile, readDir } from "./fileutil";
 import { getDateYYYYMMDDDay, throwIf } from "./utils";
 import { getHelp, getInitialContent } from "./initial-content";
 import {
-  getOpenCount,
-  incNoteCreateCount,
-  incSaveCount,
-  isDocDirty,
-} from "./state";
-import {
   getSettings,
   loadSettings,
   saveSettings,
   setSetting,
 } from "./settings";
+import {
+  getStats,
+  incNoteCreateCount,
+  incNoteSaveCount,
+  isDocDirty,
+} from "./state";
 
 import { KV } from "./dbutil";
 
@@ -218,8 +218,9 @@ export async function createDefaultNotes(existingNoteInfos) {
   const s = isDev ? initialDevContent : initialContent;
   let nCreated = await createIfNotExists(kScratchNoteName, s);
   // scratch note must always exist but the user can delete inbox / daily journal notes
-  let n = getOpenCount();
-  if (n === 0) {
+  let n = getStats().appOpenCount;
+  if (n < 2) {
+    // re-create those notes if the user hasn't deleted them
     nCreated += await createIfNotExists(kDailyJournalNoteName, initialJournal);
     nCreated += await createIfNotExists(kInboxNoteName, initialInbox);
   }
@@ -422,7 +423,7 @@ export async function saveCurrentNote(content) {
     await fsWriteTextFile(dh, noteInfo.path, content);
   }
   isDocDirty.value = false;
-  incSaveCount();
+  incNoteSaveCount();
 }
 
 /**

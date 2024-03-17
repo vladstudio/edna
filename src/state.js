@@ -12,68 +12,94 @@ import { ref } from "vue";
  * @property {string} [nameLC]
  */
 
+/**
+ * @typedef {Object} Stats
+ * @property {number} appOpenCount
+ * @property {number} noteCreateCount
+ * @property {number} noteDeleteCount
+ * @property {number} noteSaveCount
+ */
+
 export let isDocDirty = ref(false);
 /** @type {Ref<NoteInfo[]>} */
 export let noteInfos = ref([]);
 
-const keyOpenCount = "edna:openCount";
-const keySaveCount = "edna:saveCount";
-const keyNoteCreateCount = "edna:noteCreateCount";
+const kStatsKey = "stats.json";
+
+// TODO: optimize by keeping in-mem copy of kStatsKey
+// so that getCount() can get it from there and incCount()
+// doesn't have to read from localStorage and parse JSON
 
 /**
+ * @returns {Stats}
+ */
+export function getStats() {
+  let s = localStorage.getItem(kStatsKey) || "{}";
+  /** @type {Stats} */
+  let stats = JSON.parse(s);
+  stats.appOpenCount = stats.appOpenCount || 0;
+  stats.noteCreateCount = stats.noteCreateCount || 0;
+  stats.noteDeleteCount = stats.noteDeleteCount || 0;
+  stats.noteSaveCount = stats.noteSaveCount || 0;
+  return stats;
+}
+
+/**
+ * @param {(Stats) => void} fn
+ */
+export function updateStats(fn) {
+  let stats = getStats();
+  fn(stats);
+  let s = JSON.stringify(stats, null, 2);
+  localStorage.setItem(kStatsKey, s);
+}
+
+/**
+ * TODO: a way to type key as one of the keys of Stats?
  * @param {string} key
  * @returns {number}
  * */
-function getLSCount(key) {
-  let vs = localStorage.getItem(key);
-  if (vs === null) {
-    return 0;
-  }
-  // if parsing fails, returns NaN and NaN | 0 == 0
-  return parseInt(vs) || 0;
-}
-
-/**
- * @param {string} key
- * @returns {number}
- * */
-function incLSCount(key) {
-  let v = getLSCount(key);
-  v++;
-  localStorage.setItem(key, v.toString());
-  return v;
-}
-
-/**
- * @returns {number}
- */
-export function getOpenCount() {
-  return getLSCount(keyOpenCount);
-}
-
-/**
- * @returns {number}
- */
-export function incSaveCount() {
-  return incLSCount(keySaveCount);
+function incCount(key) {
+  let n;
+  updateStats((stats) => {
+    n = (stats[key] || 0) + 1;
+    stats[key] = n;
+  });
+  return n;
 }
 
 /**
  * @returns {number}
  */
 export function incNoteCreateCount() {
-  return incLSCount(keyNoteCreateCount);
+  return incCount("noteCreateCount");
 }
 
-let openCount = incLSCount(keyOpenCount);
+/**
+ * @returns {number}
+ */
+export function incNoteDeleteCount() {
+  return incCount("noteDeleteCount");
+}
+
+/**
+ * @returns {number}
+ */
+export function incNoteSaveCount() {
+  return incCount("noteSaveCount");
+}
+
+let stats = getStats();
 console.log(
-  "openCount:",
-  openCount,
+  "appOpenCount:",
+  stats.appOpenCount,
   "noteCreateCount:",
-  getLSCount(keyNoteCreateCount),
-  "saveCount",
-  getLSCount(keySaveCount)
+  stats.noteCreateCount,
+  "noteSaveCount",
+  stats.noteSaveCount
 );
+
+incCount("appOpenCount");
 
 let editors = [];
 
