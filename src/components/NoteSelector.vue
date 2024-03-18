@@ -162,15 +162,20 @@ export default {
       return null;
     },
 
+    /**
+     * @param {KeyboardEvent} event
+     */
     onKeydown(event) {
-      let altN = isAltNumEvent(event)
+      console.log("onKeyDown:", event);
+      let container = /** @type {HTMLElement} */(this.$refs.container);
+      let altN = isAltNumEvent(event);
       if (altN !== null) {
+        event.preventDefault()
         let note = this.selectedNote
         if (note) {
-          event.preventDefault()
           console.log("altN", altN, "n", note);
           reassignNoteShortcut(note.name, altN).then(meta => {
-            console.log("onKeydown", meta)
+            console.log("onKeydown: reassignNoteShortcut", meta)
             this.notesMetadata = meta
           })
           return;
@@ -181,18 +186,15 @@ export default {
         this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
         event.preventDefault()
         if (this.selected === this.filteredItems.length - 1) {
-          // @ts-ignore
-          this.$refs.container.scrollIntoView({ block: "end" })
+          container.scrollIntoView({ block: "end" })
         } else {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
-
       } else if (event.key === "ArrowUp") {
         this.selected = Math.max(this.selected - 1, 0)
         event.preventDefault()
         if (this.selected === 0) {
-          // @ts-ignore
-          this.$refs.container.scrollIntoView({ block: "start" })
+          container.scrollIntoView({ block: "start" })
         } else {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }

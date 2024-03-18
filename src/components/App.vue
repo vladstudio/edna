@@ -97,28 +97,34 @@ export default {
   },
 
   methods: {
-    /**@c
+    /**
      * @returns {Editor}
     */
     getEditor() {
-      console.log("getEditor")
       // @ts-ignore
       return this.$refs.editor
     },
 
+    /**
+     * @param {KeyboardEvent} e
+     */
     onKeyDown(e) {
-      let altN = isAltNumEvent(e)
-      if (altN) {
-        let meta = getNotesMetadata()
-        for (let o of meta) {
-          if (o.altShortcut == altN && o.name !== this.noteName) {
-            console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
-            let noteInfo = findNoteInfoByName(o.name)
-            console.log("onKeyDown: noteInfo:", noteInfo)
-            this.getEditor().openNote(noteInfo)
-            this.getEditor().focus()
-            e.preventDefault()
-            return
+      // TODO: can I do this better? The same keydown event that sets the Alt-N shortcut
+      // in NoteSelector also seems to propagate here and immediately opens the note.
+      if (!this.showingNoteSelector) {
+        let altN = isAltNumEvent(e)
+        if (altN) {
+          let meta = getNotesMetadata()
+          for (let o of meta) {
+            if (o.altShortcut == altN && o.name !== this.noteName) {
+              console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
+              let noteInfo = findNoteInfoByName(o.name)
+              console.log("onKeyDown: noteInfo:", noteInfo)
+              this.getEditor().openNote(noteInfo)
+              this.getEditor().focus()
+              e.preventDefault()
+              return
+            }
           }
         }
       }
