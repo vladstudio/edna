@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getMetadataForNote, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getMetadataForNote, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -198,12 +198,12 @@ export default {
           children: [
             {
               label: "Rename current note",
-              onClick: () => { this.renameNote() },
+              onClick: () => { this.renameCurrentNote() },
               disabled: !canDelete,
             },
             {
               label: "Delete current note",
-              onClick: () => { this.deleteNote() },
+              onClick: () => { this.deleteCurrentNote() },
               disabled: !canDelete,
             },
             {
@@ -371,7 +371,7 @@ export default {
       this.languageAuto = e.languageAuto
     },
 
-    renameNote() {
+    renameCurrentNote() {
       console.log("renameNote:");
       this.showingRenameNote = true;
     },
@@ -384,11 +384,15 @@ export default {
       return true
     },
 
-    async deleteNote() {
-      console.log("deleteNote:");
-      let noteInfo = findNoteInfoByName(this.noteName);
+    async deleteCurrentNote() {
+      let name = this.noteName
+      console.log("deleteNote:", name);
+      if (!canDeleteNote(name)) {
+        console.log("cannot delete note:", name)
+        return
+      }
       this.getEditor().openNote(kScratchNoteName)
-      await deleteNote(noteInfo)
+      await deleteNote(name)
     },
 
     async createNewScratchNote() {
@@ -456,17 +460,18 @@ export default {
     async onDeleteNote(noteInfo) {
       this.showingNoteSelector = false
       let settings = getSettings()
+      let name = noteInfo.name
       // if deleting current note, first switch to scratch note
       // TODO: maybe switch to the most recently opened
-      if (noteInfo.name === settings.currentNoteName) {
+      if (name === settings.currentNoteName) {
         console.log("deleted current note, opening scratch note")
         this.getEditor().openNote(kScratchNoteName)
       }
       // must delete after openNote() because openNote() saves
       // current note
-      await deleteNote(noteInfo)
+      await deleteNote(name)
       this.getEditor().focus()
-      console.log("deleted note", noteInfo)
+      console.log("deleted note", name)
       // TODO: show a notification that allows to undo deletion of the note
     },
 

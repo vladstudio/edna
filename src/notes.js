@@ -534,20 +534,31 @@ export async function loadCurrentNote() {
 }
 
 /**
- * @param {NoteInfo} noteInfo
+ * @param {string} name
  * @returns {Promise<NoteInfo[]>}
  */
-export async function deleteNote(noteInfo) {
+export async function deleteNote(name) {
   let dh = getStorageFS();
   if (dh === null) {
-    let key = noteInfo.path;
+    let key = notePathFromName(name);
     localStorage.removeItem(key);
   } else {
-    let fileName = noteInfo.path;
+    let fileName = notePathFromNameFS(name);
     await dh.removeEntry(fileName);
   }
   incNoteDeleteCount();
   return await updateLatestNoteInfos();
+}
+
+/**
+ * @param {string} name
+ * @returns {boolean}
+ */
+export function canDeleteNote(name) {
+  if (name === kScratchNoteName) {
+    return false;
+  }
+  return !isSystemNoteName(name);
 }
 
 /**
