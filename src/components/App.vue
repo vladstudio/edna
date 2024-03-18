@@ -17,8 +17,6 @@ import { onOpenSettings, getSettings, onSettingsChange } from '../settings'
 import { boot } from '../webapp-boot'
 import { langSupportsFormat, langSupportsRun } from '../editor/languages'
 
-/** @typedef {import("../notes.js").NoteInfo} NoteInfo */
-
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
 export default {

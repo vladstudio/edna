@@ -2,8 +2,6 @@ import { cloneObjectDeep, objectEqualDeep } from "./utils";
 
 import { ipcRenderer } from "./ipcrenderer";
 
-/** @typedef {import("./notes.js").NoteInfo} NoteInfo */
-
 /**
  * @typedef {Object} Settings
  * @property {boolean} bracketClosing

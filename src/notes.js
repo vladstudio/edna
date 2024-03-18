@@ -51,15 +51,6 @@ export async function dbDelDirHandle() {
   await db.del(kStorageDirHandleKey);
 }
 
-/**
- * @param {NoteInfo} a
- * @param {NoteInfo} b
- * @returns {boolean}
- */
-export function isNoteInfoEqual(a, b) {
-  return a.path === b.path && a.name === b.name;
-}
-
 const kEdnaFileExt = ".edna.txt";
 const kEdnaEncrFileExt = ".edna.encr.txt";
 
@@ -78,54 +69,29 @@ function notePathFromNameFS(name, encrypted = false) {
   return name + kEdnaFileExt;
 }
 
-// TODO: take encyrption into account
+const kLSKeyPrefix = "note:";
+const kLSKeyEncrPrefix = "note.encr:";
+
+function notePathFromNameLS(name, encrypted = false) {
+  if (encrypted) {
+    return kLSKeyEncrPrefix + name;
+  }
+  return kLSKeyPrefix + name;
+}
+
 export function notePathFromName(name, encrypted = false) {
   let dh = getStorageFS();
   if (dh) {
     return notePathFromNameFS(name, encrypted);
+  } else {
+    return notePathFromNameLS(name, encrypted);
   }
-  if (encrypted) {
-    return "note.encr:" + name;
-  }
-  return "note:" + name;
-}
-
-/**
- * @param {string} name
- * @returns {NoteInfo}
- */
-function mkNoteInfoFromName(name) {
-  return {
-    path: notePathFromName(name),
-    name: name,
-  };
 }
 
 export const kScratchNoteName = "scratch";
 export const kDailyJournalNoteName = "daily journal";
 export const kInboxNoteName = "inbox";
 export const kHelpSystemNoteName = "help";
-
-/**
- * @returns {NoteInfo}
- */
-export function getScratchNoteInfo() {
-  return mkNoteInfoFromName(kScratchNoteName);
-}
-
-/**
- * @returns {NoteInfo}
- */
-export function getJournalNoteInfo() {
-  return mkNoteInfoFromName(kDailyJournalNoteName);
-}
-
-/**
- * @returns {NoteInfo}
- */
-export function getInboxNoteInfo() {
-  return mkNoteInfoFromName(kInboxNoteName);
-}
 
 /**
  * @param {NoteInfo} noteInfo
@@ -146,14 +112,6 @@ export function isSystemNoteName(name) {
 }
 
 /**
- * @param {NoteInfo} noteInfo
- * @returns {boolean}
- */
-export function isJournalNote(noteInfo) {
-  return noteInfo.name == "daily journal";
-}
-
-/**
  * @returns {NoteInfo[]}
  */
 function getSystemNoteInfos() {
@@ -163,18 +121,6 @@ function getSystemNoteInfos() {
       name: "help",
     },
   ];
-}
-
-/**
- * @returns {NoteInfo}
- */
-export function getHelpNoteInfo() {
-  /** @type {NoteInfo} */
-  const helpNoteInfo = {
-    path: "system:help",
-    name: "help",
-  };
-  return helpNoteInfo;
 }
 
 export const blockHdrPlainText = "\n∞∞∞text-a\n";

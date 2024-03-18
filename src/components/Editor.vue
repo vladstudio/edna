@@ -1,7 +1,7 @@
 <script>
 import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, isSystemNoteName, kScratchNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
+import { isSystemNote, isSystemNoteName, kScratchNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
 import { getSettings } from '../settings.js'
 
