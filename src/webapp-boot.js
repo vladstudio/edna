@@ -25,6 +25,8 @@ let app;
 
 export async function boot() {
   console.log("booting");
+  loadInitialSettings();
+
   let dh = await dbGetDirHandle();
   if (dh) {
     console.log("we're storing data in the file system");
@@ -39,8 +41,6 @@ export async function boot() {
   } else {
     console.log("we're storing data in localStorage");
   }
-
-  loadInitialSettings();
 
   let noteInfos = await loadNoteInfos();
   createDefaultNotes(noteInfos);

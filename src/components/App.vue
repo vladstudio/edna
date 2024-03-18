@@ -13,7 +13,7 @@ import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, f
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
-import { onOpenSettings, getSettings, onSettingsChange, themeMode } from '../settings'
+import { onOpenSettings, getSettings, onSettingsChange } from '../settings'
 import { boot } from '../webapp-boot'
 import { langSupportsFormat, langSupportsRun } from '../editor/languages'
 
@@ -42,7 +42,6 @@ export default {
       development: window.location.href.indexOf("dev=1") !== -1,
       docSize: 0,
       helpAnchor: "",
-      initialTheme: themeMode.initial,
       language: "plaintext",
       languageAuto: true,
       line: 1,
@@ -55,30 +54,16 @@ export default {
       showingNoteSelector: false,
       showingSettings: false,
       showingRenameNote: false,
-      theme: themeMode.initial,
-      themeSetting: 'system',
+      theme: settings.theme,
     }
   },
 
   mounted() {
-    themeMode.get().then((mode) => {
-      this.theme = mode.computed
-      this.themeSetting = mode.theme
-    })
-    const onThemeChange = (theme) => {
-      this.theme = theme
-      if (theme === "system") {
-        document.documentElement.setAttribute("theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      } else {
-        document.documentElement.setAttribute("theme", theme)
-      }
-    }
-    onThemeChange(themeMode.initial)
-    themeMode.onChange(onThemeChange)
     onSettingsChange((settings) => {
       this.settings = settings;
       this.noteName = settings.currentNoteName
-      console.log("onSettingsChange callback, noteName:", this.noteName)
+      this.theme = settings.theme;
+      console.log("onSettingsChange callback, noteName:", this.noteName, "theme:", this.theme)
     })
     onOpenSettings(() => {
       this.showingSettings = true
@@ -87,7 +72,6 @@ export default {
   },
 
   beforeUnmount() {
-    themeMode.removeListener()
     window.removeEventListener("keydown", this.onKeyDown);
   },
 
@@ -383,23 +367,6 @@ export default {
       this.getEditor().focus()
     },
 
-    setTheme(newTheme) {
-      themeMode.set(newTheme)
-      this.themeSetting = newTheme
-    },
-
-    toggleTheme() {
-      let newTheme
-      // when the "system" theme is used, make sure that the first click always results in an actual theme change
-      if (this.initialTheme === "light") {
-        newTheme = this.themeSetting === "system" ? "dark" : (this.themeSetting === "dark" ? "light" : "system")
-      } else {
-        newTheme = this.themeSetting === "system" ? "light" : (this.themeSetting === "light" ? "dark" : "system")
-      }
-      this.setTheme(newTheme)
-      this.getEditor().focus()
-    },
-
     onCursorChange(e) {
       this.line = e.cursorLine.line
       this.column = e.cursorLine.col
@@ -543,8 +510,7 @@ export default {
         @close="closeLanguageSelector" />
       <NoteSelector v-if="showingNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote"
         @deleteNote="onDeleteNote" @close="closeNoteSelector" />
-      <Settings v-if="showingSettings" :initialSettings="settings" :initialTheme="themeSetting" @setTheme="setTheme"
-        @closeSettings="closeSettings" />
+      <Settings v-if="showingSettings" :initialSettings="settings" @closeSettings="closeSettings" />
     </div>
   </div>
   <div style="mcStyle" class="menu-overlay">

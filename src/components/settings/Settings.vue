@@ -1,14 +1,13 @@
 <script>
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
-import { kDefaultFontFamily, kDefaultFontSize, getVersion, saveSettings } from "../../settings"
+import { kDefaultFontFamily, kDefaultFontSize, getVersion, saveSettings, setSetting } from "../../settings"
 import { platform } from "../../utils"
 
 export default {
   props: {
     initialKeymap: String,
     initialSettings: Object,
-    initialTheme: String,
   },
   components: {
     TabListItem,
@@ -29,8 +28,7 @@ export default {
       bracketClosing: this.initialSettings.bracketClosing,
       fontFamily: this.initialSettings.fontFamily || kDefaultFontFamily,
       fontSize: this.initialSettings.fontSize || kDefaultFontSize,
-      // theme: this.initialSettings.theme,
-      themeSetting: this.initialTheme,
+      theme: this.initialSettings.theme,
 
       activeTab: "general",
       systemFonts: [[kDefaultFontFamily, kDefaultFontFamily + " (default)"]],
@@ -38,6 +36,8 @@ export default {
       defaultFontSize: kDefaultFontSize,
       appVersion: "",
       currentNoteName: this.initialSettings.currentNoteName,
+
+      lastTheme: this.initialSettings.theme,
     }
   },
 
@@ -68,8 +68,9 @@ export default {
     },
 
     updateTheme() {
-      console.log("updateTheme", this.themeSetting)
-      this.$emit("setTheme", this.themeSetting)
+      console.log("updateTheme", this.theme)
+      this.$emit("setTheme", this.theme)
+      setSetting("theme", this.theme)
     },
 
     updateSettings() {
@@ -82,6 +83,7 @@ export default {
         keymap: this.keymap,
         showFoldGutter: this.showFoldGutter,
         showLineNumberGutter: this.showLineNumberGutter,
+        theme: this.theme,
       })
     },
   }
@@ -154,8 +156,8 @@ export default {
             <div class="row flex">
               <div class="entry">
                 <h2>Theme</h2>
-                <select v-model="themeSetting" @change="updateTheme" class="width-[280px] border border-black">
-                  <option v-for="[theme, label] in themes" :selected="theme === themeSetting" :value="theme">{{ label }}
+                <select v-model="theme" @change="updateTheme" class="width-[280px] border border-black">
+                  <option v-for="[theme, label] in themes" :selected="theme === this.theme" :value="theme">{{ label }}
                   </option>
                 </select>
               </div>

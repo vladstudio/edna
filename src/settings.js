@@ -1,5 +1,6 @@
+import { cloneObjectDeep, objectEqualDeep } from "./utils";
+
 import { ipcRenderer } from "./ipcrenderer";
-import { objectEqualDeep } from "./utils";
 
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
 
@@ -13,7 +14,7 @@ import { objectEqualDeep } from "./utils";
  * @property {string} keymap
  * @property {boolean} showFoldGutter
  * @property {boolean} showLineNumberGutter
- * @property {NoteInfo} [currentNoteInfo] // TODO: obsolete, delete
+ * @property {string} [theme] // "system", "light", "dark"
  */
 
 export const kEventOpenSettings = "open-settings";
@@ -45,25 +46,49 @@ export function loadSettings() {
   let d = localStorage.getItem(kSettingsPath) || "{}";
   // also set settings to the latest version
   let settings = d === null ? {} : JSON.parse(d);
+  localStorage.removeItem("theme"); // TODO: temporary, theme moved to settings object
   return settings;
 }
 
+const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
+export function updateWebsiteTheme() {
+  console.log("updateWebsiteTheme");
+  let theme = settings.theme || "system";
+  if (theme === "system") {
+    theme = mediaMatch.matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("theme", theme);
+}
+
+mediaMatch.addEventListener("change", async () => {
+  if (settings.theme === "system") {
+    updateWebsiteTheme();
+  }
+});
+
 /**
  * @param {Settings} newSettings
+ * @returns {boolean}
  */
 export function saveSettings(newSettings) {
   // console.log("saveSettings:", newSettings);
   if (objectEqualDeep(settings, newSettings)) {
     console.log("saveSettings: no change");
-    return;
+    return false;
   }
   let s = JSON.stringify(newSettings, null, 2);
   localStorage.setItem(kSettingsPath, s);
   settings = newSettings;
+  updateWebsiteTheme();
   ipcRenderer.send(kEventSettingsChange, newSettings);
+  return true;
 }
 
 export function loadInitialSettings() {
+  let settings = loadSettings();
+  // console.log("settings loaded:", s);
+
+  // ensure all possible settings are present. Start with defaults and overwrite with persisted settings
   /** @type {Settings} */
   let initialSettings = {
     bracketClosing: false,
@@ -72,14 +97,11 @@ export function loadInitialSettings() {
     keymap: "default",
     showFoldGutter: true,
     showLineNumberGutter: true,
+    theme: "system",
   };
-  let settings = loadSettings();
-  // console.log("settings loaded:", s);
   let updatedSettings = Object.assign(initialSettings, settings);
-  if (updatedSettings.currentNoteInfo) {
-    updatedSettings.currentNoteInfo = undefined; // temporary, delete obsolete field
-  }
   saveSettings(updatedSettings);
+  updateWebsiteTheme();
 }
 
 /**
@@ -88,7 +110,7 @@ export function loadInitialSettings() {
  */
 export function setSetting(key, value) {
   console.log("setSetting:", key, value);
-  let s = { ...settings };
+  let s = cloneObjectDeep(settings);
   s[key] = value;
   saveSettings(s);
 }
@@ -109,35 +131,3 @@ export function getVersion() {
   // @ts-ignore
   return __APP_VERSION__ + " (" + __GIT_HASH__ + ")";
 }
-
-const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
-let themeCallback = null;
-
-export const themeMode = {
-  set: (mode) => {
-    localStorage.setItem("theme", mode);
-    themeCallback(mode);
-    // console.log("set theme to", mode)
-  },
-  get: async () => {
-    const theme = localStorage.getItem("theme") || "system";
-    const systemTheme = mediaMatch.matches ? "dark" : "light";
-    return {
-      theme: theme,
-      computed: theme === "system" ? systemTheme : theme,
-    };
-  },
-  onChange: (callback) => {
-    themeCallback = callback;
-  },
-  removeListener() {
-    themeCallback = null;
-  },
-  initial: localStorage.getItem("theme") || "system",
-};
-
-mediaMatch.addEventListener("change", async (event) => {
-  if (themeCallback) {
-    themeCallback((await themeMode.get()).computed);
-  }
-});
