@@ -6,12 +6,6 @@ import { ref } from "vue";
  */
 
 /**
- * @typedef {Object} NoteInfo
- * @property {string} path
- * @property {string} name
- */
-
-/**
  * @typedef {Object} Stats
  * @property {number} appOpenCount
  * @property {number} noteCreateCount

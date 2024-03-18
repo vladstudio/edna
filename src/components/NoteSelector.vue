@@ -3,7 +3,7 @@ import { getLatestNoteInfos, getMetadataForNote, isSystemNote, isSystemNoteName,
 import sanitize from "sanitize-filename"
 import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 
-/** @typedef {import("../state.js").NoteInfo} NoteInfo */
+/** @typedef {import("../notes.js").NoteInfo} NoteInfo */
 
 /**
  * @typedef {Object} NoteInfo2

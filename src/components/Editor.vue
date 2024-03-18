@@ -5,7 +5,7 @@ import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, isSystemNoteName, lo
 import { rememberEditor } from '../state.js'
 import { getSettings } from '../settings.js'
 
-/** @typedef {import("../state.js").NoteInfo} NoteInfo */
+/** @typedef {import("../notes.js").NoteInfo} NoteInfo */
 
 export default {
   props: {

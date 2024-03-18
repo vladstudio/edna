@@ -22,7 +22,11 @@ import {
 
 import { KV } from "./dbutil";
 
-/** @typedef {import("./state.js").NoteInfo} NoteInfo */
+/**
+ * @typedef {Object} NoteInfo
+ * @property {string} path
+ * @property {string} name
+ */
 
 // some things, like FilesystemDirectoryHandle, we need to store in indexedDb
 const db = new KV("edna", "keyval");
