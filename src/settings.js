@@ -1,5 +1,5 @@
 import { ipcRenderer } from "./ipcrenderer";
-import { objectEqual } from "./utils";
+import { objectEqualDeep } from "./utils";
 
 /** @typedef {import("./state.js").NoteInfo} NoteInfo */
 
@@ -53,7 +53,7 @@ export function loadSettings() {
  */
 export function saveSettings(newSettings) {
   // console.log("saveSettings:", newSettings);
-  if (objectEqual(settings, newSettings)) {
+  if (objectEqualDeep(settings, newSettings)) {
     console.log("saveSettings: no change");
     return;
   }

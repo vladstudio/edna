@@ -94,7 +94,6 @@ function mkNoteInfoFromName(name) {
   return {
     path: notePathFromName(name),
     name: name,
-    nameLC: name.toLowerCase(),
   };
 }
 
@@ -259,7 +258,6 @@ function loadNoteInfosLS() {
       let o = {
         path: key,
         name: name,
-        nameLC: name.toLowerCase(),
       };
       res.push(o);
     }
@@ -305,7 +303,6 @@ async function loadNoteInfosFS(dh = null) {
     let name = nameFromFileName(fileName);
     let o = {
       name: name,
-      nameLC: name.toLowerCase(),
       path: fileName,
     };
     res.push(o);
@@ -455,7 +452,6 @@ export async function createNoteWithName(name, content = null) {
     return {
       path: path,
       name: name,
-      nameLC: name.toLowerCase(),
     };
   }
 
@@ -467,7 +463,6 @@ export async function createNoteWithName(name, content = null) {
   return {
     path: fileName,
     name: name,
-    nameLC: name.toLowerCase(),
   };
 }
 
@@ -676,13 +671,32 @@ export async function pickAnotherDirectory() {
 const kMetadataName = "notes.metadata.edna.json";
 
 /**
- * @typedef {Object} NoteMedata
+ * @typedef {Object} NoteMetadata
  * @property {string} name
  * @property {string} [altShortcut]
  */
 
-/** @type {NoteMedata[]} */
+/** @type {NoteMetadata[]} */
 let notesMetadata = [];
+
+export function getNotesMetadata() {
+  return notesMetadata;
+}
+
+/**
+ *
+ * @param {string} noteName
+ * @returns
+ */
+export function getMetadataForNote(noteName) {
+  let meta = notesMetadata;
+  for (let m of meta) {
+    if (m.name === noteName) {
+      return m;
+    }
+  }
+  return null;
+}
 
 export async function loadNotesMetadata() {
   let dh = getStorageFS();
@@ -697,58 +711,45 @@ export async function loadNotesMetadata() {
   return notesMetadata;
 }
 
-export function getNotesMetadata() {
-  return notesMetadata;
-}
-
 /**
- * @param {NoteMedata[]} m
+ * @param {NoteMetadata[]} m
  */
-export function saveNotesMetadata(m) {
+async function saveNotesMetadata(m) {
   let s = JSON.stringify(m, null, 2);
   let dh = getStorageFS();
   if (dh === null) {
     localStorage.setItem(kMetadataName, s);
   } else {
-    fsWriteTextFile(dh, kMetadataName, s);
+    await fsWriteTextFile(dh, kMetadataName, s);
   }
   notesMetadata = m;
+  return m;
 }
 
 /**
  * @param {string} name
  * @param {string} altShortcut
- * @returns {Promise<NoteMedata[]>}
+ * @returns {Promise<NoteMetadata[]>}
  */
 export async function reassignNoteShortcut(name, altShortcut) {
-  console.log("reassignNoteShortcut:", name, altShortcut);
+  // console.log("reassignNoteShortcut:", name, altShortcut);
   let m = getNotesMetadata();
   for (let o of m) {
     if (o.altShortcut === altShortcut) {
       if (o.name === name) {
+        // same note: just remove shortcut
         o.altShortcut = undefined;
-        console.log(
-          "reassignNoteShortcut: removed shortcut",
-          altShortcut,
-          "from",
-          o.name
-        );
         m = m.filter((o) => o.altShortcut);
-        await saveNotesMetadata(m);
-        return m;
+        return await saveNotesMetadata(m);
       } else {
+        // a different note: remove shortcut and then assign to the new note
         o.altShortcut = undefined;
-        console.log(
-          "reassignNoteShortcut: removed shortcut",
-          altShortcut,
-          "from",
-          o.name
-        );
+        break;
       }
     }
   }
 
-  /** @type {NoteMedata} */
+  /** @type {NoteMetadata} */
   let found;
   for (let o of m) {
     if (o.name === name) {
@@ -764,6 +765,5 @@ export async function reassignNoteShortcut(name, altShortcut) {
   }
   found.altShortcut = altShortcut;
   m = m.filter((o) => o.altShortcut);
-  await saveNotesMetadata(m);
-  return m;
+  return await saveNotesMetadata(m);
 }

@@ -1,33 +1,53 @@
 <script>
-import { getLatestNoteInfos, getNotesMetadata, isSystemNote, reassignNoteShortcut } from '../notes'
+import { getLatestNoteInfos, getMetadataForNote, isSystemNote, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
-import { isAltNumEvent } from '../utils'
+import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 
 /** @typedef {import("../state.js").NoteInfo} NoteInfo */
 
 /**
- * @param {NoteInfo} noteInfo
- * @returns {NoteInfo}
+ * @typedef {Object} NoteInfo2
+ * @property {string} path
+ * @property {string} name
+ * @property {string} [nameLC]
+ * @property {number} [altShortcut] - -1 if no shortcut, 0 to 9 for Alt-0 to Alt-9
  */
-function mkNoteInfo2(noteInfo) {
-  if (noteInfo.nameLC === undefined) {
-    noteInfo.nameLC = noteInfo.name.toLowerCase()
-  }
-  return noteInfo
-}
 
 /**
- * @returns {NoteInfo[]}
- */
+* @returns {NoteInfo2[]}
+*/
 function rebuildNotesInfo() {
   const noteInfos = getLatestNoteInfos()
   console.log("rebuildNotesInfo, notes", noteInfos.length)
-  /** @type {NoteInfo[]} */
-  let res = [];
-  for (let noteInfo of noteInfos) {
-    res.push(mkNoteInfo2(noteInfo))
+  /** @type {NoteInfo2[]} */
+  let res = Array(len(noteInfos))
+  // let res = [];
+  for (let i = 0; i < len(noteInfos); i++) {
+    let noteInfo = cloneObjectShallow(noteInfos[i])
+    noteInfo.nameLC = noteInfo.name.toLowerCase()
+    let m = getMetadataForNote(noteInfo.name);
+    if (m && m.altShortcut) {
+      noteInfo.altShortcut = parseInt(m.altShortcut)
+    }
+    res[i] = noteInfo
   }
+  // -1 if a < b
+  // 0 if a = b
+  // 1 if a > b
   res.sort((a, b) => {
+    // those with shortcut are before (<) those without
+    if (a.altShortcut && !b.altShortcut) {
+      return -1
+    }
+    // those without shortcut are after (>) those with
+    if (!a.altShortcut && b.altShortcut) {
+      return 1
+    }
+    // if both have shortcut, sort by shortcut
+    if (a.altShortcut && b.altShortcut) {
+      return a.altShortcut - b.altShortcut
+    }
+    // if both have no shortcut, sort by name
     return a.name.localeCompare(b.name)
   })
   return res
@@ -36,12 +56,10 @@ function rebuildNotesInfo() {
 export default {
   data() {
     let items = rebuildNotesInfo()
-    let meta = getNotesMetadata()
     return {
       items: items,
       selected: 0,
       filter: "",
-      notesMetadata: meta,
     }
   },
 
@@ -64,7 +82,7 @@ export default {
       })
     },
     /**
-     * @returns {NoteInfo | null}
+     * @returns {NoteInfo2 | null}
      */
     selectedNote() {
       if (this.filteredItems.length === 0) {
@@ -75,6 +93,9 @@ export default {
       }
       return null;
     },
+    /**
+     * @returns {string}
+     */
     selectedName() {
       let selected = this.selectedNote
       if (selected === null) {
@@ -82,6 +103,9 @@ export default {
       }
       return selected.name
     },
+    /**
+     * @returns {boolean}
+     */
     canOpenSelected() {
       if (this.filteredItems.length === 0) {
         return false
@@ -91,6 +115,9 @@ export default {
       }
       return true
     },
+    /**
+     * @returns {boolean}
+     */
     canCreate() {
       // TODO: use lowerCase name?
       let name = this.sanitizedFilter
@@ -104,6 +131,9 @@ export default {
       }
       return true
     },
+    /**
+     * @returns {boolean}
+     */
     canCreateWithEnter() {
       // if there are no matches for the filter, we can create with just Enter
       // otherwise we need Ctrl + Enter
@@ -113,6 +143,9 @@ export default {
       }
       return !this.canOpenSelected;
     },
+    /**
+     * @returns {boolean}
+     */
     canDeleteSelected() {
       if (!this.canOpenSelected) {
         return false
@@ -150,16 +183,11 @@ export default {
       return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
     },
 
+    /**
+     * @param {NoteInfo2} note
+     */
     noteShortcut(note) {
-      let name = note.name
-      for (let o of this.notesMetadata) {
-        if (o.name === name) {
-          if (o.altShortcut) {
-            return "Alt + " + o.altShortcut
-          }
-        }
-      }
-      return null;
+      return note.altShortcut ? "Alt + " + note.altShortcut : ""
     },
 
     /**
@@ -174,10 +202,7 @@ export default {
         let note = this.selectedNote
         if (note) {
           console.log("altN", altN, "n", note);
-          reassignNoteShortcut(note.name, altN).then(meta => {
-            console.log("onKeydown: reassignNoteShortcut", meta)
-            this.notesMetadata = meta
-          })
+          reassignNoteShortcut(note.name, altN); // async but no need to wait
           return;
         }
       }
@@ -235,7 +260,7 @@ export default {
     },
 
     /**
-     * @param {NoteInfo} noteInfo
+     * @param {NoteInfo2} noteInfo
      */
     openNote(noteInfo) {
       this.$emit("openNote", noteInfo)
@@ -247,7 +272,7 @@ export default {
     },
 
     /**
-     * @param {NoteInfo} noteInfo
+     * @param {NoteInfo2} noteInfo
      */
     deleteNote(noteInfo) {
       console.log("deleteNote", noteInfo)

@@ -9,7 +9,6 @@ import { ref } from "vue";
  * @typedef {Object} NoteInfo
  * @property {string} path
  * @property {string} name
- * @property {string} [nameLC]
  */
 
 /**

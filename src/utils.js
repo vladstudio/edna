@@ -12,8 +12,17 @@ export function throwIf(cond, msg) {
   }
 }
 
-export function objectEqual(a, b) {
+export function objectEqualDeep(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
+}
+
+export function cloneObjectShallow(o) {
+  // could also be return { ...o };
+  return Object.assign({}, o);
+}
+
+export function cloneObjectDeep(o) {
+  return JSON.parse(JSON.stringify(o));
 }
 
 export let platform = {
