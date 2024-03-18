@@ -270,7 +270,7 @@ export default {
         }
         const selected = this.filteredItems[this.selected]
         if (selected) {
-          this.openNote(selected)
+          this.openNote(selected.name)
         } else {
           this.$emit("close")
         }
@@ -281,7 +281,7 @@ export default {
         }
         const selected = this.selectedNote;
         if (selected) {
-          this.deleteNote(selected)
+          this.deleteNote(selected.name)
         } else {
           this.$emit("close")
         }
@@ -293,10 +293,10 @@ export default {
     },
 
     /**
-     * @param {NoteInfo2} noteInfo
+     * @param {string} name
      */
-    openNote(noteInfo) {
-      this.$emit("openNote", noteInfo)
+    openNote(name) {
+      this.$emit("openNote", name)
     },
 
     createNote(name) {
@@ -305,11 +305,11 @@ export default {
     },
 
     /**
-     * @param {NoteInfo2} noteInfo
+     * @param {string} name
      */
-    deleteNote(noteInfo) {
-      console.log("deleteNote", noteInfo)
-      this.$emit("deleteNote", noteInfo)
+    deleteNote(name) {
+      console.log("deleteNote", name)
+      this.$emit("deleteNote", name)
     },
 
     onInput(event) {

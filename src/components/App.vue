@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getMetadataForNote, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -397,7 +397,7 @@ export default {
 
     async createNewScratchNote() {
       let noteInfo = await createNewScratchNote()
-      this.onOpenNote(noteInfo)
+      this.onOpenNote(noteInfo.name)
       // TODO: show a notification that allows to undo creation of the note
     },
 
@@ -426,11 +426,11 @@ export default {
     },
 
     /**
-     * @param {NoteInfo} noteInfo
+     * @param {string} name
      */
-    onOpenNote(noteInfo) {
+    onOpenNote(name) {
       this.showingNoteSelector = false
-      this.getEditor().openNote(noteInfo.name)
+      this.getEditor().openNote(name)
     },
 
     toggleHelp(anchor = "") {
@@ -449,18 +449,17 @@ export default {
      */
     async onCreateNote(name) {
       this.showingNoteSelector = false
-      let noteInfo = await createNoteWithName(name)
-      this.onOpenNote(noteInfo)
+      await createNoteWithName(name)
+      this.onOpenNote(name)
       // TODO: show a notification that allows to undo creation of the note
     },
 
     /**
-     * @param {NoteInfo} noteInfo
+     * @param {string} name
      */
-    async onDeleteNote(noteInfo) {
+    async onDeleteNote(name) {
       this.showingNoteSelector = false
       let settings = getSettings()
-      let name = noteInfo.name
       // if deleting current note, first switch to scratch note
       // TODO: maybe switch to the most recently opened
       if (name === settings.currentNoteName) {
