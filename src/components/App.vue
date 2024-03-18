@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, findNoteInfoByName, getNotesMetadata, getMetadataForNote, getScratchNoteInfo, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -92,6 +92,14 @@ export default {
   },
 
   computed: {
+    noteNameStatusBar() {
+      let name = this.noteName
+      let m = getMetadataForNote(name)
+      if (m && m.altShortcut) {
+        name = `${name} (Alt + ${m.altShortcut})`
+      }
+      return name
+    },
     mcStyle() {
       return {
         display: this.showingMenu ? "block" : "none"
@@ -525,10 +533,11 @@ export default {
       :bracketClosing="settings.bracketClosing" :fontFamily="settings.fontFamily" :fontSize="settings.fontSize"
       class="editor" ref="editor" @openLanguageSelector="openLanguageSelector"
       @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="docChanged" />
-    <StatusBar :noteName="noteName" :line="line" :column="column" :docSize="docSize" :selectionSize="selectionSize"
-      :language="language" :languageAuto="languageAuto" @openLanguageSelector="openLanguageSelector"
-      @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
-      @openSettings="showingSettings = true" @toggleHelp="toggleHelp" class="status" />
+    <StatusBar :noteName="noteNameStatusBar" :line="line" :column="column" :docSize="docSize"
+      :selectionSize="selectionSize" :language="language" :languageAuto="languageAuto"
+      @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
+      @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock" @openSettings="showingSettings = true"
+      @toggleHelp="toggleHelp" class="status" />
     <div class="overlay">
       <LanguageSelector v-if="showingLanguageSelector" @selectLanguage="onSelectLanguage"
         @close="closeLanguageSelector" />

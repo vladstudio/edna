@@ -684,9 +684,8 @@ export function getNotesMetadata() {
 }
 
 /**
- *
  * @param {string} noteName
- * @returns
+ * @returns {NoteMetadata}
  */
 export function getMetadataForNote(noteName) {
   let meta = notesMetadata;
