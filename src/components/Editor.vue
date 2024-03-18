@@ -79,12 +79,12 @@ export default {
         element: this.$refs.editor,
         content: content,
         theme: this.theme,
-        saveFunction: (content) => {
+        saveFunction: async (content) => {
           if (content === diskContent) {
             return
           }
           diskContent = content
-          saveCurrentNote(content)
+          await saveCurrentNote(content)
         },
         keymap: this.keymap,
         emacsMetaKey: this.emacsMetaKey,
@@ -232,15 +232,23 @@ export default {
       return this.editor.getContent()
     },
 
+    // saving is debounced so ensure we save before opening a new note
+    // TODO: we'll have a spurious save if there was a debounce, because
+    // the debounce is still in progress, I think
+    async saveCurrentNote() {
+      console.log("saveCurrentNote")
+      await this.editor.saveFunction(this.editor.getContent())
+    },
+
     /**
      * @param {string} name
      */
-    openNote(name) {
+    openNote(name, skipSave = false) {
       console.log("openNote:", name)
-      // saving is debounced so ensure we save before opening a new note
-      // TODO: we'll have a spurious save if there was a debounce, because
-      // the debounce is still in progress, I think
-      this.editor.saveFunction(this.editor.getContent())
+      if (!skipSave) {
+        // TODO: this is async so let's hope it works
+        this.saveCurrentNote()
+      }
       loadNote(name).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);

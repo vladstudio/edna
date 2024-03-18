@@ -140,7 +140,7 @@ export default {
       this.showingRenameNote = false
       let s = this.getEditor().getContent() || ""
       await renameNote(this.noteName, newName, s)
-      this.onOpenNote(newName)
+      this.getEditor().openNote(newName, true)
       console.log("onRename: newName:", newName)
     },
 
@@ -154,9 +154,10 @@ export default {
       if (!dh) {
         return;
       }
+      // TODO: this.getEditor().saveCurrentNote() ?
       await switchToStoringNotesOnDisk(dh);
       let settings = getSettings();
-      this.getEditor().openNote(settings.currentNoteName)
+      this.getEditor().openNote(settings.currentNoteName, true)
       this.getEditor().focus()
     },
 
@@ -393,7 +394,7 @@ export default {
         console.log("cannot delete note:", name)
         return
       }
-      this.getEditor().openNote(kScratchNoteName)
+      this.getEditor().openNote(kScratchNoteName, true)
       await deleteNote(name)
     },
 

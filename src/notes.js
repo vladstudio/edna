@@ -376,6 +376,7 @@ export async function createNoteWithName(name, content = null) {
       console.log("note already exists", name);
     }
     await updateLatestNoteInfos();
+    return;
   }
 
   // TODO: check if exists
