@@ -171,7 +171,6 @@ export default {
     },
 
     onContextMenu(e) {
-      // console.log("onContextMenu")
       if (this.showingNoteSelector || this.showingLanguageSelector || this.showingSettings) {
         return
       }
@@ -186,12 +185,34 @@ export default {
       }
       e.preventDefault();
       this.showingMenu = true
+      let canDelete = this.canDeleteNote();
+      console.log("canDelete:", canDelete)
       /** @type {MenuItem[]} */
       let items = [
         {
           label: "Open / create / delete note",
           onClick: () => { this.openNoteSelector() },
           shortcut: `${modChar} + P`,
+        },
+        {
+          label: "Note",
+          children: [
+            {
+              label: "Rename",
+              onClick: () => { this.renameNote() },
+              disabled: !canDelete,
+            },
+            {
+              label: "Delete",
+              onClick: () => { this.deleteNote() },
+              disabled: !canDelete,
+            },
+            {
+              label: "Create new scratch",
+              onClick: () => { this.createNewScratchNote() },
+              shortcut: `${altChar} + N`,
+            },
+          ]
         },
         {
           label: "Block",
@@ -243,22 +264,18 @@ export default {
             },
           ]
         },
-        {
-          label: "Create new scratch note",
-          onClick: () => { this.createNewScratchNote() },
-          shortcut: `${altChar} + N`,
-        },
         // TODO: set plain text, markdown
       ]
+      let blockChildren = items[2].children
       if (langSupportsFormat(this.language)) {
-        items[1].children.push({
+        blockChildren.push({
           label: "Format " + this.language,
           onClick: () => { this.getEditor().formatCurrentBlock() },
           shortcut: `${altChar} + Shift + F`,
         })
       }
       if (langSupportsRun(this.language)) {
-        items[1].children.push({
+        blockChildren.push({
           label: "Run " + this.language,
           onClick: () => { this.getEditor().runCurrentBlock() },
           shortcut: `${altChar} + Shift + R`,
@@ -370,6 +387,25 @@ export default {
       this.selectionSize = e.selectionSize
       this.language = e.language
       this.languageAuto = e.languageAuto
+    },
+
+    renameNote() {
+      console.log("renameNote:");
+    },
+
+    canDeleteNote() {
+      let name = this.noteName
+      if (name == "scratch" || name == "help") {
+        return false
+      }
+      return true
+    },
+
+    async deleteNote() {
+      console.log("deleteNote:");
+      let noteInfo = findNoteInfoByName(this.noteName);
+      this.getEditor().openNote(getScratchNoteInfo())
+      await deleteNote(noteInfo)
     },
 
     async createNewScratchNote() {
