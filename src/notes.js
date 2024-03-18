@@ -437,14 +437,13 @@ export async function saveCurrentNote(content) {
 /**
  * @param {string} name
  * @param {string} content
- * @returns {Promise<NoteInfo>}
+ * @returns {Promise<void>}
  */
 export async function createNoteWithName(name, content = null) {
+  const path = notePathFromName(name);
   let dh = getStorageFS();
   content = fixUpNoteContent(content);
   if (dh === null) {
-    // TODO: do I need to sanitize name for localStorage keys?
-    const path = "note:" + name;
     // TODO: should it happen that note already exists?
     if (localStorage.getItem(path) == null) {
       localStorage.setItem(path, content);
@@ -454,21 +453,12 @@ export async function createNoteWithName(name, content = null) {
       console.log("note already exists", name);
     }
     await updateLatestNoteInfos();
-    return {
-      path: path,
-      name: name,
-    };
   }
 
-  let fileName = notePathFromName(name);
   // TODO: check if exists
-  await fsWriteTextFile(dh, fileName, content);
+  await fsWriteTextFile(dh, path, content);
   incNoteCreateCount();
   await updateLatestNoteInfos();
-  return {
-    path: fileName,
-    name: name,
-  };
 }
 
 /**
