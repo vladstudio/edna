@@ -137,6 +137,8 @@ export default {
     },
 
     onRename(newName) {
+      let s = this.getEditor().getContent() || ""
+
       console.log("onRename: newName:", newName)
     },
 

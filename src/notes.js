@@ -335,20 +335,6 @@ function pickUniqueNameInNoteInfos(base, noteInfos) {
 }
 
 /**
- * @param {string} name
- * @returns {NoteInfo}
- */
-export function findNoteInfoByName(name) {
-  for (let ni of latestNoteInfos) {
-    if (ni.name === name) {
-      return ni;
-    }
-  }
-  throwIf(true, "note not found:" + name);
-  return null;
-}
-
-/**
  * @param {string} content
  * @returns
  */
@@ -360,12 +346,12 @@ export async function saveCurrentNote(content) {
     console.log("skipped saving system note", name);
     return;
   }
-  const noteInfo = findNoteInfoByName(name);
+  let path = notePathFromName(name);
   let dh = getStorageFS();
   if (dh === null) {
-    localStorage.setItem(noteInfo.path, content);
+    localStorage.setItem(path, content);
   } else {
-    await fsWriteTextFile(dh, noteInfo.path, content);
+    await fsWriteTextFile(dh, path, content);
   }
   isDocDirty.value = false;
   incNoteSaveCount();
@@ -396,6 +382,19 @@ export async function createNoteWithName(name, content = null) {
   await fsWriteTextFile(dh, path, content);
   incNoteCreateCount();
   await updateLatestNoteInfos();
+}
+
+/**
+ * creates a new scratch-${N} note
+ * @returns {Promise<string>}
+ */
+export async function createNewScratchNote() {
+  console.log("createNewScratchNote");
+  let noteInfos = await loadNoteInfos();
+  // generate a unique "scratch-${N}" note name
+  let scratchName = pickUniqueNameInNoteInfos("scratch", noteInfos);
+  createNoteWithName(scratchName);
+  return scratchName;
 }
 
 /**
@@ -462,6 +461,17 @@ export async function loadCurrentNote() {
 
 /**
  * @param {string} name
+ * @returns {boolean}
+ */
+export function canDeleteNote(name) {
+  if (name === kScratchNoteName) {
+    return false;
+  }
+  return !isSystemNoteName(name);
+}
+
+/**
+ * @param {string} name
  */
 export async function deleteNote(name) {
   let dh = getStorageFS();
@@ -474,30 +484,6 @@ export async function deleteNote(name) {
   }
   incNoteDeleteCount();
   await updateLatestNoteInfos();
-}
-
-/**
- * @param {string} name
- * @returns {boolean}
- */
-export function canDeleteNote(name) {
-  if (name === kScratchNoteName) {
-    return false;
-  }
-  return !isSystemNoteName(name);
-}
-
-/**
- * creates a new scratch-${N} note
- * @returns {Promise<string>}
- */
-export async function createNewScratchNote() {
-  console.log("createNewScratchNote");
-  let noteInfos = await loadNoteInfos();
-  // generate a unique "scratch-${N}" note name
-  let scratchName = pickUniqueNameInNoteInfos("scratch", noteInfos);
-  createNoteWithName(scratchName);
-  return scratchName;
 }
 
 /**
