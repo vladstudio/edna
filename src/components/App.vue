@@ -209,17 +209,17 @@ export default {
           label: "Note",
           children: [
             {
-              label: "Rename",
+              label: "Rename current note",
               onClick: () => { this.renameNote() },
               disabled: !canDelete,
             },
             {
-              label: "Delete",
+              label: "Delete current note",
               onClick: () => { this.deleteNote() },
               disabled: !canDelete,
             },
             {
-              label: "Create new scratch",
+              label: "Create new scratch note",
               onClick: () => { this.createNewScratchNote() },
               shortcut: `${altChar} + N`,
             },
