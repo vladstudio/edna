@@ -1,5 +1,5 @@
 <script>
-import { getLatestNoteInfos, getMetadataForNote, isSystemNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
+import { getLatestNoteInfos, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
 import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 
@@ -166,7 +166,7 @@ export default {
       if (item.name === "scratch") {
         return false
       }
-      if (isSystemNote(item)) {
+      if (isSystemNoteName(item.name)) {
         return false
       }
       return true

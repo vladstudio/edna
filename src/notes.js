@@ -94,33 +94,12 @@ export const kInboxNoteName = "inbox";
 export const kHelpSystemNoteName = "help";
 
 /**
- * @param {NoteInfo} noteInfo
- * @returns {boolean}
- */
-export function isSystemNote(noteInfo) {
-  // console.log("isSystemNote:", notePath)
-  return noteInfo.path.startsWith("system:");
-}
-
-/**
  *
  * @param {string} name
  * @returns {boolean}
  */
 export function isSystemNoteName(name) {
   return name === "help";
-}
-
-/**
- * @returns {NoteInfo[]}
- */
-function getSystemNoteInfos() {
-  return [
-    {
-      path: "system:help",
-      name: "help",
-    },
-  ];
 }
 
 export const blockHdrPlainText = "\n∞∞∞text-a\n";
@@ -259,6 +238,18 @@ async function loadNoteInfosFS(dh = null) {
     res.push(o);
   }
   return res;
+}
+
+/**
+ * @returns {NoteInfo[]}
+ */
+function getSystemNoteInfos() {
+  return [
+    {
+      path: "system:help",
+      name: "help",
+    },
+  ];
 }
 
 /**
@@ -471,7 +462,6 @@ export async function loadCurrentNote() {
 
 /**
  * @param {string} name
- * @returns {Promise<NoteInfo[]>}
  */
 export async function deleteNote(name) {
   let dh = getStorageFS();
@@ -483,7 +473,7 @@ export async function deleteNote(name) {
     await dh.removeEntry(fileName);
   }
   incNoteDeleteCount();
-  return await updateLatestNoteInfos();
+  await updateLatestNoteInfos();
 }
 
 /**
@@ -565,14 +555,14 @@ export async function switchToStoringNotesOnDisk(dh) {
 
   // migrate notes
   for (let ni of latestNoteInfos) {
-    if (isSystemNote(ni)) {
+    if (isSystemNoteName(ni.name)) {
       continue;
     }
     migrateNote(ni, diskNoteInfos, dh);
   }
   // remove migrated notes
   for (let ni of latestNoteInfos) {
-    if (isSystemNote(ni)) {
+    if (isSystemNoteName(ni.name)) {
       continue;
     }
     localStorage.removeItem(ni.path);
