@@ -21,7 +21,9 @@ export default {
   },
 
   mounted() {
+    // @ts-ignore
     this.$refs.container.focus()
+    // @ts-ignore
     this.$refs.input.focus()
   },
 
@@ -36,11 +38,12 @@ export default {
 
   methods: {
     onKeydown(event) {
+      let container = /** @type {HTMLElement} */(this.$refs.container);
       if (event.key === "ArrowDown") {
         this.selected = Math.min(this.selected + 1, this.filteredItems.length - 1)
         event.preventDefault()
         if (this.selected === this.filteredItems.length - 1) {
-          this.$refs.container.scrollIntoView({ block: "end" })
+          container.scrollIntoView({ block: "end" })
         } else {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
@@ -49,7 +52,7 @@ export default {
         this.selected = Math.max(this.selected - 1, 0)
         event.preventDefault()
         if (this.selected === 0) {
-          this.$refs.container.scrollIntoView({ block: "start" })
+          container.scrollIntoView({ block: "start" })
         } else {
           this.$refs.item[this.selected].scrollIntoView({ block: "nearest" })
         }
@@ -77,7 +80,7 @@ export default {
     },
 
     onFocusOut(event) {
-      let container = this.$refs.container
+      let container = /** @type {HTMLElement} */(this.$refs.container);
       if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
         this.$emit("close")
       }

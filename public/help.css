@@ -38,3 +38,8 @@ p.bright {
   height: 64px;
   margin-bottom: 0;
 }
+
+h1 a {
+  text-decoration: none;
+  color: gray;
+}

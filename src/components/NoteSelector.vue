@@ -118,6 +118,9 @@ export default {
         return false
       }
       const item = this.filteredItems[this.selected]
+      if (!item) {
+        return false
+      }
       // can't delete scratch note
       if (item.name === "scratch") {
         return false

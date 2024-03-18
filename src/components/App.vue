@@ -131,11 +131,6 @@ export default {
           e.preventDefault()
         }
       }
-      if (e.key == "Escape") {
-        if (this.showingHelp) {
-          this.toggleHelp();
-        }
-      }
     },
 
     onCloseHelp(e) {
