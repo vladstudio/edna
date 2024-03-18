@@ -88,7 +88,7 @@ export default {
       </template>
     </div>
     <div class="status-block doc-size">{{ formatSize }}</div>
-    <div class="spacer"></div>
+    <div class="grow"></div>
     <div @click="$emit('openLanguageSelector')" class="status-block lang clickable" :title="changeLanguageTitle">
       {{ languageName }}
       <span v-if="languageAuto" class="auto">(auto)</span>
@@ -123,9 +123,6 @@ export default {
         align-items: center
         user-select: none
 
-        .spacer
-            flex-grow: 1
-        
         .status-block
             box-sizing: border-box
             padding: 4px 10px

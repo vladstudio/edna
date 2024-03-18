@@ -323,11 +323,9 @@ export function getLanguage(token) {
 }
 
 export function langSupportsFormat(token) {
-  console.log("langSupportsFormat", token);
   return getLanguage(token).supportsFormat;
 }
 
 export function langSupportsRun(token) {
-  console.log("langSupportsRun", token);
   return getLanguage(token).supportsRun;
 }

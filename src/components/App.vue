@@ -5,6 +5,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import NoteSelector from './NoteSelector.vue'
 import StatusBar from './StatusBar.vue'
 import TopNav from './TopNav.vue'
+import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
@@ -27,6 +28,7 @@ export default {
     Help,
     LanguageSelector,
     NoteSelector,
+    RenameNote,
     Settings,
     StatusBar,
     TopNav,
@@ -52,6 +54,7 @@ export default {
       showingLanguageSelector: false,
       showingNoteSelector: false,
       showingSettings: false,
+      showingRenameNote: false,
       theme: themeMode.initial,
       themeSetting: 'system',
     }
@@ -140,6 +143,15 @@ export default {
       }
     },
 
+    onCloseRename() {
+      this.showingRenameNote = false
+      this.getEditor().focus()
+    },
+
+    onRename(newName) {
+      console.log("onRename: newName:", newName)
+    },
+
     onCloseHelp(e) {
       this.showingHelp = false
       this.getEditor().focus()
@@ -186,7 +198,6 @@ export default {
       e.preventDefault();
       this.showingMenu = true
       let canDelete = this.canDeleteNote();
-      console.log("canDelete:", canDelete)
       /** @type {MenuItem[]} */
       let items = [
         {
@@ -391,6 +402,7 @@ export default {
 
     renameNote() {
       console.log("renameNote:");
+      this.showingRenameNote = true;
     },
 
     canDeleteNote() {
@@ -530,6 +542,7 @@ export default {
     <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
   <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
+  <RenameNote @close="onCloseRename" :oldName="noteName" v-if="showingRenameNote" />
 </template>
 
 <style scoped lang="sass">

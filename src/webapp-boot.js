@@ -49,14 +49,18 @@ export async function boot() {
   // make sure currentNoteName points to a valid note
   let name = settings.currentNoteName;
   noteInfos = await loadNoteInfos(); // re-do because could have created default notes
+  let found = false;
   for (let ni of noteInfos) {
     if (ni.name === name) {
       console.log("currentNoteName:", name);
+      found = true;
       break;
     }
   }
-  // initialSettings.currentNoteName = "scratch";
-  console.log(`didn't find currentNoteName '${name}' so set to 'scratch'`);
+  if (!found) {
+    settings.currentNoteName = "scratch";
+    console.log(`didn't find currentNoteName '${name}' so set to 'scratch'`);
+  }
   console.log("mounting App");
   const app = createApp(App);
   app.mount("#app");

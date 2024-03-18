@@ -279,7 +279,7 @@ export default {
           <div>
             {{ item.name }}
           </div>
-          <div class="flex-grow"></div>
+          <div class="grow"></div>
           <div>{{ noteShortcut(item) }}</div>
         </li>
       </ul>
