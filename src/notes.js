@@ -487,6 +487,16 @@ export async function deleteNote(name) {
 }
 
 /**
+ * @param {string} oldName
+ * @param {string} newName
+ * @param {string} content
+ */
+export async function renameNote(oldName, newName, content) {
+  await createNoteWithName(newName, content);
+  await deleteNote(oldName);
+}
+
+/**
  * @param {NoteInfo} noteInfo
  * @param {NoteInfo[]} diskNoteInfos
  * @param {FileSystemDirectoryHandle} dh

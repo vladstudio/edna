@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -136,9 +136,11 @@ export default {
       this.getEditor().focus()
     },
 
-    onRename(newName) {
+    async onRename(newName) {
+      this.showingRenameNote = false
       let s = this.getEditor().getContent() || ""
-
+      await renameNote(this.noteName, newName, s)
+      this.onOpenNote(newName)
       console.log("onRename: newName:", newName)
     },
 
