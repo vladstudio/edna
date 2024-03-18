@@ -13,10 +13,19 @@
   margin: 0
   padding-right: 1em
 
-// TODO: this doesn't work
 .mx-right-arrow
   width: 8px
   height: 8px
 
 .mx-shortcut
   border: 1px solid white
+
+.center-with-translate
+  left: 50%
+  top: 50%
+  transform: translate(-50%, -50%)
+
+.no-border-outline
+  &active, &:selected, &:focus, &:focus-visible
+    border: none
+    outline: none

@@ -53,7 +53,6 @@ if (uaPlatform.indexOf("Win") !== -1) {
   };
   platformName = "darwin";
 }
-platform.isWebApp = true;
 
 export function getModChar(platform = platformName) {
   return platform === "darwin" ? "⌘" : "Ctrl";

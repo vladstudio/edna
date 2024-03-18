@@ -89,17 +89,17 @@ export default {
 </script>
 
 <template>
-  <div class="settings">
-    <div class="dialog">
-      <div class="dialog-content">
+  <div class="fixed inset-0">
+    <div
+      class="dialog gray-700 absolute z-20 flex flex-col bg-white max-w-full max-h-full rounded shadow-xl w-[640px] h-[460px] center-with-translate overflow-y-auto no-border-outline">
+      <div class="dialog-content flex grow">
         <nav class="sidebar">
           <h1>Settings</h1>
           <ul>
             <TabListItem name="General" tab="general" :activeTab="activeTab" @click="activeTab = 'general'" />
             <TabListItem name="Editing" tab="editing" :activeTab="activeTab" @click="activeTab = 'editing'" />
             <TabListItem name="Appearance" tab="appearance" :activeTab="activeTab" @click="activeTab = 'appearance'" />
-            <TabListItem :name="isWebApp ? 'Version' : 'Updates'" tab="updates" :activeTab="activeTab"
-              @click="activeTab = 'updates'" />
+            <TabListItem name="Version" tab="updates" :activeTab="activeTab" @click="activeTab = 'updates'" />
           </ul>
         </nav>
         <div class="settings-content">
@@ -194,112 +194,74 @@ export default {
         <button @click="$emit('closeSettings')" class="close border-gray-500 px-4 border">Close</button>
       </div>
     </div>
-    <div class="shader"></div>
+    <div class="bg-black opacity-50 absolute inset-0 z-10"></div>
   </div>
 </template>
 
 <style lang="sass" scoped>
-    .settings
-        position: fixed
-        top: 0
-        left: 0
-        bottom: 0
-        right: 0
-
-        .shader
-            z-index: 1
-            position: absolute
-            top: 0
-            left: 0
-            bottom: 0
-            right: 0
-            background: rgba(0, 0, 0, 0.5)
-
-        .dialog
+  .dialog
+    +dark-mode
+        background: #333
+        color: #eee
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3)
+    .dialog-content
+        .sidebar
             box-sizing: border-box
-            z-index: 2
-            position: absolute
-            left: 50%
-            top: 50%
-            transform: translate(-50%, -50%)
-            width: 700px
-            height: 560px
-            max-width: 100%
-            max-height: 100%
-            display: flex
-            flex-direction: column
-            border-radius: 5px
-            background: #fff
-            color: #333
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.2)
-            overflow-y: auto
-            &:active, &:selected, &:focus, &:focus-visible
-                border: none
-                outline: none
+            width: 140px
+            border-right: 1px solid #eee
+            padding-top: 20px
             +dark-mode
-                background: #333
-                color: #eee
-                box-shadow: 0 0 25px rgba(0, 0, 0, 0.3)
-            .dialog-content
-                flex-grow: 1
-                display: flex
-                .sidebar
-                    box-sizing: border-box
-                    width: 140px
-                    border-right: 1px solid #eee
-                    padding-top: 20px
-                    +dark-mode
-                        border-right: 1px solid #222
-                    h1
-                        font-size: 16px
-                        font-weight: 700
-                        margin-bottom: 20px
-                        padding: 0 20px
-                        margin-bottom: 20px
-                .settings-content
-                    flex-grow: 1
-                    padding: 40px
-                    overflow-y: auto
-                    select
-                        height: 22px
-                        +dark-mode
-                            background: #222
-                            color: #eee
-                    .row
-                        display: flex
-                        .entry
-                            margin-bottom: 24px
-                            margin-right: 20px
-                            &:last-child
-                                margin-right: 0
-                            h2
-                                font-weight: 600
-                                margin-bottom: 10px
-                                font-size: 14px
-                            select
-                                width: 200px
-                                &:focus
-                                    outline: none
-                            label
-                                display: block
-                                user-select: none
-                                > input[type=checkbox]
-                                    position: relative
-                                    top: 2px
-                                    left: -3px
-
-            .bottom-bar
-                border-radius: 0 0 5px 5px
-                background: #eee
-                text-align: right
-                padding: 10px 20px
+                border-right: 1px solid #222
+            h1
+                font-size: 16px
+                font-weight: 700
+                margin-bottom: 20px
+                padding: 0 20px
+                margin-bottom: 20px
+        .settings-content
+            flex-grow: 1
+            padding: 40px
+            overflow-y: auto
+            select
+                height: 22px
                 +dark-mode
                     background: #222
-                .close
-                    height: 28px
-                    &:hover
-                      background-color: lightgray
-                      +dark-mode
-                          background: #333
-                          color: #eee
+                    color: #eee
+            .row
+                display: flex
+                .entry
+                    margin-bottom: 24px
+                    margin-right: 20px
+                    &:last-child
+                        margin-right: 0
+                    h2
+                        font-weight: 600
+                        margin-bottom: 10px
+                        font-size: 14px
+                    select
+                        width: 200px
+                        &:focus
+                            outline: none
+                    label
+                        display: block
+                        user-select: none
+                        > input[type=checkbox]
+                            position: relative
+                            top: 2px
+                            left: -3px
+
+    .bottom-bar
+        border-radius: 0 0 5px 5px
+        background: #eee
+        text-align: right
+        padding: 10px 20px
+        +dark-mode
+            background: #222
+        .close
+            height: 28px
+            &:hover
+              background-color: lightgray
+              +dark-mode
+                  background: #333
+                  color: #eee
 </style>
