@@ -20,8 +20,6 @@ import { ref } from "vue";
  */
 
 export let isDocDirty = ref(false);
-/** @type {Ref<NoteInfo[]>} */
-export let noteInfos = ref([]);
 
 const kStatsKey = "stats.json";
 
