@@ -542,7 +542,7 @@ export default {
     <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
   </div>
   <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
-  <RenameNote @close="onCloseRename" :oldName="noteName" v-if="showingRenameNote" />
+  <RenameNote @close="onCloseRename" @rename="onRename" :oldName="noteName" v-if="showingRenameNote" />
 </template>
 
 <style scoped lang="sass">
