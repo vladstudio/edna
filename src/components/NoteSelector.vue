@@ -333,7 +333,7 @@ export default {
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
       <ul class="items">
         <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
-          @click="openNote(item)" ref="item">
+          @click="openNote(item.name)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">
             {{ item.name }}
           </div>

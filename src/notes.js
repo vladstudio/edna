@@ -563,15 +563,15 @@ export function canDeleteNote(name) {
 
 /**
  * creates a new scratch-${N} note
- * @returns {Promise<NoteInfo>}
+ * @returns {Promise<string>}
  */
 export async function createNewScratchNote() {
   console.log("createNewScratchNote");
   let noteInfos = await loadNoteInfos();
   // generate a unique "scratch-${N}" note name
   let scratchName = pickUniqueNameInNoteInfos("scratch", noteInfos);
-  let noteInfo = createNoteWithName(scratchName);
-  return noteInfo;
+  createNoteWithName(scratchName);
+  return scratchName;
 }
 
 /**

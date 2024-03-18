@@ -396,8 +396,8 @@ export default {
     },
 
     async createNewScratchNote() {
-      let noteInfo = await createNewScratchNote()
-      this.onOpenNote(noteInfo.name)
+      let name = await createNewScratchNote()
+      this.onOpenNote(name)
       // TODO: show a notification that allows to undo creation of the note
     },
 
