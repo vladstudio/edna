@@ -1,5 +1,5 @@
 <script>
-import { getLatestNoteInfos, getMetadataForNote, isSystemNote, reassignNoteShortcut } from '../notes'
+import { getLatestNoteInfos, getMetadataForNote, isSystemNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
 import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 
@@ -47,6 +47,15 @@ function rebuildNotesInfo() {
     if (a.altShortcut && b.altShortcut) {
       return a.altShortcut - b.altShortcut
     }
+    let isSysA = isSystemNoteName(a.name)
+    let isSysB = isSystemNoteName(b.name)
+    // system are last
+    if (isSysA && !isSysB) {
+      return 1
+    }
+    if (!isSysA && isSysB) {
+      return -1
+    }
     // if both have no shortcut, sort by name
     return a.name.localeCompare(b.name)
   })
@@ -74,6 +83,7 @@ export default {
     sanitizedFilter() {
       return sanitize(this.filter).trim()
     },
+
 
     filteredItems() {
       const nameLC = this.sanitizedFilter.toLowerCase()
@@ -169,22 +179,43 @@ export default {
   },
 
   methods: {
+    /**
+     * @param {string} name
+     * @returns {string}
+     */
     sanitizeNoteName(name) {
       let res = sanitize(name);
       // console.log(`sanitizeNoteName: ${name} -> ${res}`);
       return res;
     },
 
+    /**
+     * @param {string} name
+     * @returns {string}
+     */
     cleanNoteName(name) {
       return `"` + this.sanitizeNoteName(name) + `"`
     },
 
+    /**
+     * @param {NoteInfo2} note
+     * @returns {string}
+     */
+    isSysNote(note) {
+      return isSystemNoteName(note.name) ? "italic" : ""
+    },
+
+    /**
+     * @param {KeyboardEvent} event
+     * @returns {boolean}
+     */
     isCtrlDelete(event) {
       return (event.key === "Delete" || event.key === "Backspace") && event.ctrlKey
     },
 
     /**
      * @param {NoteInfo2} note
+     * @returns {string}
      */
     noteShortcut(note) {
       return note.altShortcut ? "Alt + " + note.altShortcut : ""
@@ -194,7 +225,7 @@ export default {
      * @param {KeyboardEvent} event
      */
     onKeydown(event) {
-      console.log("onKeyDown:", event);
+      // console.log("onKeyDown:", event);
       let container = /** @type {HTMLElement} */(this.$refs.container);
       let altN = isAltNumEvent(event);
       if (altN !== null) {
@@ -202,7 +233,9 @@ export default {
         let note = this.selectedNote
         if (note) {
           console.log("altN", altN, "n", note);
-          reassignNoteShortcut(note.name, altN); // async but no need to wait
+          reassignNoteShortcut(note.name, altN).then(() => {
+            this.items = rebuildNotesInfo()
+          })
           return;
         }
       }
@@ -301,7 +334,7 @@ export default {
       <ul class="items">
         <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
           @click="openNote(item)" ref="item">
-          <div>
+          <div :class="this.isSysNote(item) ? 'italic' : ''">
             {{ item.name }}
           </div>
           <div class="grow"></div>
@@ -335,106 +368,106 @@ export default {
 
         <div><span class="kbd">Esc</span></div>
         <div>dismiss</div>
-        <div></div>
+        <div class="italic"></div>
       </div>
     </form>
   </div>
 </template>
 
 <style scoped lang="sass">
-    .scroller
-        overflow: auto
-        position: fixed
-        top: 0
-        left: 0
-        bottom: 0
-        right: 0
+  .scroller
+    overflow: auto
+    position: fixed
+    top: 0
+    left: 0
+    bottom: 0
+    right: 0
 
-    .note-selector
-        width: 32em
-        font-size: 13px
-        padding: 10px
-        //background: #48b57e
-        background: #efefef
-        position: absolute
-        top: 0
-        left: 50%
-        transform: translateX(-50%)
-        border-radius: 0 0 5px 5px
-        box-shadow: 0 0 10px rgba(0,0,0,0.3)
-        +dark-mode
-            background: #151516
-            box-shadow: 0 0 10px rgba(0,0,0,0.5)
-        +webapp-mobile
-            max-width: calc(100% - 80px)
+  .note-selector
+      width: 32em
+      font-size: 13px
+      padding: 10px
+      //background: #48b57e
+      background: #efefef
+      position: absolute
+      top: 0
+      left: 50%
+      transform: translateX(-50%)
+      border-radius: 0 0 5px 5px
+      box-shadow: 0 0 10px rgba(0,0,0,0.3)
+      +dark-mode
+          background: #151516
+          box-shadow: 0 0 10px rgba(0,0,0,0.5)
+      +webapp-mobile
+          max-width: calc(100% - 80px)
 
-        input
-            width: 100%
-            background: #fff
-            padding: 4px 5px
-            border: 1px solid #ccc
-            box-sizing: border-box
-            border-radius: 2px
-            margin-bottom: 10px
-            &:focus
-                outline: none
-                border: 1px solid #fff
-                // outline: 2px solid #48b57e
-                outline: 2px solid #487eb5
-            +dark-mode
-                background: #3b3b3b
-                color: rgba(255,255,255, 0.9)
-                border: 1px solid #5a5a5a
-                &:focus
-                    border: 1px solid #3b3b3b
-            +webapp-mobile
-                font-size: 16px
-                max-width: 100%
-        .items
-            > li
-                line-height: 1.5
-                border-radius: 3px
-                padding: 2px 8px
-                cursor: pointer
-                &:hover
-                    background: #e2e2e2
-                &.selected
-                    // background: #48b57e
-                    background: #487eb5
-                    color: #fff
-                +dark-mode
-                    color: rgba(255,255,255, 0.53)
-                    &:hover
-                        background: #29292a
-                    &.selected
-                        background: #1b6540
-                        color: rgba(255,255,255, 0.87)
-        .kbd-grid
-            display: grid
-            grid-template-columns: auto auto 1fr
-            grid-column-gap: 1em
-            grid-row-gap: 1em
-            margin-top: 1em
-            font-size: 11px
-            padding-left: 8px
-            padding-right: 8px
-            color: gray
-            +dark-mode
-                    color: rgba(255,255,255, 0.53)
-        .kbd
-            font-family: monospace
-            font-size: 10px
-            border: 1px solid #ccc
-            border-radius: 4px
-            padding: 3px 5px
-            background-color: white
-            +dark-mode
-                background-color: #3b3b3b
-                color: rgba(255,255,255, 0.9)
-        .bold
-            font-weight: bold
-        .red
-            color: red
-            +dark-mode
-                color: #ff7b72
+      input
+          width: 100%
+          background: #fff
+          padding: 4px 5px
+          border: 1px solid #ccc
+          box-sizing: border-box
+          border-radius: 2px
+          margin-bottom: 10px
+          &:focus
+              outline: none
+              border: 1px solid #fff
+              // outline: 2px solid #48b57e
+              outline: 2px solid #487eb5
+          +dark-mode
+              background: #3b3b3b
+              color: rgba(255,255,255, 0.9)
+              border: 1px solid #5a5a5a
+              &:focus
+                  border: 1px solid #3b3b3b
+          +webapp-mobile
+              font-size: 16px
+              max-width: 100%
+      .items
+          > li
+              line-height: 1.5
+              border-radius: 3px
+              padding: 2px 8px
+              cursor: pointer
+              &:hover
+                  background: #e2e2e2
+              &.selected
+                  // background: #48b57e
+                  background: #487eb5
+                  color: #fff
+              +dark-mode
+                  color: rgba(255,255,255, 0.53)
+                  &:hover
+                      background: #29292a
+                  &.selected
+                      background: #1b6540
+                      color: rgba(255,255,255, 0.87)
+      .kbd-grid
+          display: grid
+          grid-template-columns: auto auto 1fr
+          grid-column-gap: 1em
+          grid-row-gap: 1em
+          margin-top: 1em
+          font-size: 11px
+          padding-left: 8px
+          padding-right: 8px
+          color: gray
+          +dark-mode
+                  color: rgba(255,255,255, 0.53)
+      .kbd
+          font-family: monospace
+          font-size: 10px
+          border: 1px solid #ccc
+          border-radius: 4px
+          padding: 3px 5px
+          background-color: white
+          +dark-mode
+              background-color: #3b3b3b
+              color: rgba(255,255,255, 0.9)
+      .bold
+          font-weight: bold
+      .red
+          color: red
+          +dark-mode
+              color: #ff7b72
 </style>
