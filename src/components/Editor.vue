@@ -1,11 +1,9 @@
 <script>
 import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, isSystemNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
+import { getScratchNoteInfo, isNoteInfoEqual, isSystemNote, isSystemNoteName, kScratchNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
 import { getSettings } from '../settings.js'
-
-/** @typedef {import("../notes.js").NoteInfo} NoteInfo */
 
 export default {
   props: {
@@ -235,32 +233,32 @@ export default {
     },
 
     /**
-     * @param {NoteInfo} noteInfo
+     * @param {string} name
      */
-    openNote(noteInfo) {
-      console.log("openNote:", noteInfo)
+    openNote(name) {
+      console.log("openNote:", name)
       // saving is debounced so ensure we save before opening a new note
       // TODO: we'll have a spurious save if there was a debounce, because
       // the debounce is still in progress, I think
       this.editor.saveFunction(this.editor.getContent())
-      loadNote(noteInfo).then((content) => {
+      loadNote(name).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // a bit magic: sometimes we open at the beginning, sometimes at the end
         // TODO: remember selection in memory so that we can restore during a session
         let pos = 0;
-        if (isNoteInfoEqual(noteInfo, getScratchNoteInfo())) {
+        if (name === kScratchNoteName) {
           pos = content.length
         }
         this.editor.view.dispatch({
           selection: { anchor: pos, head: pos },
           scrollIntoView: true,
         })
-        let readOnly = isSystemNote(noteInfo)
+        let readOnly = isSystemNoteName(name)
         this.editor.setReadOnly(readOnly)
         this.$emit("docChanged")
         this.focus()
-        let title = noteInfo.name + " - Edna"
+        let title = name + " - Edna"
         window.document.title = title
       })
     }

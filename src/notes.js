@@ -104,6 +104,7 @@ function mkNoteInfoFromName(name) {
 export const kScratchNoteName = "scratch";
 export const kDailyJournalNoteName = "daily journal";
 export const kInboxNoteName = "inbox";
+export const kHelpSystemNoteName = "help";
 
 /**
  * @returns {NoteInfo}
@@ -360,15 +361,15 @@ export function fixUpNoteContent(s) {
 }
 
 /**
- * @param {NoteInfo} noteInfo
+ * @param {string} name
  * @returns {string}
  */
-function getSystemNoteContent(noteInfo) {
-  console.log("getSystemNoteContent:", noteInfo);
-  if (noteInfo.path === "system:help") {
+function getSystemNoteContent(name) {
+  console.log("getSystemNoteContent:", name);
+  if (name === kHelpSystemNoteName) {
     return getHelp();
   }
-  throw new Error("unknown system note:" + noteInfo);
+  throw new Error("unknown system note:" + name);
 }
 
 /**
@@ -471,12 +472,12 @@ export async function createNoteWithName(name, content = null) {
 }
 
 /**
- * @param {NoteInfo} noteInfo
+ * @param {string} name
  * @param {string} content
  * @returns {string}
  */
-function autoCreateDayInJournal(noteInfo, content) {
-  if (!isJournalNote(noteInfo)) {
+function autoCreateDayInJournal(name, content) {
+  if (name != kDailyJournalNoteName) {
     return content;
   }
   // create block for a current day
@@ -492,52 +493,44 @@ function autoCreateDayInJournal(noteInfo, content) {
 }
 
 /**
- * @param {NoteInfo} noteInfo
+ * @param {string} name
  * @returns {string}
  */
-function loadNoteLS(noteInfo) {
-  return localStorage.getItem(noteInfo.path);
-}
-
-async function loadNoteFS(dh, noteInfo) {
-  return await fsReadTextFile(dh, noteInfo.path);
+function loadNoteLS(name) {
+  // TODO: encrypted notes
+  let key = "note:" + name;
+  return localStorage.getItem(key);
 }
 
 /**
- * @param {NoteInfo} noteInfo
+ * @param {string} name
  * @returns {Promise<string>}
  */
-async function loadNoteRaw(noteInfo) {
-  console.log("loadNoteRaw:", noteInfo);
-  if (isSystemNote(noteInfo)) {
-    return getSystemNoteContent(noteInfo);
+export async function loadNote(name) {
+  console.log("loadNote:", name);
+  let content;
+  if (isSystemNoteName(name)) {
+    content = getSystemNoteContent(name);
+  } else {
+    let dh = getStorageFS();
+    if (dh === null) {
+      content = loadNoteLS(name);
+    } else {
+      let path = notePathFromNameFS(name);
+      content = await fsReadTextFile(dh, path);
+    }
   }
-  let dh = getStorageFS();
-  if (dh === null) {
-    return loadNoteLS(noteInfo);
-  }
-  return await loadNoteFS(dh, noteInfo);
+  setSetting("currentNoteName", name);
+  content = autoCreateDayInJournal(name, content);
+  return fixUpNoteContent(content);
 }
 
+/**
+ * @returns {Promise<string>}
+ */
 export async function loadCurrentNote() {
   let settings = getSettings();
-  let name = settings.currentNoteName;
-  console.log("loadCurrentNote:", name);
-  const noteInfo = findNoteInfoByName(name);
-  let s = await loadNoteRaw(noteInfo);
-  return fixUpNoteContent(s);
-}
-
-/**
- * @param {NoteInfo} noteInfo
- * @returns {Promise<string>}
- */
-export async function loadNote(noteInfo) {
-  console.log("loadNote:", noteInfo);
-  let content = await loadNoteRaw(noteInfo);
-  setSetting("currentNoteName", noteInfo.name);
-  content = autoCreateDayInJournal(noteInfo, content);
-  return fixUpNoteContent(content);
+  return loadNote(settings.currentNoteName);
 }
 
 /**
@@ -586,7 +579,7 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
       break;
     }
   }
-  let content = loadNoteLS(noteInfo);
+  let content = loadNoteLS(noteInfo.name);
   if (!noteInfoOnDisk) {
     // didn't find a note with the same name so create
     let fileName = notePathFromNameFS(name);
