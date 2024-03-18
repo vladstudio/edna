@@ -260,8 +260,7 @@ export default {
     },
 
     onFocusOut(event) {
-      let container = this.$refs.container
-      // @ts-ignore
+      let container = /** @type {HTMLElement} */ (this.$refs.container);
       if (container !== event.relatedTarget && !container.contains(event.relatedTarget)) {
         this.$emit("close")
       }

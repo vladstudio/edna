@@ -132,7 +132,8 @@ export default {
       // hack: stop Ctrl + O unless it originates from code mirror (because then it
       // triggers NoteSelector.vue)
       if (e.key == "o" && e.ctrlKey && !e.altKey && !e.shiftKey) {
-        let fromCodeMirror = e.target && e.target.className.includes("cm-content")
+        let target = /** @type {HTMLElement} */ (e.target);
+        let fromCodeMirror = target && target.className.includes("cm-content")
         if (!fromCodeMirror) {
           e.preventDefault()
         }
