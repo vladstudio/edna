@@ -698,7 +698,6 @@ export async function loadNotesMetadata() {
 }
 
 export function getNotesMetadata() {
-  console.log("getNotesMetadata:", notesMetadata);
   return notesMetadata;
 }
 

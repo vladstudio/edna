@@ -92,9 +92,9 @@ export default {
   <div class="fixed inset-0">
     <div
       class="dialog gray-700 absolute z-20 flex flex-col bg-white max-w-full max-h-full rounded shadow-xl w-[640px] h-[460px] center-with-translate overflow-y-auto no-border-outline">
-      <div class="dialog-content flex grow">
-        <nav class="sidebar">
-          <h1>Settings</h1>
+      <div class="flex grow">
+        <nav class="sidebar w-[140px] pt-[20px] border-r border-gray-300 border-solid">
+          <h1 class="text-[16px] font-bold mb-[20px] py-0 px-[20px]">Settings</h1>
           <ul>
             <TabListItem name="General" tab="general" :activeTab="activeTab" @click="activeTab = 'general'" />
             <TabListItem name="Editing" tab="editing" :activeTab="activeTab" @click="activeTab = 'editing'" />
@@ -102,7 +102,7 @@ export default {
             <TabListItem name="Version" tab="updates" :activeTab="activeTab" @click="activeTab = 'updates'" />
           </ul>
         </nav>
-        <div class="settings-content">
+        <div class="settings-content flex-grow overflow-y-auto p-[40px]">
           <TabContent tab="general" :activeTab="activeTab">
             <div class="row">
               <div class="entry">
@@ -190,7 +190,7 @@ export default {
         </div>
       </div>
 
-      <div class="bottom-bar">
+      <div class="bottom-bar text-right py-[10px] px-[20px] bg-gray-100">
         <button @click="$emit('closeSettings')" class="close border-gray-500 px-4 border">Close</button>
       </div>
     </div>
@@ -204,64 +204,46 @@ export default {
         background: #333
         color: #eee
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.3)
-    .dialog-content
-        .sidebar
-            box-sizing: border-box
-            width: 140px
-            border-right: 1px solid #eee
-            padding-top: 20px
-            +dark-mode
-                border-right: 1px solid #222
-            h1
-                font-size: 16px
-                font-weight: 700
-                margin-bottom: 20px
-                padding: 0 20px
-                margin-bottom: 20px
-        .settings-content
-            flex-grow: 1
-            padding: 40px
-            overflow-y: auto
-            select
-                height: 22px
-                +dark-mode
-                    background: #222
-                    color: #eee
-            .row
-                display: flex
-                .entry
-                    margin-bottom: 24px
-                    margin-right: 20px
-                    &:last-child
-                        margin-right: 0
-                    h2
-                        font-weight: 600
-                        margin-bottom: 10px
-                        font-size: 14px
-                    select
-                        width: 200px
-                        &:focus
-                            outline: none
-                    label
-                        display: block
-                        user-select: none
-                        > input[type=checkbox]
-                            position: relative
-                            top: 2px
-                            left: -3px
+  .sidebar
+      +dark-mode
+          border-right: 1px solid #222
+  .settings-content
+      select
+          height: 22px
+          +dark-mode
+              background: #222
+              color: #eee
+      .row
+          display: flex
+          .entry
+              margin-bottom: 24px
+              margin-right: 20px
+              &:last-child
+                  margin-right: 0
+              h2
+                  font-weight: 600
+                  margin-bottom: 10px
+                  font-size: 14px
+              select
+                  width: 200px
+                  &:focus
+                      outline: none
+              label
+                  display: block
+                  user-select: none
+                  > input[type=checkbox]
+                      position: relative
+                      top: 2px
+                      left: -3px
 
-    .bottom-bar
-        border-radius: 0 0 5px 5px
-        background: #eee
-        text-align: right
-        padding: 10px 20px
-        +dark-mode
-            background: #222
-        .close
-            height: 28px
-            &:hover
-              background-color: lightgray
-              +dark-mode
-                  background: #333
-                  color: #eee
+  .bottom-bar
+      +dark-mode
+          background: #222
+      .close
+          height: 28px
+          &:hover
+            background-color: lightgray
+            +dark-mode
+                background: #333
+                color: #eee
 </style>
