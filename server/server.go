@@ -150,6 +150,7 @@ var (
 	currencyRatesURL1 = "https://open.er-api.com/v6/latest/EUR"
 	currencyRatesURL2 = "https://currencies.heynote.com/rates.json"
 	// I also have https://apilayer.com/marketplace/fixer-api account
+	// on https://apilayer.com/account
 	// which is free for 100 reqs per month
 )
 

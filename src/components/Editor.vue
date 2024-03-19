@@ -1,7 +1,7 @@
 <script>
 import { kEventDocChanged, EdnaEditor, kEventOpenLanguageSelector, kEventOpenNoteSelector, kEventCreateNewScratchNote } from '../editor/editor.js'
 import { syntaxTree } from "@codemirror/language"
-import { isSystemNoteName, kScratchNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
+import { kScratchNoteName, loadCurrentNote, loadNote, saveCurrentNote } from '../notes.js'
 import { rememberEditor } from '../state.js'
 import { getSettings } from '../settings.js'
 
@@ -98,6 +98,7 @@ export default {
       let name = settings.currentNoteName;
       rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
+      console.log("loadCurrentNote: triggering docChanged event, name:", name)
       this.$emit("docChanged", name)
     })
 
@@ -248,6 +249,7 @@ export default {
         this.saveCurrentNote()
       }
       loadNote(name).then((content) => {
+        console.log("loadNote: name:", name)
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // TODO: move this logic to App.onDocChanged
@@ -262,6 +264,7 @@ export default {
           scrollIntoView: true,
         })
         this.focus()
+        console.log("openNote: triggering docChanged event, name:", name)
         this.$emit("docChanged", name)
       })
     }

@@ -478,27 +478,35 @@ export default {
     },
 
     /**
-     * called when a new document has been loaded
+     * called when a new document has been loaded or when a document has been modified
+     * TODO: maybe needs separate event onDocLoaded
      * @param {string} name
      */
     onDocChanged(name) {
-      console.log("new doc loaded:", name)
-      this.noteName = name
+      let justOpened = name !== undefined;
+      // console.log(`doc changed: name: ${name} this.noteName: ${this.noteName}, justOpened: ${justOpened}`)
+      if (name === undefined) {
+        name = this.noteName
+      } else {
+        this.noteName = name
+      }
 
       let editorComp = this.getEditor()
       const c = editorComp.getContent() || ""
       this.docSize = stringSizeInUtf8Bytes(c);
 
-      let readOnly = isSystemNoteName(name)
-      editorComp.editor.setReadOnly(readOnly)
-      if (name === kDailyJournalNoteName) {
-        console.log("journal, so going to next block")
-        editorComp.gotoNextBlock()
-      }
-      let title = name + " - Edna"
-      window.document.title = title
+      if (justOpened) {
+        let readOnly = isSystemNoteName(name)
+        editorComp.editor.setReadOnly(readOnly)
+        if (name === kDailyJournalNoteName) {
+          console.log("journal, so going to next block")
+          editorComp.gotoNextBlock()
+        }
 
-      setSetting("currentNoteName", name);
+        let title = name + " - Edna"
+        window.document.title = title
+        setSetting("currentNoteName", name);
+      }
     },
 
     formatCurrentBlock() {
