@@ -143,10 +143,40 @@ func handleGithubCallback(w http.ResponseWriter, r *http.Request) {
 
 var (
 	cachedCurrencyRatesJSON []byte
-	currencyRatesURL        = "https://currencies.heynote.com/rates.json"
 	currencyRatesLastUpdate time.Time
 	muCurrency              sync.Mutex
+	currencyUpdateFreq      = time.Hour * 24
+	// https://www.exchangerate-api.com/docs/fre, free for 1 per day
+	currencyRatesURL1 = "https://open.er-api.com/v6/latest/EUR"
+	currencyRatesURL2 = "https://currencies.heynote.com/rates.json"
+	// I also have https://apilayer.com/marketplace/fixer-api account
+	// which is free for 100 reqs per month
 )
+
+func getCurrencyRates() ([]byte, error) {
+	{
+		rsp, err := http.Get(currencyRatesURL1)
+		if err != nil {
+			return nil, err
+		}
+		defer rsp.Body.Close()
+		if rsp.StatusCode == 200 {
+			return io.ReadAll(rsp.Body)
+		}
+	}
+
+	{
+		rsp, err := http.Get(currencyRatesURL2)
+		if err != nil {
+			return nil, err
+		}
+		defer rsp.Body.Close()
+		if rsp.StatusCode != 200 {
+			return nil, e("failed to get currency rates")
+		}
+		return io.ReadAll(rsp.Body)
+	}
+}
 
 // TODO: implement without using https://currencies.heynote.com/rates.json
 func serverApiCurrencyRates(w http.ResponseWriter, r *http.Request) {
@@ -157,24 +187,13 @@ func serverApiCurrencyRates(w http.ResponseWriter, r *http.Request) {
 	if cachedCurrencyRatesJSON != nil {
 		sinceUpdate := time.Since(currencyRatesLastUpdate)
 		logf("serverCurrencyRates: have cached data, since update: %s\n", sinceUpdate)
-		if sinceUpdate < time.Hour {
+		if sinceUpdate < currencyUpdateFreq {
 			logf("serverCurrencyRates: using cached data\n")
 			serveJSON(w, []byte(cachedCurrencyRatesJSON))
 			return
 		}
 	}
 
-	getCurrencyRates := func() ([]byte, error) {
-		rsp, err := http.Get(currencyRatesURL)
-		if err != nil {
-			return nil, err
-		}
-		defer rsp.Body.Close()
-		if rsp.StatusCode != 200 {
-			return nil, e("failed to get currency rates")
-		}
-		return io.ReadAll(rsp.Body)
-	}
 	d, err := getCurrencyRates()
 	if err != nil {
 		logf("serverCurrencyRates: getCurrencyRates() failed with: '%s'\n", err)
