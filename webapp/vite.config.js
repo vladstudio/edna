@@ -1,8 +1,8 @@
 import * as child from "child_process";
 
-import vue from "@vitejs/plugin-vue";
-import path from "path";
 import { defineConfig } from "vite";
+import path from "path";
+import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({

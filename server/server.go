@@ -198,6 +198,12 @@ func truncData(data []byte, maxLen int) string {
 	return string(data)
 }
 
+func isMacBasedOnUserAgent(r *http.Request) bool {
+	ua := strings.ToLower(r.UserAgent())
+	// TODO: verify this
+	return strings.Contains(ua, "mac")
+}
+
 // in dev, proxyHandler redirects assets to vite web server
 // in prod, assets must be pre-built in frontend/dist directory
 func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.ReverseProxy) *http.Server {
@@ -234,7 +240,15 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 
 		tryServeRedirect := func(uri string) bool {
 			if uri == "/home" {
-				http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+				http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+				return true
+			}
+			if uri == "/help" {
+				newURL := "/help-win.html"
+				if isMacBasedOnUserAgent(r) {
+					newURL = "/help-mac.html"
+				}
+				http.Redirect(w, r, newURL, http.StatusTemporaryRedirect)
 				return true
 			}
 			return false

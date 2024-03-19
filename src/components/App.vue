@@ -291,7 +291,7 @@ export default {
           // if currently storing in browser
           children = [
             {
-              label: "Move from browser to directory",
+              label: "Move notes from browser to directory",
               onClick: () => { this.storeNotesOnDisk() },
               shortcut: "",
             },

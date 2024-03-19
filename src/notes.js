@@ -151,7 +151,7 @@ export async function createDefaultNotes(existingNoteInfos) {
   const { initialContent, initialDevContent, initialJournal, initialInbox } =
     getInitialContent();
 
-  const s = isDev ? initialDevContent : initialContent;
+  const s = false && isDev ? initialDevContent : initialContent;
   let nCreated = await createIfNotExists(kScratchNoteName, s);
   // scratch note must always exist but the user can delete inbox / daily journal notes
   if (isFirstRun) {
