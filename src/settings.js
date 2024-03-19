@@ -50,7 +50,7 @@ export function loadSettings() {
 
 const mediaMatch = window.matchMedia("(prefers-color-scheme: dark)");
 export function updateWebsiteTheme() {
-  console.log("updateWebsiteTheme");
+  console.log("updateWebsiteTheme, settings.theme:", settings.theme);
   let theme = settings.theme || "system";
   if (theme === "system") {
     theme = mediaMatch.matches ? "dark" : "light";
@@ -60,6 +60,7 @@ export function updateWebsiteTheme() {
 
 mediaMatch.addEventListener("change", async () => {
   if (settings.theme === "system") {
+    console.log("change event listener");
     updateWebsiteTheme();
   }
 });
@@ -99,7 +100,6 @@ export function loadInitialSettings() {
   };
   let updatedSettings = Object.assign(initialSettings, settings);
   saveSettings(updatedSettings);
-  updateWebsiteTheme();
 }
 
 /**

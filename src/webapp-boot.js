@@ -14,6 +14,7 @@ import App from "./components/App.vue";
 import AskFSPermissions from "./components/AskFSPermissions.vue";
 import { createApp } from "vue";
 import { hasHandlePermission } from "./fileutil";
+import { isDev } from "./utils";
 import { loadCurrencies } from "./currency";
 
 /** @typedef {import("./settings").Settings} Settings */
@@ -74,3 +75,15 @@ export async function boot() {
 boot().then(() => {
   console.log("finished booting");
 });
+
+if (isDev) {
+  // @ts-ignore
+  window.resetApp = function () {
+    console.log("unmounting app");
+    app.unmount();
+    console.log("clearing localStorage");
+    localStorage.clear();
+    console.log("reloading");
+    window.location.reload();
+  };
+}

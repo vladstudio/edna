@@ -4,7 +4,7 @@ import {
   openDirPicker,
   readDir,
 } from "./fileutil";
-import { getDateYYYYMMDDDay, throwIf } from "./utils";
+import { getDateYYYYMMDDDay, isDev, throwIf } from "./utils";
 import { getHelp, getInitialContent } from "./initial-content";
 import {
   getSettings,
@@ -106,8 +106,6 @@ export function isSystemNoteName(name) {
 export const blockHdrPlainText = "\n∞∞∞text-a\n";
 export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
-export const isDev = location.host.startsWith("localhost");
-
 // is set if we store notes on disk, null if in localStorage
 /** @type {FileSystemDirectoryHandle | null} */
 let storageFS = null;
@@ -147,6 +145,8 @@ export async function createDefaultNotes(existingNoteInfos) {
     await createNoteWithName(name, content);
     return 1;
   }
+  let isFirstRun = getStats().appOpenCount < 2;
+  console.log("isFirstRun:", isFirstRun);
 
   const { initialContent, initialDevContent, initialJournal, initialInbox } =
     getInitialContent();
@@ -154,14 +154,19 @@ export async function createDefaultNotes(existingNoteInfos) {
   const s = isDev ? initialDevContent : initialContent;
   let nCreated = await createIfNotExists(kScratchNoteName, s);
   // scratch note must always exist but the user can delete inbox / daily journal notes
-  let n = getStats().appOpenCount;
-  if (n < 2) {
+  if (isFirstRun) {
     // re-create those notes if the user hasn't deleted them
     nCreated += await createIfNotExists(kDailyJournalNoteName, initialJournal);
     nCreated += await createIfNotExists(kInboxNoteName, initialInbox);
   }
   if (nCreated > 0) {
     await updateLatestNoteInfos();
+  }
+  if (isFirstRun) {
+    await loadNotesMetadata(); // must pre-load to make them available
+    reassignNoteShortcut("scratch", "1");
+    reassignNoteShortcut("daily journal", "2");
+    reassignNoteShortcut("inbox", "3");
   }
   return latestNoteInfos;
 }
@@ -678,7 +683,7 @@ async function renameInMetadata(oldName, newName) {
 
 /**
  * @param {string} name
- * @param {string} altShortcut
+ * @param {string} altShortcut - "0" ... "9"
  * @returns {Promise<NoteMetadata[]>}
  */
 export async function reassignNoteShortcut(name, altShortcut) {

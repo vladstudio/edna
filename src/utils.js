@@ -1,3 +1,5 @@
+export const isDev = location.host.startsWith("localhost");
+
 export function len(o) {
   return o ? o.length : 0;
 }
