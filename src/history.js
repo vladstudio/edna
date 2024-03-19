@@ -19,3 +19,14 @@ export function historyPush(name) {
 export function getHistory() {
   return openedHistory;
 }
+
+/**
+ * @param {string} oldName
+ * @param {string} newName
+ */
+export function renameInHistory(oldName, newName) {
+  let i = openedHistory.indexOf(oldName);
+  if (i >= 0) {
+    openedHistory[i] = newName;
+  }
+}

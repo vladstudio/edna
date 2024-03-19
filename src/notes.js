@@ -21,6 +21,7 @@ import {
 } from "./state";
 
 import { KV } from "./dbutil";
+import { renameInHistory } from "./history";
 
 /**
  * @typedef {Object} NoteInfo
@@ -495,6 +496,9 @@ export async function deleteNote(name) {
 export async function renameNote(oldName, newName, content) {
   await createNoteWithName(newName, content);
   await deleteNote(oldName);
+  await renameInMetadata(oldName, newName);
+  renameInHistory(oldName, newName);
+  await updateLatestNoteInfos();
 }
 
 /**
@@ -654,6 +658,22 @@ async function saveNotesMetadata(m) {
   }
   notesMetadata = m;
   return m;
+}
+
+/**
+ * @param {string} oldName
+ * @param {string} newName
+ * @returns {Promise<NoteMetadata[]>}
+ */
+async function renameInMetadata(oldName, newName) {
+  let m = notesMetadata;
+  for (let o of notesMetadata) {
+    if (o.name === oldName) {
+      o.name = newName;
+      break;
+    }
+  }
+  return await saveNotesMetadata(m);
 }
 
 /**

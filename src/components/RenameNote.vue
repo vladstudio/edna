@@ -1,4 +1,6 @@
 <script>
+import { getLatestNoteInfos } from '../notes'
+
 export default {
   props: {
     oldName: String,
@@ -12,7 +14,17 @@ export default {
 
   computed: {
     canRename() {
-      return this.newName.trim() !== ""
+      let name = this.newName.trim()
+      if (name === "") {
+        return false
+      }
+      let notes = getLatestNoteInfos()
+      for (let note of notes) {
+        if (note.name === name) {
+          return false
+        }
+      }
+      return true
     }
   },
 
