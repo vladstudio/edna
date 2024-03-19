@@ -12,10 +12,11 @@
   </head>
   <body>
     <div class="content">
-  <h1 id="welcome-to-edna" tabindex="-1"><a class="header-anchor" href="#welcome-to-edna">Welcome to Edna</a></h1>
-<p>Edna is a scratchpad for quickly taking notes.</p>
-<p>This is a help note. To switch to a different note, press <code>Ctrl + O</code>.</p>
-<h1 id="keyboard-shortcuts" tabindex="-1"><a class="header-anchor" href="#keyboard-shortcuts">Keyboard shortcuts</a></h1>
+  <h1 id="welcome-to-edna" tabindex="-1"><a class="header-anchor" href="#welcome-to-edna" target="_blank">Welcome to <a href="https://edna.arslexis.io" target="_blank">Edna</a></a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is a scratchpad and note taker for developers and power users.</p>
+<p>This is a help note. To switch to a different note, press <code>Ctrl + P</code>.</p>
+<p>To see help in HTML, press <code>?</code> at the bottom right or visit https://edna.arslexis.io/help</p>
+<h1 id="keyboard-shortcuts" tabindex="-1"><a class="header-anchor" href="#keyboard-shortcuts" target="_blank">Keyboard shortcuts</a></h1>
 <pre><code>Ctrl + P               Open, create or delete a note
 Alt + N                Create a new scratch note
 Ctrl + Enter           Add new block below the current block
@@ -32,43 +33,115 @@ Alt + Shift + F        Format block content (works for Go, JSON, JavaScript, HTM
 Alt + Shift + R        Execute block code (works for Go)
 Ctrl + F               Search / replace within a note
 </code></pre>
-<h1 id="why-edna%3F" tabindex="-1"><a class="header-anchor" href="#why-edna%3F">Why Edna?</a></h1>
-<p>Edna is optimized for speed of note taking.</p>
-<p>We have keyboard shortcuts for quickly navigating between blocks and notes.</p>
-<p>We have syntax highlighting for markdown and multiple programming languages.</p>
-<h1 id="blocks-and-notes" tabindex="-1"><a class="header-anchor" href="#blocks-and-notes">Blocks and notes</a></h1>
+<h1 id="why-edna%3F" tabindex="-1"><a class="header-anchor" href="#why-edna%3F" target="_blank">Why <a href="https://edna.arslexis.io" target="_blank">Edna</a>?</a></h1>
+<h2 id="speed" tabindex="-1"><a class="header-anchor" href="#speed" target="_blank">Speed</a></h2>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is optimized for speed of note taking:</p>
+<ul>
+<li><code>Ctrl + P</code> to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut</li>
+<li><code>Alt + N</code> - a quick access shortcut. You can assign <code>Alt + 0</code> to <code>Alt + 9</code> for quickly accessing your notes
+<ul>
+<li>use <code>Ctrl + P</code>, select a note and press <code>Alt + N</code> shortcut</li>
+<li>default shortcuts are:
+<ul>
+<li><code>Alt + 1</code> : scratch</li>
+<li><code>Alt + 2</code> : daily journal</li>
+<li><code>Alt + 3</code> : inbox</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="blocks-and-notes" tabindex="-1"><a class="header-anchor" href="#blocks-and-notes" target="_blank">Blocks and notes</a></h2>
+<p>Notes consists of blocks.</p>
+<p>Each block has a type: plain text, markdown, JavaScript code, Go code etc.</p>
+<h2 id="features-for-developers" tabindex="-1"><a class="header-anchor" href="#features-for-developers" target="_blank">Features for developers</a></h2>
+<p>We have syntax highlighting for markdown and many programming languages.</p>
+<p>You can format many types of blocks:</p>
+<ul>
+<li><code>Alt + Shift + F</code></li>
+<li>right-click and use context menu</li>
+<li>press format icon in status bar (bottom right)</li>
+</ul>
+<h1 id="multiple-notes" tabindex="-1"><a class="header-anchor" href="#multiple-notes" target="_blank">Multiple notes</a></h1>
+<h2 id="create-a-new-note" tabindex="-1"><a class="header-anchor" href="#create-a-new-note" target="_blank">Create a new note</a></h2>
+<ul>
+<li><code>Ctrl + P</code> to open note selector</li>
+<li>type name of the note to create</li>
+<li><code>Enter</code> to create if the name doesn't match any existing note</li>
+<li><code>Ctrl + Enter</code> to create if the name partially matches an existing note</li>
+</ul>
+<h2 id="create-a-new-scratch-note" tabindex="-1"><a class="header-anchor" href="#create-a-new-scratch-note" target="_blank">Create a new scratch note</a></h2>
+<p><code>Alt + N</code> if you just want a temporary scratch note.</p>
+<p>We'll auto-create a unique name <code>scratch-N</code></p>
+<h2 id="delete-a-note" tabindex="-1"><a class="header-anchor" href="#delete-a-note" target="_blank">Delete a note</a></h2>
+<ul>
+<li>right-click for context menu, <code>Note / Delete current note</code></li>
+</ul>
+<p>or:</p>
+<ul>
+<li><code>Ctrl + P</code></li>
+<li>select a note with arrow key or by typing a partial name match</li>
+<li><code>Ctrl + Delete</code> or <code>Ctrl + Backspace</code> to delete selected note</li>
+</ul>
+<p>A <code>scratch</code> note is always available. If you delete it, we'll re-create an empty note.</p>
+<h2 id="rename-a-note" tabindex="-1"><a class="header-anchor" href="#rename-a-note" target="_blank">Rename a note</a></h2>
+<ul>
+<li>right-click for context menu, <code>Note / Rename current note</code></li>
+</ul>
 <p>Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.</p>
 <p>Each block has its own type for syntax highlighting.</p>
 <p>You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.</p>
-<h1 id="multiple-notes" tabindex="-1"><a class="header-anchor" href="#multiple-notes">Multiple notes</a></h1>
-<p>You can create multiple notes:</p>
+<h2 id="open-a-different-note" tabindex="-1"><a class="header-anchor" href="#open-a-different-note" target="_blank">Open a different note</a></h2>
 <ul>
-<li>default, always available note is 'scratch'. Press <code>Alt-1</code> to quickly switch to it</li>
-<li>press 'Ctrl + O' to switch to another note or create / delete a note</li>
-<li>or click on the note name in the bottom left corner</li>
+<li><code>Ctrl + P</code></li>
+<li>click on note to open or</li>
+<li>enter text to narrow down list of notes</li>
+<li><code>up</code> / <code>down</code> arrow keys to select a note</li>
+<li><code>Enter</code> to open selected note</li>
 </ul>
-<p>It's up to you to how to divide your writing into blocks and notes.</p>
-<p>A <code>scratch</code> note is always available and cannot be deleted.</p>
-<h1 id="daily-journal" tabindex="-1"><a class="header-anchor" href="#daily-journal">Daily journal</a></h1>
-<p>By default we create a 'daily journal' note.</p>
-<p>Daily journal is for keeping track of what you do daily.</p>
-<p>By convention each block represents a day.</p>
-<p>We recommend that first line is date in the format: <code>#YYYY-MM-DD &lt;day of week&gt;</code>.</p>
-<p>We automatically create a new block for each day when you open journal note.</p>
-<p>You can delete it if you don't want to use it.</p>
-<h1 id="accessing-notes-on-multiple-devices" tabindex="-1"><a class="header-anchor" href="#accessing-notes-on-multiple-devices">Accessing notes on multiple devices</a></h1>
-<p>You can login with GitHub and we'll store the notes as GitHub gists. They will be encrypted with a password.</p>
-<h1 id="privacy-and-security" tabindex="-1"><a class="header-anchor" href="#privacy-and-security">Privacy and security</a></h1>
-<p>Your notes are private and secure.</p>
-<p>Your notes are stored:</p>
+<h2 id="quick-access-shortcut" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut" target="_blank">Quick access shortcut</a></h2>
+<p>You can assign <code>Alt + 0</code> to <code>Alt + 9</code> keyboard shortcuts for quickly opening up to 10 notes.</p>
 <ul>
-<li>locally in the browser if you don't login with GitHub</li>
-<li>encrypted with a password if you login with GitHub. The password is only stored in the browser.</li>
+<li><code>Ctrl + P</code></li>
+<li>select a note</li>
+<li>press <code>Alt + N</code> shortcut to re-assign it to selected note</li>
 </ul>
-<p>The code is <a href="">open source</a> so you can audit it.</p>
+<p>Notes with assigned shortcut show up at the top of note selector (<code>Ctrl + P</code>).</p>
+<h1 id="default-notes" tabindex="-1"><a class="header-anchor" href="#default-notes" target="_blank">Default notes</a></h1>
+<p>We create 3 default notes for you:</p>
+<ul>
+<li><code>scratch</code>, <code>Alt + 1</code></li>
+<li><code>daily journal</code>, <code>Alt + 2</code></li>
+<li><code>inbox</code>, <code>Alt + 3</code></li>
+</ul>
+<h1 id="storing-notes-on-disk" tabindex="-1"><a class="header-anchor" href="#storing-notes-on-disk" target="_blank">Storing notes on disk</a></h1>
+<p>By default notes are stored in the browser (localStorage).</p>
+<p>In browsers that support file system access (currently Chrome) you can store notes on disk instead.</p>
+<p>You can do one-time export from localStorage to a folder on disk:</p>
+<ul>
+<li>right click for context menu, <code>Notes storage / Move notes from browser to directory</code></li>
+<li>pick a directory on disk</li>
+<li>we save notes on disk as <code>${name}.edna.txt</code> files in chosen directory and delete notes in localStorage</li>
+</ul>
+<p>You can have multiple folders with notes. Use context menu <code>Notes storage / Open directory with notes</code> to open a different directory.</p>
+<p>It could be a new directory, without existing notes, in which case we'll create default <code>scratch</code> note.</p>
+<h1 id="accessing-notes-on-multiple-computers" tabindex="-1"><a class="header-anchor" href="#accessing-notes-on-multiple-computers" target="_blank">Accessing notes on multiple computers</a></h1>
+<p>If you pick a directory managed by Dropbox or One Drive or Google Drive etc. then you'll be able to access notes on multiple computers.</p>
+<p>On the first computer export notes from browser to disk:</p>
+<ul>
+<li>right click for context menu, <code>Notes storage / Move notes from browser to directory</code></li>
+<li>pick a directory shared by Dropbox / One Drive / Google Drive etc.</li>
+</ul>
+<p>On other computers:</p>
+<ul>
+<li>right click for context menu, <code>Notes storage / Open directory with notes</code></li>
+<li>pick the same directory</li>
+</ul>
+<p>Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.</p>
+<h1 id="lists" tabindex="-1"><a class="header-anchor" href="#lists" target="_blank">Lists</a></h1>
 <p>In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:</p>
 <ul>
-<li>[ ] Try out Edna</li>
+<li>[ ] Try out <a href="https://edna.arslexis.io" target="_blank">Edna</a></li>
 <li>[ ] Do laundry</li>
 </ul>
 <p>This is a Math block. Here, rows are evaluated as math expressions.</p>
@@ -80,10 +153,25 @@ sqrt(9)</p>
 time = 3900 seconds to minutes
 time * 2</p>
 <p>1 EUR in USD</p>
-<p>// this is a javascript block
+<p>// <a href="https://edna.arslexis.io" target="_blank">Edna</a> is great for storing code snippets
+// this is a javascript block
+// change type of block with <code>Ctrl + L</code>
+// you can format it with <code>Alt + Shift + F</code>
 let x = 5
 console.log(&quot;x is&quot;, x)</p>
-<h1 id="how-i-use-edna" tabindex="-1"><a class="header-anchor" href="#how-i-use-edna">How I use Edna</a></h1>
+<h1 id="privacy-and-security" tabindex="-1"><a class="header-anchor" href="#privacy-and-security" target="_blank">Privacy and security</a></h1>
+<p>Your notes are private and secure.</p>
+<p>Your notes are stored in the browser or on your computer.</p>
+<p>The code is <a href="https:/github.com/kjk/edna" target="_blank">open source</a> so you can audit it.</p>
+<h1 id="no-lock-in" tabindex="-1"><a class="header-anchor" href="#no-lock-in" target="_blank">No lock in</a></h1>
+<p>The notes are stored in plain text files on disk (or in localStorage under <code>note:${name}</code> key)</p>
+<p>Blocks are marked with <code>\n∞∞∞${type}\n</code> e.g. <code>\n∞∞∞markdown\n</code> marks the beginning of markdown block.</p>
+<p>You can edit the notes in any text editor (just be mindful of the above block markers).</p>
+<p>You can back them up, store in git repositories, write scripts to process them.</p>
+<p>They are not locked in a proprietary <a href="https://edna.arslexis.io" target="_blank">Edna</a> format.</p>
+<h1 id="how-to-use-edna" tabindex="-1"><a class="header-anchor" href="#how-to-use-edna" target="_blank">How to use <a href="https://edna.arslexis.io" target="_blank">Edna</a></a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is flexible and you should find your own way of using it.</p>
+<p>I use <a href="https://edna.arslexis.io" target="_blank">Edna</a> daily::</p>
 <ul>
 <li>I use <code>scratch</code> note for temporary notes</li>
 <li>I use <code>daily journal</code> for keeping track of what I do</li>
@@ -91,20 +179,21 @@ console.log(&quot;x is&quot;, x)</p>
 <li>I have a note for each project I work on</li>
 <li>I have a note for each programming language / technology I use. I keep code snippets and notes about it</li>
 <li>I have <code>ideas</code> note for jotting down ideas</li>
+<li>I have <code>investing</code> note for keeping track of various stock investment ideas</li>
 </ul>
-<h1 id="more-info" tabindex="-1"><a class="header-anchor" href="#more-info">More info</a></h1>
-<p>You can find more software by <a href="https://blog.kowalczyk.info/">me</a> on https://arslexis.io</p>
-<p>Edna is open source: https://github.com/kjk/edna</p>
-<p>To report a bug or request a feature, please use https://github.com/kjk/edna</p>
-<h1 id="credits" tabindex="-1"><a class="header-anchor" href="#credits">Credits</a></h1>
-<p>Edna is a fork of <a href="https://github.com/heyman/heynote">Heynote</a> with the following differences:</p>
+<h1 id="code%2C-feedback%2C-more-software" tabindex="-1"><a class="header-anchor" href="#code%2C-feedback%2C-more-software" target="_blank">Code, feedback, more software</a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is open source: https://github.com/kjk/edna</p>
+<p>To report a bug or request a feature: https://github.com/kjk/edna</p>
+<p>You can find more software by <a href="https://blog.kowalczyk.info/" target="_blank">me</a> on https://arslexis.io</p>
+<h1 id="credits" tabindex="-1"><a class="header-anchor" href="#credits" target="_blank">Credits</a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is a fork of <a href="https://github.com/heyman/heynote" target="_blank">Heynote</a> with the following differences:</p>
 <ul>
 <li>web first (no desktop apps)</li>
 <li>multiple notes</li>
-<li>ability to access notes on multiple devices by storing them in GitHub Gists</li>
+<li>ability to access notes on multiple devices by storing them on folder managed by Dropbox / One Drive / Google Drive</li>
 </ul>
-<p>There's a spirit of Notational Velocity and Simplenote in Edna in how it allows quickly switching between notes.</p>
-<p>Edna is built upon <a href="https://codemirror.net/">CodeMirror</a>, <a href="https://vuejs.org/">Vue</a>, <a href="https://mathjs.org/">Math.js</a>, <a href="https://prettier.io/">Prettier</a> and other great open-source projects.</p>
+<p>There's a spirit of Notational Velocity and Simplenote in <a href="https://edna.arslexis.io" target="_blank">Edna</a> in how it allows quickly creating notes and switching between them.</p>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is built on <a href="https://codemirror.net/" target="_blank">CodeMirror</a>, <a href="https://vuejs.org/" target="_blank">Vue</a>, <a href="https://mathjs.org/" target="_blank">Math.js</a>, <a href="https://prettier.io/" target="_blank">Prettier</a>.</p>
 
     </div>
   </body>

@@ -21,7 +21,7 @@ To see help in HTML, press `?` at the bottom right or visit https://edna.arslexi
 Edna is optimized for speed of note taking:
 
 - `Mod + P` to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut
-- `Alt + N` - a quick access shortcut. You can assign `Alt + 0` to `Alt + 9` for quickly accessing your notes
+- `Alt + N` - a quick access shortcut. You can assign `Alt + 0` to `Alt + 9` for quickly accessing your notes:
   - use `Mod + P`, select a note and press `Alt + N` shortcut
   - default shortcuts are:
     - `Alt + 1` : scratch

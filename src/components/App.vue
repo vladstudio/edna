@@ -317,7 +317,7 @@ export default {
         }
         children.push({
           label: "Show help",
-          onClick: () => { this.toggleHelp("storage") },
+          onClick: () => { this.toggleHelp("storing-notes-on-disk") },
           divided: "up",
           shortcut: "",
         })
