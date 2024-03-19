@@ -448,7 +448,7 @@ export async function loadNote(name) {
       content = await fsReadTextFile(dh, path);
     }
   }
-  setSetting("currentNoteName", name);
+  // TODO: this should happen in App.vue:onDocChange(); this was easier to write
   content = autoCreateDayInJournal(name, content);
   return fixUpNoteContent(content);
 }

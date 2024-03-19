@@ -8,12 +8,12 @@ import TopNav from './TopNav.vue'
 import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
-import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote } from '../notes'
+import { isAltNumEvent, stringSizeInUtf8Bytes, throwIf } from '../utils'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
-import { onOpenSettings, getSettings, onSettingsChange } from '../settings'
+import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../settings'
 import { boot } from '../webapp-boot'
 import { langSupportsFormat, langSupportsRun } from '../editor/languages'
 
@@ -59,8 +59,8 @@ export default {
   mounted() {
     onSettingsChange((settings) => {
       this.settings = settings;
-      this.noteName = settings.currentNoteName
       this.theme = settings.theme;
+      throwIf(this.noteName != settings.currentNoteName, "noteName != settings.currentNoteName")
       console.log("onSettingsChange callback, noteName:", this.noteName, "theme:", this.theme)
     })
     onOpenSettings(() => {
@@ -477,9 +477,28 @@ export default {
       // TODO: show a notification that allows to undo deletion of the note
     },
 
-    docChanged() {
-      const c = this.getEditor().getContent() || ""
+    /**
+     * called when a new document has been loaded
+     * @param {string} name
+     */
+    onDocChanged(name) {
+      console.log("new doc loaded:", name)
+      this.noteName = name
+
+      let editorComp = this.getEditor()
+      const c = editorComp.getContent() || ""
       this.docSize = stringSizeInUtf8Bytes(c);
+
+      let readOnly = isSystemNoteName(name)
+      editorComp.editor.setReadOnly(readOnly)
+      if (name === kDailyJournalNoteName) {
+        console.log("journal, so going to next block")
+        editorComp.gotoNextBlock()
+      }
+      let title = name + " - Edna"
+      window.document.title = title
+
+      setSetting("currentNoteName", name);
     },
 
     formatCurrentBlock() {
@@ -502,7 +521,7 @@ export default {
       :showLineNumberGutter="settings.showLineNumberGutter" :showFoldGutter="settings.showFoldGutter"
       :bracketClosing="settings.bracketClosing" :fontFamily="settings.fontFamily" :fontSize="settings.fontSize"
       class="editor" ref="editor" @openLanguageSelector="openLanguageSelector"
-      @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="docChanged" />
+      @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="onDocChanged" />
     <StatusBar :noteName="noteNameStatusBar" :line="line" :column="column" :docSize="docSize"
       :selectionSize="selectionSize" :language="language" :languageAuto="languageAuto"
       @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"

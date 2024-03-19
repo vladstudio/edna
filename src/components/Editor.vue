@@ -96,11 +96,9 @@ export default {
       })
       let settings = getSettings();
       let name = settings.currentNoteName;
-      let readOnly = isSystemNoteName(name)
-      this.editor.setReadOnly(readOnly);
       rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
-      this.$emit("docChanged")
+      this.$emit("docChanged", name)
     })
 
     // if debugSyntaxTree prop is set, display syntax tree for debugging
@@ -252,6 +250,7 @@ export default {
       loadNote(name).then((content) => {
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
+        // TODO: move this logic to App.onDocChanged
         // a bit magic: sometimes we open at the beginning, sometimes at the end
         // TODO: remember selection in memory so that we can restore during a session
         let pos = 0;
@@ -262,12 +261,8 @@ export default {
           selection: { anchor: pos, head: pos },
           scrollIntoView: true,
         })
-        let readOnly = isSystemNoteName(name)
-        this.editor.setReadOnly(readOnly)
-        this.$emit("docChanged")
         this.focus()
-        let title = name + " - Edna"
-        window.document.title = title
+        this.$emit("docChanged", name)
       })
     }
   },
