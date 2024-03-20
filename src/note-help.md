@@ -119,9 +119,11 @@ You can do one-time export from localStorage to a folder on disk:
 - pick a directory on disk
 - we save notes on disk as `${name}.edna.txt` files in chosen directory and delete notes in localStorage
 
-You can have multiple folders with notes. Use context menu `Notes storage / Open directory with notes` to open a different directory.
+You can have multiple folders with notes. Use context menu `Notes storage / Open notes in directory` to open a different directory.
 
 It could be a new directory, without existing notes, in which case we'll create default `scratch` note.
+
+You can go back to storing in browser with context menu `Notes storage / Open notes in browser (localStorage)`. Note that unlike going from browser => directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.
 
 # Accessing notes on multiple computers
 
@@ -132,7 +134,7 @@ On the first computer export notes from browser to disk:
 - pick a directory shared by Dropbox / One Drive / Google Drive etc.
 
 On other computers:
-- right click for context menu, `Notes storage / Open directory with notes`
+- right click for context menu, `Notes storage / Open notes in directory`
 - pick the same directory
 
 Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.
