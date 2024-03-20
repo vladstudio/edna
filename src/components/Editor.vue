@@ -100,6 +100,10 @@ export default {
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
       console.log("loadCurrentNote: triggering docChanged event, name:", name)
       this.$emit("docChanged", name)
+
+      // setTimeout(() => {
+      //   this.setSpellChecking(true);
+      // }, 10)
     })
 
     // if debugSyntaxTree prop is set, display syntax tree for debugging
@@ -121,6 +125,7 @@ export default {
       }, 1000)
     }
   },
+
 
   beforeUnmount() {
     window.document.removeEventListener("currenciesLoaded", this.onCurrenciesLoaded)
@@ -160,6 +165,16 @@ export default {
   },
 
   methods: {
+    setSpellChecking(value) {
+      console.log("setSpellChecking:", value)
+      let ce = document.querySelector('[contenteditable="true"]');
+      if (ce) {
+        console.log("found content editable")
+        ce.setAttribute("spellcheck", "true")
+      } else {
+        console.log("no content editable found")
+      }
+    },
     setLanguage(language) {
       if (language === "auto") {
         this.editor.setCurrentLanguage("text", true)
