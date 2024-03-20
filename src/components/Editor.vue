@@ -166,14 +166,26 @@ export default {
 
   methods: {
     setSpellChecking(value) {
-      console.log("setSpellChecking:", value)
+      // console.log("setSpellChecking:", value)
       let ce = document.querySelector('[contenteditable="true"]');
-      if (ce) {
-        console.log("found content editable")
+      if (!ce) {
+        // console.log("no content editable found")
+        return
+      }
+      // console.log("found content editable")
+      if (value) {
         ce.setAttribute("spellcheck", "true")
       } else {
-        console.log("no content editable found")
+        ce.setAttribute("spellcheck", "false")
       }
+    },
+
+    isSpellChecking() {
+      let ce = document.querySelector('[contenteditable="true"]');
+      if (!ce) {
+        return false
+      }
+      return ce.getAttribute("spellcheck") === "true"
     },
     setLanguage(language) {
       if (language === "auto") {

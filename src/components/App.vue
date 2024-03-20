@@ -174,11 +174,27 @@ export default {
       await boot();
     },
 
+    /**
+     * @param {MouseEvent} e
+     */
     onContextMenu(e) {
       if (this.showingNoteSelector || this.showingLanguageSelector || this.showingSettings) {
         return
       }
+      // hack: if spellchecking is enabled we show native context menu
+      // to allow fix spellings.
+      // unless the user presses ctrl or meta
+      // should come up with a better way e.g. custom spellchecking
+      let spellcheckEnabled = this.getEditor().isSpellChecking()
+      if (spellcheckEnabled) {
+        let forceCustom = e.ctrlKey || e.metaKey
+        if (!forceCustom) {
+          console.log("showing native because neither ctrl nor meta pressed")
+          return
+        }
+      }
 
+      console.log("onContextMenu: e:", e)
       let modChar = getModChar();
       let altChar = getAltChar();
       let theme = document.documentElement.getAttribute("theme")
@@ -324,6 +340,23 @@ export default {
         items.push({
           label: "Notes storage",
           children: children,
+        })
+      }
+      if (spellcheckEnabled) {
+        items.push({
+          label: "Disable spellcheck",
+          onClick: () => {
+            this.getEditor().setSpellChecking(false)
+          },
+          shortcut: "",
+        })
+      } else {
+        items.push({
+          label: "Enable spellcheck",
+          onClick: () => {
+            this.getEditor().setSpellChecking(true)
+          },
+          shortcut: "",
         })
       }
       items.push({
