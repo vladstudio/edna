@@ -6,12 +6,7 @@ import {
 } from "./fileutil";
 import { getDateYYYYMMDDDay, isDev, throwIf } from "./utils";
 import { getHelp, getInitialContent } from "./initial-content";
-import {
-  getSettings,
-  loadSettings,
-  saveSettings,
-  setSetting,
-} from "./settings";
+import { getSettings, loadSettings, saveSettings } from "./settings";
 import {
   getStats,
   incNoteCreateCount,
@@ -29,6 +24,26 @@ import { renameInHistory } from "./history";
  * @property {string} name
  */
 
+// is set if we store notes on disk, null if in localStorage
+/** @type {FileSystemDirectoryHandle | null} */
+let storageFS = null;
+
+/**
+ * if we're storing notes on disk, returns dir handle
+ * returns null if we're storing in localStorage
+ * @returns {FileSystemDirectoryHandle | null}
+ */
+export function getStorageFS() {
+  return storageFS;
+}
+
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ */
+export function setStorageFS(dh) {
+  storageFS = dh;
+}
+
 // some things, like FilesystemDirectoryHandle, we need to store in indexedDb
 const db = new KV("edna", "keyval");
 
@@ -38,7 +53,9 @@ const kStorageDirHandleKey = "storageDirHandle";
  * @returns {Promise<FileSystemDirectoryHandle>}
  */
 export async function dbGetDirHandle() {
-  return await db.get(kStorageDirHandleKey);
+  let dh = await db.get(kStorageDirHandleKey);
+  storageFS = dh ? dh : null;
+  return storageFS;
 }
 
 /**
@@ -46,10 +63,12 @@ export async function dbGetDirHandle() {
  */
 export async function dbSetDirHandle(dh) {
   await db.set(kStorageDirHandleKey, dh);
+  storageFS = dh;
 }
 
 export async function dbDelDirHandle() {
   await db.del(kStorageDirHandleKey);
+  storageFS = null;
 }
 
 const kEdnaFileExt = ".edna.txt";
@@ -105,26 +124,6 @@ export function isSystemNoteName(name) {
 
 export const blockHdrPlainText = "\n∞∞∞text-a\n";
 export const blockHdrMarkdown = "\n∞∞∞markdown\n";
-
-// is set if we store notes on disk, null if in localStorage
-/** @type {FileSystemDirectoryHandle | null} */
-let storageFS = null;
-
-/**
- * if we're storing notes on disk, returns dir handle
- * returns null if we're storing in localStorage
- * @returns {FileSystemDirectoryHandle | null}
- */
-export function getStorageFS() {
-  return storageFS;
-}
-
-/**
- * @param {FileSystemDirectoryHandle} dh
- */
-export function setStorageFS(dh) {
-  storageFS = dh;
-}
 
 /**
  * @param {NoteInfo[]} existingNoteInfos
@@ -218,9 +217,9 @@ function nameFromFileName(name) {
 }
 
 async function loadNoteInfosFS(dh = null) {
-  if (dh === null) {
+  if (!dh) {
     dh = getStorageFS();
-    throwIf(dh === null, "unknown storage");
+    throwIf(!dh, "unknown storage");
   }
   let skipEntryFn = (entry, dir) => {
     if (entry.kind === "directory") {
@@ -243,6 +242,7 @@ async function loadNoteInfosFS(dh = null) {
     };
     res.push(o);
   }
+  console.log("loadNoteInfosFS() res:", res);
   return res;
 }
 
@@ -252,8 +252,8 @@ async function loadNoteInfosFS(dh = null) {
 function getSystemNoteInfos() {
   return [
     {
-      path: "system:help",
       name: "help",
+      path: "system:help",
     },
   ];
 }
@@ -265,7 +265,7 @@ export async function loadNoteInfos() {
   let dh = getStorageFS();
   /** @type {NoteInfo[]} */
   let res = [];
-  if (dh === null) {
+  if (!dh) {
     res = loadNoteInfosLS();
   } else {
     res = await loadNoteInfosFS(dh);
@@ -273,6 +273,7 @@ export async function loadNoteInfos() {
   const systemNotes = getSystemNoteInfos();
   res = res.concat(systemNotes);
   latestNoteInfos = res;
+  console.log("loadNoteInfos() res:", res);
   return res;
 }
 
@@ -354,7 +355,7 @@ export async function saveCurrentNote(content) {
   }
   let path = notePathFromName(name);
   let dh = getStorageFS();
-  if (dh === null) {
+  if (!dh) {
     localStorage.setItem(path, content);
   } else {
     await fsWriteTextFile(dh, path, content);
@@ -372,7 +373,7 @@ export async function createNoteWithName(name, content = null) {
   const path = notePathFromName(name);
   let dh = getStorageFS();
   content = fixUpNoteContent(content);
-  if (dh === null) {
+  if (!dh) {
     // TODO: should it happen that note already exists?
     if (localStorage.getItem(path) == null) {
       localStorage.setItem(path, content);
@@ -446,7 +447,7 @@ export async function loadNote(name) {
     content = getSystemNoteContent(name);
   } else {
     let dh = getStorageFS();
-    if (dh === null) {
+    if (!dh) {
       content = loadNoteLS(name);
     } else {
       let path = notePathFromNameFS(name);
@@ -482,7 +483,7 @@ export function canDeleteNote(name) {
  */
 export async function deleteNote(name) {
   let dh = getStorageFS();
-  if (dh === null) {
+  if (!dh) {
     let key = notePathFromName(name);
     localStorage.removeItem(key);
   } else {
@@ -596,7 +597,7 @@ export async function switchToStoringNotesOnDisk(dh) {
 export async function pickAnotherDirectory() {
   try {
     let newDh = await openDirPicker(true);
-    if (newDh === null) {
+    if (!newDh) {
       return;
     }
     await dbSetDirHandle(newDh);
@@ -640,10 +641,16 @@ export function getMetadataForNote(noteName) {
 export async function loadNotesMetadata() {
   let dh = getStorageFS();
   let s;
-  if (dh === null) {
+  if (!dh) {
     s = localStorage.getItem(kMetadataName);
   } else {
-    s = await fsReadTextFile(dh, kMetadataName);
+    try {
+      s = await fsReadTextFile(dh, kMetadataName);
+    } catch (e) {
+      // it's ok if doesn't exist
+      console.log("loadNotesMetadata: no metadata file", e);
+      s = "[]";
+    }
   }
   s = s || "[]";
   notesMetadata = JSON.parse(s);
@@ -656,7 +663,7 @@ export async function loadNotesMetadata() {
 async function saveNotesMetadata(m) {
   let s = JSON.stringify(m, null, 2);
   let dh = getStorageFS();
-  if (dh === null) {
+  if (!dh) {
     localStorage.setItem(kMetadataName, s);
   } else {
     await fsWriteTextFile(dh, kMetadataName, s);

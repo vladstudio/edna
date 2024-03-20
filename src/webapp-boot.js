@@ -34,11 +34,11 @@ export async function boot() {
     let ok = await hasHandlePermission(dh, true);
     if (!ok) {
       console.log("no permission to write files in directory", dh.name);
+      setStorageFS(null);
       app = createApp(AskFSPermissions);
       app.mount("#app");
       return;
     }
-    setStorageFS(dh);
   } else {
     console.log("we're storing data in localStorage");
   }

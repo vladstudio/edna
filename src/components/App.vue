@@ -60,8 +60,8 @@ export default {
     onSettingsChange((settings) => {
       this.settings = settings;
       this.theme = settings.theme;
-      throwIf(this.noteName != settings.currentNoteName, "noteName != settings.currentNoteName")
-      console.log("onSettingsChange callback, noteName:", this.noteName, "theme:", this.theme)
+      //throwIf(this.noteName != settings.currentNoteName, "noteName != settings.currentNoteName")
+      console.log(`onSettingsChange callback, noteName: ${this.noteName}, settings.currentNoteName: ${settings.currentNoteName}, theme: ${this.theme}`)
     })
     onOpenSettings(() => {
       this.showingSettings = true
@@ -162,15 +162,16 @@ export default {
     },
 
     async pickAnotherDirectory() {
-      let ok = pickAnotherDirectory();
+      let ok = await pickAnotherDirectory();
       if (ok) {
-        boot()
+        await boot()
       }
     },
 
     async switchToBrowserStorage() {
+      console.log("switchToBrowserStorage(): deleting dir handle")
       await dbDelDirHandle();
-      boot();
+      await boot();
     },
 
     onContextMenu(e) {
@@ -181,7 +182,6 @@ export default {
       let modChar = getModChar();
       let altChar = getAltChar();
       let theme = document.documentElement.getAttribute("theme")
-      console.log("theme:", theme)
       let menuTheme = "default"
       if (theme == "dark") {
         menuTheme = "default dark"
@@ -296,21 +296,21 @@ export default {
               shortcut: "",
             },
             {
-              label: "Open directory with notes",
-              onClick: () => { this.pickAnotherDirectory() },
+              label: "Open notes in directory",
+              onClick: async () => { await this.pickAnotherDirectory() },
               shortcut: "",
             }
           ]
         } else {
           children = [
             {
-              label: "Switch to storing in browser",
-              onClick: () => { this.switchToBrowserStorage() },
+              label: "Open notes in browser (localStorage)",
+              onClick: async () => { await this.switchToBrowserStorage() },
               shortcut: "",
             },
             {
-              label: "Open directory with notes",
-              onClick: () => { this.pickAnotherDirectory() },
+              label: "Open notes in directory",
+              onClick: async () => { await this.pickAnotherDirectory() },
               shortcut: "",
             }
           ]

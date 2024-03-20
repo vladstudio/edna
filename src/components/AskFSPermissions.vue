@@ -1,8 +1,7 @@
 <script>
-import { dbGetDirHandle, dbDelDirHandle, dbSetDirHandle, pickAnotherDirectory } from '../notes';
+import { dbGetDirHandle, dbDelDirHandle, pickAnotherDirectory, setStorageFS } from '../notes';
 import App from "./App.vue";
-import { createApp } from "vue";
-import { requestHandlePermission, openDirPicker } from '../fileutil';
+import { requestHandlePermission } from '../fileutil';
 import { boot } from '../webapp-boot';
 
 export default {
@@ -21,25 +20,26 @@ export default {
 
   methods: {
     async requestPermissions() {
-      console.log("requestPermission")
       let dh = await dbGetDirHandle();
       let ok = await requestHandlePermission(dh, true);
       if (ok) {
         console.log("trying to mount app now")
-        boot()
+        await boot()
+      } else {
+        setStorageFS(null);
       }
     },
 
     async pickAnotherDirectory() {
-      let ok = pickAnotherDirectory();
+      let ok = await pickAnotherDirectory();
       if (ok) {
-        boot()
+        await boot()
       }
     },
 
     async switchToBrowserStorage() {
       await dbDelDirHandle();
-      boot();
+      await boot();
     },
   },
 

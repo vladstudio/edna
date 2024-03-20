@@ -3,6 +3,7 @@ import { getLatestNoteInfos, getMetadataForNote, isSystemNoteName, reassignNoteS
 import sanitize from "sanitize-filename"
 import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 
+/** @typedef {import("./../notes").NoteInfo} NoteInfo */
 /**
  * @typedef {Object} NoteInfo2
  * @property {string} path
@@ -16,7 +17,7 @@ import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 */
 function rebuildNotesInfo() {
   const noteInfos = getLatestNoteInfos()
-  console.log("rebuildNotesInfo, notes", noteInfos.length)
+  console.log("rebuildNotesInfo, notes", noteInfos)
   /** @type {NoteInfo2[]} */
   let res = Array(len(noteInfos))
   // let res = [];
@@ -268,7 +269,7 @@ export default {
         }
         const selected = this.filteredItems[this.selected]
         if (selected) {
-          this.openNote(selected.name)
+          this.openNote(selected)
         } else {
           this.$emit("close")
         }
@@ -291,10 +292,11 @@ export default {
     },
 
     /**
-     * @param {string} name
+     * @param {NoteInfo} item
      */
-    openNote(name) {
-      this.$emit("openNote", name)
+    openNote(item) {
+      console.log("openNote", item)
+      this.$emit("openNote", item.name)
     },
 
     createNote(name) {
@@ -331,7 +333,7 @@ export default {
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
       <ul class="items">
         <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
-          @click="openNote(item.name)" ref="item">
+          @click="openNote(item)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">
             {{ item.name }}
           </div>
