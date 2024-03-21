@@ -622,13 +622,17 @@ export default {
 </script>
 
 <template>
-  <div class="app-container" @contextmenu="onContextMenu($event)">
-    <!-- <TopNav /> -->
+  <div class="grid w-screen max-h-screen h-screen fixed grid-rows-[auto_auto_1fr]" @contextmenu="onContextMenu($event)">
+    <!--TODO: show note name, a drop-down for switching, search icon, menu -->
+    <div class="text-base hidden">
+      <div>{{ noteName }}</div>
+      <div>23 notes</div>
+    </div>
     <Editor @cursorChange="onCursorChange" :theme="theme" :development="development" :debugSyntaxTree="false"
       :keymap="settings.keymap" :emacsMetaKey="settings.emacsMetaKey"
       :showLineNumberGutter="settings.showLineNumberGutter" :showFoldGutter="settings.showFoldGutter"
       :bracketClosing="settings.bracketClosing" :fontFamily="settings.fontFamily" :fontSize="settings.fontSize"
-      class="editor" ref="editor" @openLanguageSelector="openLanguageSelector"
+      class="overflow-hidden" ref="editor" @openLanguageSelector="openLanguageSelector"
       @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="onDocChanged" />
     <StatusBar :noteName="noteNameStatusBar" :line="line" :column="column" :docSize="docSize"
       :selectionSize="selectionSize" :language="language" :languageAuto="languageAuto"
@@ -666,14 +670,4 @@ export default {
             pointer-events: none
             z-index: 45
             font-size: 8px
-    .app-container
-        width: 100%
-        height: 100%
-        position: relative
-        .editor
-            height: calc(100% - 21px) // TODO: better way than hardcoding height of status bar
-        .status
-            position: absolute
-            bottom: 0
-            left: 0
 </style>
