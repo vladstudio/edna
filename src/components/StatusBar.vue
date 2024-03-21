@@ -76,7 +76,8 @@ export default {
 </script>
 
 <template>
-  <div class="status">
+  <div
+    class="w-full h-[22px] px-0 flex items-center select-none text-sm text-[var(--status-bar-color)] bg-[var(--status-bar-background)] font-['Open_Sans']">
     <div class="status-block clickable" @click="$emit('openNoteSelector')" title="Change or create new note">{{ noteName
       }}<span class="ml-1 w-[1em]" v-if="isDocDirty">&bull;</span><span class="ml-1 w-[1em]" v-else>&nbsp;</span>
     </div>
@@ -102,93 +103,58 @@ export default {
     <div v-if="supportsRun" @click="$emit('runCurrentBlock')" class="status-block run clickable" :title="runBlockTitle">
       Run
     </div>
-    <div v-if="supportsFormat" @click="$emit('formatCurrentBlock')" class="status-block format clickable"
+    <div v-if="supportsFormat" @click="$emit('formatCurrentBlock')" class="status-block py-0 clickable"
       :title="formatBlockTitle">
       <span class="icon icon-format"></span>
     </div>
-    <div @click="$emit('openSettings')" class="status-block settings clickable" title="Settings">
-      <span class="icon icon-format"></span>
+    <div @click="$emit('openSettings')" class="status-block py-0 clickable" title="Settings">
+      <span class="icon icon-settings"></span>
     </div>
     <div @click="$emit('toggleHelp')" class="status-block clickable" title="Help">?</div>
   </div>
 </template>
 
 <style scoped lang="sass">
-    .status
-        box-sizing: border-box
-        height: 22px
-        width: 100%
-        background: var(--status-bar-background)
-        color: var(--status-bar-color)
-        font-family: "Open Sans"
-        font-size: 12px
-        padding-left: 0px
-        padding-right: 0px
-        display: flex
-        flex-direction: row
-        align-items: center
-        user-select: none
+  .status-block
+      padding: 4px 10px
+      cursor: default
+      &:first-child
+          padding-left: 12px
+      &:last-child
+          padding-right: 12px
+      &.clickable
+          cursor: pointer
+          &:hover
+              background-color: rgba(255,255,255, 0.1)
+      .icon
+          display: block
+          width: 14px
+          height: 22px
+          +dark-mode
+              opacity: 0.9
+  .line-number
+      color: rgba(255, 255, 255, 0.7)
+      .num
+          color: rgba(255, 255, 255, 1.0)
+      +dark-mode
+          color: rgba(255, 255, 255, 0.55)
+          .num
+              color: rgba(255, 255, 255, 0.75)
+  .lang .auto
+      color: rgba(255, 255, 255, 0.7)
+      +dark-mode
+          color: rgba(255, 255, 255, 0.55)
 
-        .status-block
-            box-sizing: border-box
-            padding: 4px 10px
-            cursor: default
-            &:first-child
-                padding-left: 12px
-            &:last-child
-                padding-right: 12px
-            &.clickable
-                cursor: pointer
-                &:hover
-                    background-color: rgba(255,255,255, 0.1)
-            .icon
-                display: block
-                width: 14px
-                height: 22px
-                +dark-mode
-                    opacity: 0.9
-        .line-number
-            color: rgba(255, 255, 255, 0.7)
-            .num
-                color: rgba(255, 255, 255, 1.0)
-            +dark-mode
-                color: rgba(255, 255, 255, 0.55)
-                .num
-                    color: rgba(255, 255, 255, 0.75)
-        .lang .auto
-            color: rgba(255, 255, 255, 0.7)
-            +dark-mode
-                color: rgba(255, 255, 255, 0.55)
-        .theme
-            padding-top: 0
-            padding-bottom: 0
-            .icon
-                background-size: 14px
-                background-repeat: no-repeat
-                background-position: center center
-                &.dark
-                    background-image: url("@/assets/icons/dark-mode.png")
-                &.light
-                    background-image: url("@/assets/icons/light-mode.png")
-                &.system
-                    background-image: url("@/assets/icons/both-mode.png")
-        
-        .format
-            padding-top: 0
-            padding-bottom: 0
-            .icon
-                background-size: 16px
-                background-repeat: no-repeat
-                background-position: center center
-                background-image: url("@/assets/icons/format.svg")
-        
-        .settings
-            padding-top: 0
-            padding-bottom: 0
-            .icon
-                background-size: 13px
-                background-repeat: no-repeat
-                background-position: center center
-                background-image: url("@/assets/icons/settings.svg")
+  .icon-format
+      background-size: 16px
+      background-repeat: no-repeat
+      background-position: center center
+      background-image: url("@/assets/icons/format.svg")
+
+  .icon-settings
+      background-size: 13px
+      background-repeat: no-repeat
+      background-position: center center
+      background-image: url("@/assets/icons/settings.svg")
 
 </style>
