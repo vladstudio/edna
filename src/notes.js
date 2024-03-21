@@ -111,15 +111,15 @@ export function notePathFromName(name, encrypted = false) {
 export const kScratchNoteName = "scratch";
 export const kDailyJournalNoteName = "daily journal";
 export const kInboxNoteName = "inbox";
-export const kHelpSystemNoteName = "help";
 
+export const kHelpSystemNoteName = "system:help";
+const systemNotes = [kHelpSystemNoteName];
 /**
- *
  * @param {string} name
  * @returns {boolean}
  */
 export function isSystemNoteName(name) {
-  return name === "help";
+  return systemNotes.includes(name);
 }
 
 export const blockHdrPlainText = "\n∞∞∞text-a\n";
@@ -245,19 +245,6 @@ async function loadNoteInfosFS(dh = null) {
   console.log("loadNoteInfosFS() res:", res);
   return res;
 }
-
-/**
- * @returns {NoteInfo[]}
- */
-function getSystemNoteInfos() {
-  return [
-    {
-      name: "help",
-      path: "system:help",
-    },
-  ];
-}
-
 /**
  * @returns {Promise<NoteInfo[]>}
  */
@@ -270,8 +257,6 @@ export async function loadNoteInfos() {
   } else {
     res = await loadNoteInfosFS(dh);
   }
-  const systemNotes = getSystemNoteInfos();
-  res = res.concat(systemNotes);
   latestNoteInfos = res;
   console.log("loadNoteInfos() res:", res);
   return res;

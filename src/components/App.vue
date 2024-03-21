@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes, throwIf } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -360,10 +360,22 @@ export default {
         })
       }
       items.push({
-        label: "Show help",
-        onClick: () => { this.toggleHelp() },
+        label: "Help",
         divided: "up",
-        shortcut: "",
+        children: [
+          {
+            label: "Show help",
+            onClick: () => { this.toggleHelp() },
+          },
+          {
+            label: "Show help in new tab",
+            onClick: () => { this.showHelpInNewTab() },
+          },
+          {
+            label: "Show help as note",
+            onClick: () => { this.showHelpAsNote() },
+          }
+        ]
       })
 
       ContextMenu.showContextMenu({
@@ -478,6 +490,14 @@ export default {
       }
       this.helpAnchor = anchor
       this.showingHelp = true
+    },
+
+    showHelpInNewTab() {
+      window.open("https://edna.arslexis.io/help", "_blank");
+    },
+
+    showHelpAsNote() {
+      this.getEditor().openNote(kHelpSystemNoteName);
     },
 
     /**
