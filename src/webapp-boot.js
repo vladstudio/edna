@@ -12,6 +12,7 @@ import { getSettings, loadInitialSettings } from "./settings";
 
 import App from "./components/App.vue";
 import AskFSPermissions from "./components/AskFSPermissions.vue";
+import Toast from "vue-toastification";
 import { createApp } from "vue";
 import { hasHandlePermission } from "./fileutil";
 import { isDev } from "./utils";
@@ -69,6 +70,12 @@ export async function boot() {
     app.unmount();
   }
   app = createApp(App);
+  app.use(Toast, {
+    // transition: "Vue-Toastification__bounce",
+    transition: "none",
+    maxToasts: 20,
+    newestOnTop: true,
+  });
   app.mount("#app");
 }
 

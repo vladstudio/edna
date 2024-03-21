@@ -8,7 +8,7 @@ import TopNav from './TopNav.vue'
 import RenameNote from './RenameNote.vue'
 
 import Settings from './settings/Settings.vue'
-import { isAltNumEvent, stringSizeInUtf8Bytes, throwIf } from '../utils'
+import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
 import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -16,8 +16,24 @@ import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../settings'
 import { boot } from '../webapp-boot'
 import { langSupportsFormat, langSupportsRun } from '../editor/languages'
+import { useToast, POSITION } from "vue-toastification";
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
+
+let toastOptions = {
+  position: POSITION.TOP_RIGHT,
+  timeout: 3000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: true,
+  closeButton: "button",
+  icon: false,
+  rtl: false
+};
 
 export default {
   components: {
@@ -30,6 +46,11 @@ export default {
     Settings,
     StatusBar,
     TopNav,
+  },
+
+  setup() {
+    const toast = useToast();
+    return { toast }
   },
 
   data() {
@@ -54,10 +75,12 @@ export default {
       showingRenameNote: false,
       theme: settings.theme,
       isSpellChecking: false,
+      spellcheckToastID: 0,
     }
   },
 
   mounted() {
+    console.log("App.vue mounted")
     onSettingsChange((settings) => {
       this.settings = settings;
       this.theme = settings.theme;
@@ -69,6 +92,7 @@ export default {
     })
     this.getEditor().setSpellChecking(this.isSpellChecking)
     window.addEventListener("keydown", this.onKeyDown)
+    console.log("App.vue mounted: showing toast")
   },
 
   beforeUnmount() {
@@ -103,6 +127,9 @@ export default {
     toggleSpellCheck() {
       this.isSpellChecking = !this.isSpellChecking
       this.getEditor().setSpellChecking(this.isSpellChecking)
+      if (this.isSpellChecking) {
+        this.toast("Press Ctrl + right mouse click for context menu when spell checking is enabled", toastOptions)
+      }
     },
 
     /**

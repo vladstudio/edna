@@ -70,6 +70,7 @@
     "postcss": "^8.4.35",
     "prettier": "^3.1.1",
     "sanitize-filename": "^1.6.3",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "vue-toastification": "^2.0.0-rc.5"
   }
 }
