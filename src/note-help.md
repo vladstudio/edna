@@ -112,16 +112,14 @@ We create 3 default notes for you:
 
 By default notes are stored in the browser (localStorage).
 
-In browsers that support file system access (currently Chrome) you can store notes on disk instead.
+If your browser supports file system access (currently Chrome) you can store notes on disk.
 
-You can do one-time export from localStorage to a folder on disk:
+You can do one time export from localStorage to a directory on disk:
 - right click for context menu, `Notes storage / Move notes from browser to directory`
 - pick a directory on disk
 - we save notes on disk as `${name}.edna.txt` files in chosen directory and delete notes in localStorage
 
-You can have multiple folders with notes. Use context menu `Notes storage / Open notes in directory` to open a different directory.
-
-It could be a new directory, without existing notes, in which case we'll create default `scratch` note.
+You can have multiple directories with notes. Use context menu `Notes storage / Open notes in directory` to open notes in a different directory. If it's a new directory, without existing notes, we'll create default `scratch` note.
 
 You can go back to storing in browser with context menu `Notes storage / Open notes in browser (localStorage)`. Note that unlike going from browser => directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.
 
