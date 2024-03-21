@@ -30,7 +30,7 @@ let toastOptions = {
   // draggable: true,
   // draggablePercent: 0.6,
   showCloseButtonOnHover: false,
-  // hideProgressBar: true,
+  hideProgressBar: true,
   closeButton: "button",
   icon: false,
   rtl: false
