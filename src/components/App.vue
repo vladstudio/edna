@@ -465,12 +465,15 @@ export default {
       }
       this.getEditor().openNote(kScratchNoteName, true)
       await deleteNote(name)
+      // TODO: add a way to undo deletion of the note
+      this.toast(`Deleted note '${name}'`, toastOptions)
     },
 
     async createNewScratchNote() {
       let name = await createNewScratchNote()
       this.onOpenNote(name)
-      // TODO: show a notification that allows to undo creation of the note
+      // TODO: add a way to undo creation of the note
+      this.toast(`Created scratch note '${name}'`, toastOptions)
     },
 
     openLanguageSelector() {
@@ -531,7 +534,8 @@ export default {
       this.showingNoteSelector = false
       await createNoteWithName(name)
       this.onOpenNote(name)
-      // TODO: show a notification that allows to undo creation of the note
+      // TODO: add a way to undo creation of the note
+      this.toast(`Created note '${name}'`, toastOptions)
     },
 
     /**
@@ -551,7 +555,8 @@ export default {
       await deleteNote(name)
       this.getEditor().focus()
       console.log("deleted note", name)
-      // TODO: show a notification that allows to undo deletion of the note
+      // TODO: add a way to undo deletion of the note
+      this.toast(`Deleted note '${name}'`, toastOptions)
     },
 
     /**
