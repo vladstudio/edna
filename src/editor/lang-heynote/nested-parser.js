@@ -1,23 +1,21 @@
 import { NoteContent, NoteLanguage } from "./parser.terms.js";
 
-import { LANGUAGES } from "../languages.js";
+import { langGetParser } from "../languages.js";
 import { parseMixed } from "@lezer/common";
 
-const languageMapping = Object.fromEntries(
-  LANGUAGES.map((l) => [l.token, l.parser])
-);
-
 export function configureNesting() {
+  // TODO: would have to by async to implement on-demand loading of parsers
   return parseMixed((node, input) => {
     let id = node.type.id;
     if (id == NoteContent) {
       let noteLang = node.node.parent.firstChild.getChildren(NoteLanguage)[0];
       let langName = input.read(noteLang?.from, noteLang?.to);
-      //console.log("langName:", langName)
-      if (langName in languageMapping && languageMapping[langName] !== null) {
-        //console.log("found parser for language:", langName)
+      // console.log("langName:", langName);
+      let res = langGetParser(langName);
+      if (res) {
+        // console.log("found parser for language:", langName, "res:", res);
         return {
-          parser: languageMapping[langName],
+          parser: res,
         };
       }
     }

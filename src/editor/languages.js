@@ -43,10 +43,11 @@ import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import yamlPrettierPlugin from "prettier/plugins/yaml.mjs";
 
 class Language {
-  constructor({ token, name, parser, guesslang, prettier }) {
+  constructor({ token, name, parser, guesslang, prettier, getParser = null }) {
     this.token = token;
     this.name = name;
-    this.parser = parser;
+    this._parser = parser || null;
+    this._getParser = getParser;
     this.guesslang = guesslang;
     this.prettier = prettier;
   }
@@ -63,6 +64,18 @@ class Language {
       return true;
     }
     return false;
+  }
+
+  // TODO: this needs to be async
+  get parser() {
+    if (!this._parser) {
+      if (!this._getParser) {
+        return null;
+      }
+      console.log("calling getParser for", this.token, "language");
+      this._parser = this._getParser();
+    }
+    return this._parser;
   }
 }
 
@@ -85,7 +98,10 @@ export const LANGUAGES = [
   new Language({
     token: "json",
     name: "JSON",
-    parser: jsonLanguage.parser,
+    parser: null,
+    getParser: () => {
+      return jsonLanguage.parser;
+    },
     guesslang: "json",
     prettier: {
       parser: "json-stringify",
@@ -328,4 +344,12 @@ export function langSupportsFormat(token) {
 
 export function langSupportsRun(token) {
   return getLanguage(token).supportsRun;
+}
+
+// TODO: should be async to support on-demand loading of parsers
+export function langGetParser(token) {
+  let lang = getLanguage(token);
+  if (lang) {
+    return lang.parser;
+  }
 }
