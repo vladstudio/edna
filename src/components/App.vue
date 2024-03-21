@@ -6,6 +6,7 @@ import NoteSelector from './NoteSelector.vue'
 import StatusBar from './StatusBar.vue'
 import TopNav from './TopNav.vue'
 import RenameNote from './RenameNote.vue'
+import ToastUndo from './ToastUndo.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
@@ -22,14 +23,14 @@ import { useToast, POSITION } from "vue-toastification";
 
 let toastOptions = {
   position: POSITION.TOP_RIGHT,
-  timeout: 3000,
+  timeout: 4000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
   pauseOnHover: true,
-  draggable: true,
-  draggablePercent: 0.6,
+  // draggable: true,
+  // draggablePercent: 0.6,
   showCloseButtonOnHover: false,
-  hideProgressBar: true,
+  // hideProgressBar: true,
   closeButton: "button",
   icon: false,
   rtl: false
@@ -46,6 +47,7 @@ export default {
     Settings,
     StatusBar,
     TopNav,
+    ToastUndo
   },
 
   setup() {
@@ -136,6 +138,22 @@ export default {
      * @param {KeyboardEvent} e
      */
     onKeyDown(e) {
+
+      // if (e.key === "F2") {
+      //   console.log("F2");
+      //   let undoAction = () => {
+      //     console.log("undoAction")
+      //   }
+      //   this.toast({
+      //     component: ToastUndo,
+      //     props: {
+      //       message: "F2 pressed",
+      //       undoText: "Undo delete",
+      //       undoAction: undoAction,
+      //     },
+      //   }, toastOptions)
+      // }
+
       // TODO: can I do this better? The same keydown event that sets the Alt-N shortcut
       // in NoteSelector also seems to propagate here and immediately opens the note.
       if (!this.showingNoteSelector) {
