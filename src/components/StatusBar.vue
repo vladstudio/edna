@@ -15,6 +15,7 @@ export default {
     "selectionSize",
     "language",
     "languageAuto",
+    "isSpellChecking",
   ],
 
   components: {
@@ -89,6 +90,11 @@ export default {
     </div>
     <div class="status-block doc-size">{{ formatSize }}</div>
     <div class="grow"></div>
+    <div @click="$emit('toggleSpellCheck')" class="status-block clickable">
+      <span v-if="isSpellChecking">Disable
+        spell checking</span>
+      <span v-else>Enable spell checking</span>
+    </div>
     <div @click="$emit('openLanguageSelector')" class="status-block lang clickable" :title="changeLanguageTitle">
       {{ languageName }}
       <span v-if="languageAuto" class="auto">(auto)</span>

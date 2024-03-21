@@ -53,6 +53,7 @@ export default {
       showingSettings: false,
       showingRenameNote: false,
       theme: settings.theme,
+      isSpellChecking: false,
     }
   },
 
@@ -66,6 +67,7 @@ export default {
     onOpenSettings(() => {
       this.showingSettings = true
     })
+    this.getEditor().setSpellChecking(this.isSpellChecking)
     window.addEventListener("keydown", this.onKeyDown)
   },
 
@@ -96,6 +98,11 @@ export default {
     getEditor() {
       // @ts-ignore
       return this.$refs.editor
+    },
+
+    toggleSpellCheck() {
+      this.isSpellChecking = !this.isSpellChecking
+      this.getEditor().setSpellChecking(this.isSpellChecking)
     },
 
     /**
@@ -185,8 +192,7 @@ export default {
       // to allow fix spellings.
       // unless the user presses ctrl or meta
       // should come up with a better way e.g. custom spellchecking
-      let spellcheckEnabled = this.getEditor().isSpellChecking()
-      if (spellcheckEnabled) {
+      if (this.isSpellChecking) {
         let forceCustom = e.ctrlKey || e.metaKey
         if (!forceCustom) {
           console.log("showing native because neither ctrl nor meta pressed")
@@ -342,23 +348,14 @@ export default {
           children: children,
         })
       }
-      if (spellcheckEnabled) {
-        items.push({
-          label: "Disable spellcheck",
-          onClick: () => {
-            this.getEditor().setSpellChecking(false)
-          },
-          shortcut: "",
-        })
-      } else {
-        items.push({
-          label: "Enable spellcheck",
-          onClick: () => {
-            this.getEditor().setSpellChecking(true)
-          },
-          shortcut: "",
-        })
-      }
+      let s = this.isSpellChecking ? "Disable spell checking" : "Enable spell checking"
+      items.push({
+        label: s,
+        onClick: () => {
+          this.toggleSpellCheck();
+        },
+        shortcut: "",
+      })
       items.push({
         label: "Help",
         divided: "up",
@@ -585,9 +582,9 @@ export default {
       @createNewScratchNote="createNewScratchNote" @openNoteSelector="openNoteSelector" @docChanged="onDocChanged" />
     <StatusBar :noteName="noteNameStatusBar" :line="line" :column="column" :docSize="docSize"
       :selectionSize="selectionSize" :language="language" :languageAuto="languageAuto"
-      @openLanguageSelector="openLanguageSelector" @openNoteSelector="openNoteSelector"
-      @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock" @openSettings="showingSettings = true"
-      @toggleHelp="toggleHelp" class="status" />
+      :isSpellChecking="isSpellChecking" @openLanguageSelector="openLanguageSelector"
+      @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
+      @toggleSpellCheck="toggleSpellCheck" @openSettings="showingSettings = true" @toggleHelp="toggleHelp" class="" />
     <div class="overlay">
       <LanguageSelector v-if="showingLanguageSelector" @selectLanguage="onSelectLanguage"
         @close="closeLanguageSelector" />
