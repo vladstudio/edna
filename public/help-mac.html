@@ -38,7 +38,7 @@
 <p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is optimized for speed of note taking:</p>
 <ul>
 <li><code>⌘ + P</code> to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut</li>
-<li><code>⌥ + N</code> - a quick access shortcut. You can assign <code>⌥ + 0</code> to <code>⌥ + 9</code> for quickly accessing your notes
+<li><code>⌥ + N</code> - a quick access shortcut. You can assign <code>⌥ + 0</code> to <code>⌥ + 9</code> for quickly accessing your notes:
 <ul>
 <li>use <code>⌘ + P</code>, select a note and press <code>⌥ + N</code> shortcut</li>
 <li>default shortcuts are:
@@ -116,15 +116,15 @@
 </ul>
 <h1 id="storing-notes-on-disk" tabindex="-1"><a class="header-anchor" href="#storing-notes-on-disk" target="_blank">Storing notes on disk</a></h1>
 <p>By default notes are stored in the browser (localStorage).</p>
-<p>In browsers that support file system access (currently Chrome) you can store notes on disk instead.</p>
-<p>You can do one-time export from localStorage to a folder on disk:</p>
+<p>If your browser supports file system access (currently Chrome) you can store notes on disk.</p>
+<p>You can do one time export from localStorage to a directory on disk:</p>
 <ul>
 <li>right click for context menu, <code>Notes storage / Move notes from browser to directory</code></li>
 <li>pick a directory on disk</li>
 <li>we save notes on disk as <code>${name}.edna.txt</code> files in chosen directory and delete notes in localStorage</li>
 </ul>
-<p>You can have multiple folders with notes. Use context menu <code>Notes storage / Open directory with notes</code> to open a different directory.</p>
-<p>It could be a new directory, without existing notes, in which case we'll create default <code>scratch</code> note.</p>
+<p>You can have multiple directories with notes. Use context menu <code>Notes storage / Open notes in directory</code> to open notes in a different directory. If it's a new directory, without existing notes, we'll create default <code>scratch</code> note.</p>
+<p>You can go back to storing in browser with context menu <code>Notes storage / Open notes in browser (localStorage)</code>. Note that unlike going from browser =&gt; directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.</p>
 <h1 id="accessing-notes-on-multiple-computers" tabindex="-1"><a class="header-anchor" href="#accessing-notes-on-multiple-computers" target="_blank">Accessing notes on multiple computers</a></h1>
 <p>If you pick a directory managed by Dropbox or One Drive or Google Drive etc. then you'll be able to access notes on multiple computers.</p>
 <p>On the first computer export notes from browser to disk:</p>
@@ -134,7 +134,7 @@
 </ul>
 <p>On other computers:</p>
 <ul>
-<li>right click for context menu, <code>Notes storage / Open directory with notes</code></li>
+<li>right click for context menu, <code>Notes storage / Open notes in directory</code></li>
 <li>pick the same directory</li>
 </ul>
 <p>Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.</p>
