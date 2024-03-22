@@ -10,7 +10,7 @@ import ToastUndo from './ToastUndo.vue'
 
 import Settings from './settings/Settings.vue'
 import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes } from '../utils'
-import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName } from '../notes'
+import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName, kReleaseNotesSystemNoteName } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
@@ -416,6 +416,10 @@ export default {
           {
             label: "Show help as note",
             onClick: () => { this.showHelpAsNote() },
+          },
+          {
+            label: "Release notes",
+            onClick: () => { this.showReleaseNotes() },
           }
         ]
       })
@@ -543,6 +547,10 @@ export default {
 
     showHelpAsNote() {
       this.getEditor().openNote(kHelpSystemNoteName);
+    },
+
+    showReleaseNotes() {
+      this.getEditor().openNote(kReleaseNotesSystemNoteName);
     },
 
     /**

@@ -1,5 +1,6 @@
 import { getAltChar, getModChar, platformName } from "./utils.js";
 
+import changelogRaw from "./note-changelog.md?raw";
 import dailyJournalRaw from "./note-daily-journal.md?raw";
 import helpRaw from "./note-help.md?raw";
 import inboxRaw from "./note-inbox.md?raw";
@@ -28,6 +29,10 @@ export function getHelp(platform = platformName, forHTML = false) {
     help = help.replace(/Edna/g, "[Edna](https://edna.arslexis.io)");
   }
   return help;
+}
+
+export function getChangelog() {
+  return fixUpShortcuts(changelogRaw);
 }
 
 export function getInitialContent(platform = platformName) {

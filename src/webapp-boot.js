@@ -4,6 +4,7 @@ import "./css/application.sass";
 import {
   createDefaultNotes,
   dbGetDirHandle,
+  isSystemNoteName,
   kScratchNoteName,
   loadNoteInfos,
   loadNotesMetadata,
@@ -63,19 +64,16 @@ export async function boot() {
 
   noteInfos = await loadNoteInfos(); // re-do because could have created default notes
   // need to do this twice to make sure hashName takes precedence over settings.currentNoteName
-  for (let ni of noteInfos) {
-    if (ni.name === settingsName) {
-      toOpenAtStartup = ni.name;
-      console.log("will open note from settings.currentNoteName:", ni.name);
-      break;
-    }
+  function isValidNote(name) {
+    return noteInfos.some((ni) => ni.name === name) || isSystemNoteName(name);
   }
-  for (let ni of noteInfos) {
-    if (ni.name === hashName) {
-      toOpenAtStartup = ni.name;
-      console.log("will open note from url #hash:", ni.name);
-      break;
-    }
+  if (isValidNote(settingsName)) {
+    toOpenAtStartup = settingsName;
+    console.log("will open note from settings.currentNoteName:", settingsName);
+  }
+  if (isValidNote(hashName)) {
+    toOpenAtStartup = hashName;
+    console.log("will open note from url #hash:", hashName);
   }
 
   // will open this note in Editor.vue on mounted()

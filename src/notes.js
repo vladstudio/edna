@@ -4,8 +4,8 @@ import {
   openDirPicker,
   readDir,
 } from "./fileutil";
+import { getChangelog, getHelp, getInitialContent } from "./initial-content";
 import { getDateYYYYMMDDDay, isDev, throwIf } from "./utils";
-import { getHelp, getInitialContent } from "./initial-content";
 import { getSettings, loadSettings, saveSettings } from "./settings";
 import {
   getStats,
@@ -113,7 +113,9 @@ export const kDailyJournalNoteName = "daily journal";
 export const kInboxNoteName = "inbox";
 
 export const kHelpSystemNoteName = "system:help";
-const systemNotes = [kHelpSystemNoteName];
+export const kReleaseNotesSystemNoteName = "system:Release Notes";
+
+const systemNotes = [kHelpSystemNoteName, kReleaseNotesSystemNoteName];
 /**
  * @param {string} name
  * @returns {boolean}
@@ -295,8 +297,11 @@ export function fixUpNoteContent(s) {
  */
 function getSystemNoteContent(name) {
   console.log("getSystemNoteContent:", name);
-  if (name === kHelpSystemNoteName) {
-    return getHelp();
+  switch (name) {
+    case kHelpSystemNoteName:
+      return getHelp();
+    case kReleaseNotesSystemNoteName:
+      return getChangelog();
   }
   throw new Error("unknown system note:" + name);
 }
