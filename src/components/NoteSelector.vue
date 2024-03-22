@@ -329,11 +329,13 @@ export default {
 
 <template>
   <div class="fixed inset-0 overflow-auto">
-    <form class="note-selector max-h-[94vh] flex flex-col w-[32em] top-0 absolute p-3 " tabindex="-1"
-      @focusout="onFocusOut" ref="container">
-      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
+    <form class="note-selector left-1/2 -translate-x-1/2 max-h-[94vh] flex flex-col w-[32em] top-0 absolute p-3 "
+      tabindex="-1" @focusout="onFocusOut" ref="container">
+      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter"
+        class="py-1 px-2 bg-white w-[400px] mb-2 rounded-sm" />
       <ul class="items overflow-y-auto">
-        <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
+        <li v-for="item, idx in filteredItems" :key="item.path"
+          class="flex cursor-pointer py-0.5 px-2 rounded-sm leading-5" :class="idx === selected ? 'selected' : ''"
           @click="openNote(item)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">
             {{ item.name }}
@@ -379,9 +381,6 @@ export default {
       font-size: 13px
       //background: #48b57e
       background: #efefef
-      left: 50%
-      transform: translateX(-50%)
-      border-radius: 0 0 5px 5px
       box-shadow: 0 0 10px rgba(0,0,0,0.3)
       +dark-mode
           background: #151516
@@ -390,13 +389,7 @@ export default {
           max-width: calc(100% - 80px)
 
       input
-          width: 100%
-          background: #fff
-          padding: 4px 5px
           border: 1px solid #ccc
-          box-sizing: border-box
-          border-radius: 2px
-          margin-bottom: 10px
           &:focus
               outline: none
               border: 1px solid #fff
@@ -413,10 +406,6 @@ export default {
               max-width: 100%
       .items
           > li
-              line-height: 1.5
-              border-radius: 3px
-              padding: 2px 8px
-              cursor: pointer
               &:hover
                   background: #e2e2e2
               &.selected

@@ -90,12 +90,14 @@ export default {
 </script>
 
 <template>
-  <div class="scroller">
-    <form class="language-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
-      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
-      <ul class="items">
+  <div class="fixed inset-0 overflow-auto">
+    <form class="language-selector left-1/2 -translate-x-1/2 max-h-[94vh] flex flex-col absolute top-0 p-3"
+      tabindex="-1" @focusout="onFocusOut" ref="container">
+      <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter"
+        class="py-1 px-2 bg-white w-[400px] mb-2 rounded-sm" />
+      <ul class="items overflow-y-auto">
         <li v-for="item, idx in filteredItems" :key="item.token" :class="idx === selected ? 'selected' : ''"
-          @click="selectItem(item.token)" ref="item">
+          class="cursor-pointer py-0.5 px-2 rounded-sm leading-5" @click="selectItem(item.token)" ref="item">
           {{ item.name }}
         </li>
       </ul>
@@ -104,23 +106,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
-    .scroller
-        overflow: auto
-        position: fixed
-        top: 0
-        left: 0
-        bottom: 0
-        right: 0
     .language-selector
         font-size: 12px
-        padding: 10px
         //background: #48b57e
         background: #efefef
-        position: absolute
-        top: 0
-        left: 50%
-        transform: translateX(-50%)
-        border-radius: 0 0 5px 5px
         box-shadow: 0 0 10px rgba(0,0,0,0.3)
         +dark-mode
             background: #151516
@@ -129,13 +118,7 @@ export default {
             max-width: calc(100% - 80px)
 
         input
-            background: #fff
-            padding: 4px 5px
             border: 1px solid #ccc
-            box-sizing: border-box
-            border-radius: 2px
-            width: 400px
-            margin-bottom: 10px
             &:focus
                 outline: none
                 border: 1px solid #fff
@@ -153,9 +136,6 @@ export default {
         
         .items
             > li
-                border-radius: 3px
-                padding: 5px 12px
-                cursor: pointer
                 &:hover
                     background: #e2e2e2
                 &.selected
