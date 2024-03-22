@@ -77,7 +77,7 @@ export default {
 
 <template>
   <div
-    class="w-full h-[22px] px-0 flex items-center select-none text-sm text-[var(--status-bar-color)] bg-[var(--status-bar-background)] font-['Open_Sans']">
+    class="w-full h-[22px] px-0 flex items-center select-none text-sm text-[var(--status-bar-color)] bg-[var(--status-bar-background)]">
     <div class="status-block clickable" @click="$emit('openNoteSelector')" title="Change or create new note">{{ noteName
       }}<span class="ml-1 w-[1em]" v-if="isDocDirty">&bull;</span><span class="ml-1 w-[1em]" v-else>&nbsp;</span>
     </div>
