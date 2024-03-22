@@ -45,7 +45,7 @@ export default {
     // @ts-ignore
     let qlf = window.queryLocalFonts;
     if (qlf !== undefined) {
-      let localFonts = [... new Set((await qlf()).map(f => f.family))].filter(f => f !== "Hack")
+      let localFonts = [... new Set((await qlf()).map(f => f.family))].filter(f => f !== kDefaultFontFamily)
       localFonts = [...new Set(localFonts)].map(f => [f, f])
       this.systemFonts = [[kDefaultFontFamily, kDefaultFontFamily + " (default)"], ...localFonts]
     }

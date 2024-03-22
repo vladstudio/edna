@@ -1,4 +1,4 @@
-import { cloneObjectDeep, objectEqualDeep } from "./utils";
+import { cloneObjectDeep, objectEqualDeep, platform } from "./utils";
 
 import { ipcRenderer } from "./ipcrenderer";
 
@@ -18,7 +18,12 @@ import { ipcRenderer } from "./ipcrenderer";
 export const kEventOpenSettings = "open-settings";
 export const kEventSettingsChange = "settings-change";
 
-export let kDefaultFontFamily = "Hack";
+// Note: was "Hack" but it requires custom font which takes time to load
+// To re-enable Hack we also have to un-comment font.sass
+// TODO: should be "Consolas" instead of "Cacadia Code"?
+// TODO: something else for Linux?
+export let kDefaultFontFamily = platform.isMac ? "Menlo" : "Cascadia Code";
+
 // TODO: not sure mobile should be so big. Looked big on iPhone
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 export let kDefaultFontSize = isMobileDevice ? 16 : 12;
