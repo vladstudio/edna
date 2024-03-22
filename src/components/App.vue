@@ -631,7 +631,7 @@ export default {
 </script>
 
 <template>
-  <div class="grid w-screen max-h-screen h-screen fixed grid-rows-[auto_auto_1fr]" @contextmenu="onContextMenu($event)">
+  <div class="grid w-screen max-h-screen h-screen fixed grid-rows-[auto_1fr_auto]" @contextmenu="onContextMenu($event)">
     <!--TODO: show note name, a drop-down for switching, search icon, menu -->
     <div class="text-base hidden">
       <div>{{ noteName }}</div>
