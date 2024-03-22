@@ -647,27 +647,9 @@ export default {
       <Settings v-if="showingSettings" :initialSettings="settings" @closeSettings="closeSettings" />
     </div>
   </div>
-  <div style="mcStyle" class="menu-overlay">
-    <form class="menu-container " ref="menuContainer" tabIndex="-1"></form>
+  <div style="mcStyle" class="fixed inset-0 z-40 pointer-events-none">
+    <form class="relative w-full h-full pointer-events-none z-50 text-[8px]" ref="menuContainer" tabIndex="-1"></form>
   </div>
   <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
   <RenameNote @close="onCloseRename" @rename="onRename" :oldName="noteName" v-if="showingRenameNote" />
 </template>
-
-<style scoped lang="sass">
-    .menu-overlay
-        position: fixed
-        top: 0
-        left: 0
-        width: 100%
-        height: 100%
-        z-index: 40
-        pointer-events: none
-        .menu-container
-            position: relative
-            width: 100%
-            height: 100%
-            pointer-events: none
-            z-index: 45
-            font-size: 8px
-</style>
