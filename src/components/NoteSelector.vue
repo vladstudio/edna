@@ -1,34 +1,35 @@
 <script>
-import { getLatestNoteInfos, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
+import { getLatestNoteNames, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
-import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
+import { isAltNumEvent, len } from '../utils'
 
-/** @typedef {import("./../notes").NoteInfo} NoteInfo */
 /**
- * @typedef {Object} NoteInfo2
- * @property {string} path
+ * @typedef {Object} Item
  * @property {string} name
  * @property {string} [nameLC]
  * @property {number} [altShortcut] - -1 if no shortcut, 0 to 9 for Alt-0 to Alt-9
  */
 
 /**
-* @returns {NoteInfo2[]}
+* @returns {Item[]}
 */
 function rebuildNotesInfo() {
-  const noteInfos = getLatestNoteInfos()
+  const noteNames = getLatestNoteNames()
   // console.log("rebuildNotesInfo, notes", noteInfos)
-  /** @type {NoteInfo2[]} */
-  let res = Array(len(noteInfos))
+  /** @type {Item[]} */
+  let res = Array(len(noteNames))
   // let res = [];
-  for (let i = 0; i < len(noteInfos); i++) {
-    let noteInfo = cloneObjectShallow(noteInfos[i])
-    noteInfo.nameLC = noteInfo.name.toLowerCase()
-    let m = getMetadataForNote(noteInfo.name);
-    if (m && m.altShortcut) {
-      noteInfo.altShortcut = parseInt(m.altShortcut)
+  for (let i = 0; i < len(noteNames); i++) {
+    let name = noteNames[i]
+    let item = {
+      name: name,
+      nameLC: name.toLowerCase()
     }
-    res[i] = noteInfo
+    let m = getMetadataForNote(item.name);
+    if (m && m.altShortcut) {
+      item.altShortcut = parseInt(m.altShortcut)
+    }
+    res[i] = item
   }
   // -1 if a < b
   // 0 if a = b
@@ -91,7 +92,7 @@ export default {
       })
     },
     /**
-     * @returns {NoteInfo2 | null}
+     * @returns {Item | null}
      */
     selectedNote() {
       if (this.filteredItems.length === 0) {
@@ -197,7 +198,7 @@ export default {
     },
 
     /**
-     * @param {NoteInfo2} note
+     * @param {Item} note
      * @returns {string}
      */
     isSysNote(note) {
@@ -213,7 +214,7 @@ export default {
     },
 
     /**
-     * @param {NoteInfo2} note
+     * @param {Item} note
      * @returns {string}
      */
     noteShortcut(note) {
@@ -292,7 +293,7 @@ export default {
     },
 
     /**
-     * @param {NoteInfo} item
+     * @param {Item} item
      */
     openNote(item) {
       console.log("openNote", item)
@@ -334,7 +335,7 @@ export default {
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter"
         class="py-1 px-2 bg-white w-[400px] mb-2 rounded-sm" />
       <ul class="items overflow-y-auto">
-        <li v-for="item, idx in filteredItems" :key="item.path"
+        <li v-for="item, idx in filteredItems" :key="item.name"
           class="flex cursor-pointer py-0.5 px-2 rounded-sm leading-5" :class="idx === selected ? 'selected' : ''"
           @click="openNote(item)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">

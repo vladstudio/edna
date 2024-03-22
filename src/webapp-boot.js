@@ -6,7 +6,7 @@ import {
   dbGetDirHandle,
   isSystemNoteName,
   kScratchNoteName,
-  loadNoteInfos,
+  loadNoteNames,
   loadNotesMetadata,
   setStorageFS,
 } from "./notes";
@@ -46,7 +46,7 @@ export async function boot() {
     console.log("storing data in localStorage");
   }
 
-  let noteInfos = await loadNoteInfos();
+  let noteInfos = await loadNoteNames();
   createDefaultNotes(noteInfos);
   await loadNotesMetadata(); // pre-load
 
@@ -62,7 +62,7 @@ export async function boot() {
   hashName = decodeURIComponent(hashName);
   let settingsName = settings.currentNoteName;
 
-  noteInfos = await loadNoteInfos(); // re-do because could have created default notes
+  noteInfos = await loadNoteNames(); // re-do because could have created default notes
   // need to do this twice to make sure hashName takes precedence over settings.currentNoteName
   function isValidNote(name) {
     return noteInfos.some((ni) => ni.name === name) || isSystemNoteName(name);

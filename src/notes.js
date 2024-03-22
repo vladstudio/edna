@@ -18,12 +18,6 @@ import {
 import { KV } from "./dbutil";
 import { renameInHistory } from "./history";
 
-/**
- * @typedef {Object} NoteInfo
- * @property {string} path
- * @property {string} name
- */
-
 // is set if we store notes on disk, null if in localStorage
 /** @type {FileSystemDirectoryHandle | null} */
 let storageFS = null;
@@ -128,17 +122,17 @@ export const blockHdrPlainText = "\n∞∞∞text-a\n";
 export const blockHdrMarkdown = "\n∞∞∞markdown\n";
 
 /**
- * @param {NoteInfo[]} existingNoteInfos
- * @returns {Promise<NoteInfo[]>}
+ * @param {string[]} existingNotes
+ * @returns {Promise<string[]>}
  */
-export async function createDefaultNotes(existingNoteInfos) {
+export async function createDefaultNotes(existingNotes) {
   /**
    * @param {string} name
-   * @param {string} md
+   * @param {string} md - markdown content
    * @returns {Promise<number>}
    */
   async function createIfNotExists(name, md) {
-    if (existingNoteInfos.some((ni) => ni.name === name)) {
+    if (existingNotes.includes(name)) {
       console.log("skipping creating note", name);
       return 0;
     }
@@ -161,7 +155,7 @@ export async function createDefaultNotes(existingNoteInfos) {
     nCreated += await createIfNotExists(kInboxNoteName, initialInbox);
   }
   if (nCreated > 0) {
-    await updateLatestNoteInfos();
+    await updateLatestNoteNames();
   }
   if (isFirstRun) {
     await loadNotesMetadata(); // must pre-load to make them available
@@ -169,13 +163,13 @@ export async function createDefaultNotes(existingNoteInfos) {
     reassignNoteShortcut("daily journal", "2");
     reassignNoteShortcut("inbox", "3");
   }
-  return latestNoteInfos;
+  return latestNoteNames;
 }
 
 /**
- * @returns {NoteInfo[]}
+ * @returns {string[]}
  */
-function loadNoteInfosLS() {
+function loadNoteNamesLS() {
   /**
    * @param {string} notePath
    * @returns {string}
@@ -191,21 +185,16 @@ function loadNoteInfosLS() {
     const key = localStorage.key(i);
     if (key.startsWith("note:")) {
       let name = getNoteNameLS(key);
-      /** @type {NoteInfo} */
-      let o = {
-        path: key,
-        name: name,
-      };
-      res.push(o);
+      res.push(name);
     }
   }
   return res;
 }
 
-// we must cache those because loadNoteInfos() is async and we can't always call it
+// we must cache those because loadNoteNames() is async and we can't always call it
 // note: there's a potential of getting out of sync
-/** @type {NoteInfo[]} */
-let latestNoteInfos = [];
+/** @type {string[]} */
+let latestNoteNames = [];
 
 function nameFromFileName(name) {
   // strip edna file extensions
@@ -218,7 +207,11 @@ function nameFromFileName(name) {
   throwIf(true, `invalid file name '${name}'`);
 }
 
-async function loadNoteInfosFS(dh = null) {
+/**
+ * @param {FileSystemDirectoryHandle} dh
+ * @returns {Promise<string[]>}
+ */
+async function loadNoteNamesFS(dh = null) {
   if (!dh) {
     dh = getStorageFS();
     throwIf(!dh, "unknown storage");
@@ -233,48 +226,44 @@ async function loadNoteInfosFS(dh = null) {
   let fsEntries = await readDir(dh, skipEntryFn);
   console.log("files", fsEntries);
 
-  /** @type {NoteInfo[]} */
+  /** @type {string[]} */
   let res = [];
   for (let e of fsEntries.dirEntries) {
     let fileName = e.name;
     let name = nameFromFileName(fileName);
-    let o = {
-      name: name,
-      path: fileName,
-    };
-    res.push(o);
+    res.push(name);
   }
-  // console.log("loadNoteInfosFS() res:", res);
+  // console.log("loadNoteNamesFS() res:", res);
   return res;
 }
 /**
- * @returns {Promise<NoteInfo[]>}
+ * @returns {Promise<string[]>}
  */
-export async function loadNoteInfos() {
+export async function loadNoteNames() {
   let dh = getStorageFS();
-  /** @type {NoteInfo[]} */
+  /** @type {string[]} */
   let res = [];
   if (!dh) {
-    res = loadNoteInfosLS();
+    res = loadNoteNamesLS();
   } else {
-    res = await loadNoteInfosFS(dh);
+    res = await loadNoteNamesFS(dh);
   }
-  latestNoteInfos = res;
-  // console.log("loadNoteInfos() res:", res);
+  latestNoteNames = res;
+  // console.log("loadNoteNames() res:", res);
   return res;
 }
 
 /**
  * after creating / deleting / renaming a note we need to update
- * cached latestNoteInfos
- * @returns {Promise<NoteInfo[]>}
+ * cached latestNoteNames
+ * @returns {Promise<string[]>}
  */
-async function updateLatestNoteInfos() {
-  return await loadNoteInfos();
+async function updateLatestNoteNames() {
+  return await loadNoteNames();
 }
 
-export function getLatestNoteInfos() {
-  return latestNoteInfos;
+export function getLatestNoteNames() {
+  return latestNoteNames;
 }
 
 // in case somehow a note doesn't start with the block header, fix it up
@@ -323,12 +312,11 @@ function pickUniqueName(base, existingNames) {
 
 /**
  * @param {string} base
- * @param {NoteInfo[]} noteInfos
+ * @param {string[]} noteNames
  * @returns {string}
  */
-function pickUniqueNameInNoteInfos(base, noteInfos) {
-  let names = noteInfos.map((ni) => ni.name);
-  return pickUniqueName(base, names);
+function pickUniqueNameInNoteNames(base, noteNames) {
+  return pickUniqueName(base, noteNames);
 }
 
 /**
@@ -372,14 +360,14 @@ export async function createNoteWithName(name, content = null) {
     } else {
       console.log("note already exists", name);
     }
-    await updateLatestNoteInfos();
+    await updateLatestNoteNames();
     return;
   }
 
   // TODO: check if exists
   await fsWriteTextFile(dh, path, content);
   incNoteCreateCount();
-  await updateLatestNoteInfos();
+  await updateLatestNoteNames();
 }
 
 /**
@@ -388,9 +376,9 @@ export async function createNoteWithName(name, content = null) {
  */
 export async function createNewScratchNote() {
   console.log("createNewScratchNote");
-  let noteInfos = await loadNoteInfos();
+  let noteInfos = await loadNoteNames();
   // generate a unique "scratch-${N}" note name
-  let scratchName = pickUniqueNameInNoteInfos("scratch", noteInfos);
+  let scratchName = pickUniqueNameInNoteNames("scratch", noteInfos);
   createNoteWithName(scratchName);
   return scratchName;
 }
@@ -481,7 +469,7 @@ export async function deleteNote(name) {
     await dh.removeEntry(fileName);
   }
   incNoteDeleteCount();
-  await updateLatestNoteInfos();
+  await updateLatestNoteNames();
 }
 
 /**
@@ -494,26 +482,26 @@ export async function renameNote(oldName, newName, content) {
   await deleteNote(oldName);
   await renameInMetadata(oldName, newName);
   renameInHistory(oldName, newName);
-  await updateLatestNoteInfos();
+  await updateLatestNoteNames();
 }
 
 /**
- * @param {NoteInfo} noteInfo
- * @param {NoteInfo[]} diskNoteInfos
+ * @param {string} noteName
+ * @param {string[]} diskNoteNames
  * @param {FileSystemDirectoryHandle} dh
  * @returns
  */
-async function migrateNote(noteInfo, diskNoteInfos, dh) {
-  let name = noteInfo.name;
-  /** @type {NoteInfo} */
+async function migrateNote(noteName, diskNoteNames, dh) {
+  let name = noteName;
+  /** @type {string} */
   let noteInfoOnDisk;
-  for (let ni of diskNoteInfos) {
-    if (ni.name === name) {
+  for (let ni of diskNoteNames) {
+    if (ni === name) {
       noteInfoOnDisk = ni;
       break;
     }
   }
-  let content = loadNoteLS(noteInfo.name);
+  let content = loadNoteLS(noteName);
   if (!noteInfoOnDisk) {
     // didn't find a note with the same name so create
     let fileName = notePathFromNameFS(name);
@@ -526,13 +514,14 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
     );
     return;
   }
-  let diskContent = await fsReadTextFile(dh, noteInfoOnDisk.path);
+  let path = notePathFromNameFS(name);
+  let diskContent = await fsReadTextFile(dh, path);
   if (content === diskContent) {
-    console.log("migrateNote: same content, skipping", noteInfo.path);
+    console.log("migrateNote: same content, skipping", noteName);
     return;
   }
   // if the content is different, create a new note with a different name
-  let newName = pickUniqueNameInNoteInfos(name, diskNoteInfos);
+  let newName = pickUniqueNameInNoteNames(name, diskNoteNames);
   let fileName = notePathFromName(newName);
   await fsWriteTextFile(dh, fileName, content);
   console.log(
@@ -548,40 +537,37 @@ async function migrateNote(noteInfo, diskNoteInfos, dh) {
  */
 export async function switchToStoringNotesOnDisk(dh) {
   console.log("switchToStoringNotesOnDisk");
-  let diskNoteInfos = await loadNoteInfosFS(dh);
+  let diskNoteNames = await loadNoteNamesFS(dh);
 
   // migrate notes
-  for (let ni of latestNoteInfos) {
-    if (isSystemNoteName(ni.name)) {
+  for (let name of latestNoteNames) {
+    if (isSystemNoteName(name)) {
       continue;
     }
-    migrateNote(ni, diskNoteInfos, dh);
+    migrateNote(name, diskNoteNames, dh);
   }
   // remove migrated notes
-  for (let ni of latestNoteInfos) {
-    if (isSystemNoteName(ni.name)) {
+  for (let name of latestNoteNames) {
+    if (isSystemNoteName(name)) {
       continue;
     }
-    localStorage.removeItem(ni.path);
+    let key = notePathFromNameLS(name);
+    localStorage.removeItem(key);
   }
 
   storageFS = dh;
   // save in indexedDb so that it persists across sessions
   await dbSetDirHandle(dh);
-  let noteInfos = await updateLatestNoteInfos();
+  let noteNames = await updateLatestNoteNames();
 
   // migrate settings, update currentNoteName
   let settings = loadSettings();
   let name = settings.currentNoteName;
-  let newCurrNote = noteInfos.filter((ni) => ni.name === name)[0];
-  if (newCurrNote) {
-    settings.currentNoteName = newCurrNote.name;
-  } else {
+  if (!noteNames.includes(name)) {
     settings.currentNoteName = kScratchNoteName;
+    saveSettings(settings);
   }
-  saveSettings(settings);
-
-  return noteInfos;
+  return noteNames;
 }
 
 export async function pickAnotherDirectory() {

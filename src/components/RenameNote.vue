@@ -1,5 +1,5 @@
 <script>
-import { getLatestNoteInfos } from '../notes'
+import { getLatestNoteNames } from '../notes'
 
 export default {
   props: {
@@ -18,9 +18,9 @@ export default {
       if (name === "") {
         return false
       }
-      let notes = getLatestNoteInfos()
-      for (let note of notes) {
-        if (note.name === name) {
+      let noteNames = getLatestNoteNames()
+      for (let noteName of noteNames) {
+        if (noteName === name) {
           return false
         }
       }
