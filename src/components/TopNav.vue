@@ -11,7 +11,6 @@
         height: 22px
         background: lightgrey
         color: black
-        font-family: "Open Sans"
         font-size: 12px
         padding-left: 2em
         padding-right: 2em
