@@ -9,7 +9,7 @@ import RenameNote from './RenameNote.vue'
 import ToastUndo from './ToastUndo.vue'
 
 import Settings from './settings/Settings.vue'
-import { isAltNumEvent, stringSizeInUtf8Bytes } from '../utils'
+import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes } from '../utils'
 import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName } from '../notes'
 import { getModChar, getAltChar } from "../../src/utils"
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -605,6 +605,7 @@ export default {
 
         let title = name + " - Edna"
         window.document.title = title
+        setURLHashNoReload(name)
         setSetting("currentNoteName", name);
       }
     },

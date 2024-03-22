@@ -4,6 +4,7 @@ import "./css/application.sass";
 import {
   createDefaultNotes,
   dbGetDirHandle,
+  kScratchNoteName,
   loadNoteInfos,
   loadNotesMetadata,
   setStorageFS,
@@ -50,21 +51,35 @@ export async function boot() {
 
   let settings = getSettings();
   // console.log("settings:", settings);
-  // make sure currentNoteName points to a valid note
-  let name = settings.currentNoteName;
+
+  // pick the note to open at startup:
+  // - #${name} from the url
+  // - settings.currentNoteName if it exists
+  // - fallback to scratch note
+  let toOpenAtStartup = kScratchNoteName; // default if nothing else matches
+  let hashName = window.location.hash.slice(1);
+  hashName = decodeURIComponent(hashName);
+  let settingsName = settings.currentNoteName;
+
   noteInfos = await loadNoteInfos(); // re-do because could have created default notes
-  let found = false;
+  // need to do this twice to make sure hashName takes precedence over settings.currentNoteName
   for (let ni of noteInfos) {
-    if (ni.name === name) {
-      console.log("currentNoteName:", name);
-      found = true;
+    if (ni.name === settingsName) {
+      toOpenAtStartup = ni.name;
+      console.log("will open note from settings.currentNoteName:", ni.name);
       break;
     }
   }
-  if (!found) {
-    settings.currentNoteName = "scratch";
-    console.log(`didn't find currentNoteName '${name}' so set to 'scratch'`);
+  for (let ni of noteInfos) {
+    if (ni.name === hashName) {
+      toOpenAtStartup = ni.name;
+      console.log("will open note from url #hash:", ni.name);
+      break;
+    }
   }
+
+  // will open this note in Editor.vue on mounted()
+  settings.currentNoteName = toOpenAtStartup;
   console.log("mounting App");
   if (app) {
     app.unmount();

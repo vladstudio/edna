@@ -175,3 +175,14 @@ export function isAltNumEvent(e) {
   }
   return e.key;
 }
+
+/**
+ * @param {string} hash
+ */
+export function setURLHashNoReload(hash) {
+  // @ts-ignore
+  let url = new URL(window.location);
+  url.hash = hash;
+  // update browser's URL without reloading the page
+  window.history.pushState({}, "", url);
+}

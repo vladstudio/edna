@@ -16,3 +16,4 @@ Changes from Heynote:
 * add Ctrl + P shortcut for note switcher
 * added formatting and execution of Go
 * added svelte and vue languages
+* store note name in url's #hash so that they can be bookmarked

@@ -66,11 +66,6 @@ export default {
     editor.addEventListener(kEventCreateNewScratchNote, (e) => {
       this.$emit(kEventCreateNewScratchNote)
     })
-    // editor.addEventListener("contextmenu", (e) => {
-    //     console.log("contextmenu:", e)
-    //     e.preventDefault()
-    //     this.$emit("contextMenu", e)
-    // })
 
     // load buffer content and create editor
     loadCurrentNote().then((content) => {
