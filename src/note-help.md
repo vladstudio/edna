@@ -138,7 +138,8 @@ On other computers:
 Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.
 
 ∞∞∞markdown
-# Lists
+# Lists with TODO items
+
 In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:
 
 - [ ] Try out Edna

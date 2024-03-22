@@ -1,12 +1,12 @@
 import { getAltChar, getModChar, platformName } from "./utils.js";
 
-import changelogRaw from "./note-changelog.md?raw";
 import dailyJournalRaw from "./note-daily-journal.md?raw";
 import helpRaw from "./note-help.md?raw";
 import inboxRaw from "./note-inbox.md?raw";
 import initialDevRaw from "./note-initial-dev.md?raw";
 import initialRaw from "./note-initial.md?raw";
 import { keyHelpStr } from "./key-helper.js";
+import releaseNotesRaw from "./note-release-notes.md?raw";
 
 function fixUpShortcuts(s, platform = platformName) {
   let modChar = getModChar(platform);
@@ -16,23 +16,15 @@ function fixUpShortcuts(s, platform = platformName) {
   return s;
 }
 
-export function getHelp(platform = platformName, forHTML = false) {
+export function getHelp(platform = platformName) {
   let keyHelp = keyHelpStr(platform);
-  if (forHTML) {
-    keyHelp = "```\n" + keyHelp + "\n```";
-  }
-
   let help = fixUpShortcuts(helpRaw, platform);
   help = help.replace("{{keyHelp}}", keyHelp);
-  if (forHTML) {
-    // link Edna to website
-    help = help.replace(/Edna/g, "[Edna](https://edna.arslexis.io)");
-  }
   return help;
 }
 
-export function getChangelog() {
-  return fixUpShortcuts(changelogRaw);
+export function getReleaseNotes() {
+  return fixUpShortcuts(releaseNotesRaw);
 }
 
 export function getInitialContent(platform = platformName) {

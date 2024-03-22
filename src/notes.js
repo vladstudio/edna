@@ -4,8 +4,8 @@ import {
   openDirPicker,
   readDir,
 } from "./fileutil";
-import { getChangelog, getHelp, getInitialContent } from "./initial-content";
 import { getDateYYYYMMDDDay, isDev, throwIf } from "./utils";
+import { getHelp, getInitialContent, getReleaseNotes } from "./initial-content";
 import { getSettings, loadSettings, saveSettings } from "./settings";
 import {
   getStats,
@@ -301,7 +301,7 @@ function getSystemNoteContent(name) {
     case kHelpSystemNoteName:
       return getHelp();
     case kReleaseNotesSystemNoteName:
-      return getChangelog();
+      return getReleaseNotes();
   }
   throw new Error("unknown system note:" + name);
 }

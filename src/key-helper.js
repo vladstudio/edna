@@ -24,9 +24,9 @@ function getKeyHelp(platform = platformName) {
     ],
     [`${modChar} + ${altChar} + Up/Down`, "Add additional cursor above/below"],
     [`${altChar} + Shift + F`, "Format block content"],
-    [``, "for Go, JSON, JavaScript, HTML, CSS and Markdown"],
+    [``, "Supports Go, JSON, JavaScript, HTML, CSS and Markdown"],
     [`${altChar} + Shift + R`, "Execute block code"],
-    [``, "for Go"],
+    [``, "Supports Go"],
     [`${modChar} + F`, "Search / replace within a note"],
   ];
 }

@@ -3,7 +3,7 @@ import markdownIt from "markdown-it";
 import markdownItAnchor from "markdown-it-anchor";
 import path from "node:path";
 
-console.log("This is gen script");
+console.log("Generting html-win.html and html-mac.html from note-help.md");
 
 export function getModChar(platform) {
   return platform === "darwin" ? "⌘" : "Ctrl";
@@ -34,9 +34,9 @@ function getKeyHelp(platform) {
     [``, "Press again to select the whole buffer"],
     [`${modChar} + ${altChar} + Up/Down`, "Add additional cursor above/below"],
     [`${altChar} + Shift + F`, "Format block content"],
-    [``, "for Go, JSON, JavaScript, HTML, CSS and Markdown"],
+    [``, "Supports Go, JSON, JavaScript, HTML, CSS and Markdown"],
     [`${altChar} + Shift + R`, "Execute block code"],
-    [``, "for Go"],
+    [``, "Supports Go"],
     [`${modChar} + F`, "Search / replace within a note"],
   ];
 }
@@ -64,9 +64,43 @@ function fixUpShortcuts(s, platform) {
   return s;
 }
 
+function removeMathBlock(s) {
+  // remove text between "∞∞∞math" and "∞∞∞"
+  // that part is not appropriate for HTML
+  return s.replace(/(\n)(∞∞∞math[\s\S]*)(∞∞∞markdown)/gm, "$1$3");
+}
+
+function removeLineStartingWith(lines, s) {
+  return lines.filter((line) => !line.startsWith(s));
+}
+
+function collapseMultipleEmptyLines(lines) {
+  let newLines = [];
+  let lastLineWasEmpty = false;
+  for (let line of lines) {
+    if (line === "") {
+      if (!lastLineWasEmpty) {
+        newLines.push(line);
+        lastLineWasEmpty = true;
+      }
+    } else {
+      newLines.push(line);
+      lastLineWasEmpty = false;
+    }
+  }
+  return newLines;
+}
+
 function getHelp(platform) {
   let path = "./src/note-help.md";
   let helpRaw = fs.readFileSync(path, "utf8");
+  helpRaw = removeMathBlock(helpRaw);
+
+  let lines = helpRaw.split("\n");
+  lines = removeLineStartingWith(lines, "This is a help note");
+  lines = removeLineStartingWith(lines, "To see help in HTML");
+  lines = collapseMultipleEmptyLines(lines);
+  helpRaw = lines.join("\n");
 
   let keyHelp = keyHelpStr(platform);
   keyHelp = "```\n" + keyHelp + "\n```";
