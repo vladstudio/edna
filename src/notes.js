@@ -244,7 +244,7 @@ async function loadNoteInfosFS(dh = null) {
     };
     res.push(o);
   }
-  console.log("loadNoteInfosFS() res:", res);
+  // console.log("loadNoteInfosFS() res:", res);
   return res;
 }
 /**
@@ -260,7 +260,7 @@ export async function loadNoteInfos() {
     res = await loadNoteInfosFS(dh);
   }
   latestNoteInfos = res;
-  console.log("loadNoteInfos() res:", res);
+  // console.log("loadNoteInfos() res:", res);
   return res;
 }
 

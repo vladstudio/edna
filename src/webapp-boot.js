@@ -33,7 +33,7 @@ export async function boot() {
 
   let dh = await dbGetDirHandle();
   if (dh) {
-    console.log("we're storing data in the file system");
+    console.log("storing data in the file system");
     let ok = await hasHandlePermission(dh, true);
     if (!ok) {
       console.log("no permission to write files in directory", dh.name);
@@ -43,7 +43,7 @@ export async function boot() {
       return;
     }
   } else {
-    console.log("we're storing data in localStorage");
+    console.log("storing data in localStorage");
   }
 
   let noteInfos = await loadNoteInfos();
@@ -69,11 +69,11 @@ export async function boot() {
   }
   if (isValidNote(settingsName)) {
     toOpenAtStartup = settingsName;
-    console.log("will open note from settings.currentNoteName:", settingsName);
+    // console.log("will open note from settings.currentNoteName:", settingsName);
   }
   if (isValidNote(hashName)) {
     toOpenAtStartup = hashName;
-    console.log("will open note from url #hash:", hashName);
+    // console.log("will open note from url #hash:", hashName);
   }
 
   // will open this note in Editor.vue on mounted()

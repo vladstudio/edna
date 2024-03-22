@@ -648,13 +648,13 @@ export default {
       :isSpellChecking="isSpellChecking" @openLanguageSelector="openLanguageSelector"
       @openNoteSelector="openNoteSelector" @formatCurrentBlock="formatCurrentBlock" @runCurrentBlock="runCurrentBlock"
       @toggleSpellCheck="toggleSpellCheck" @openSettings="showingSettings = true" @toggleHelp="toggleHelp" class="" />
-    <div class="overlay">
-      <LanguageSelector v-if="showingLanguageSelector" @selectLanguage="onSelectLanguage"
-        @close="closeLanguageSelector" />
-      <NoteSelector v-if="showingNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote"
-        @deleteNote="onDeleteNote" @close="closeNoteSelector" />
-      <Settings v-if="showingSettings" :initialSettings="settings" @closeSettings="closeSettings" />
-    </div>
+  </div>
+  <div class="overlay">
+    <LanguageSelector v-if="showingLanguageSelector" @selectLanguage="onSelectLanguage"
+      @close="closeLanguageSelector" />
+    <NoteSelector v-if="showingNoteSelector" @openNote="onOpenNote" @createNote="onCreateNote"
+      @deleteNote="onDeleteNote" @close="closeNoteSelector" />
+    <Settings v-if="showingSettings" :initialSettings="settings" @closeSettings="closeSettings" />
   </div>
   <div style="mcStyle" class="fixed inset-0 z-40 pointer-events-none">
     <form class="relative w-full h-full pointer-events-none z-50 text-[8px]" ref="menuContainer" tabIndex="-1"></form>
