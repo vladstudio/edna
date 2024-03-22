@@ -36,33 +36,45 @@
 </code></pre>
 <h1 id="why-edna%3F" tabindex="-1"><a class="header-anchor" href="#why-edna%3F" target="_blank">Why <a href="https://edna.arslexis.io" target="_blank">Edna</a>?</a></h1>
 <h2 id="speed" tabindex="-1"><a class="header-anchor" href="#speed" target="_blank">Speed</a></h2>
-<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is optimized for speed of note taking:</p>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is optimized for speed of note taking.</p>
+<p><code>⌘ + P</code> to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut</p>
+<h2 id="quick-access-shortcut" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut" target="_blank">Quick access shortcut</a></h2>
+<p>You can assign <code>⌥ + 0</code> to <code>⌥ + 9</code> for quickly accessing your notes:</p>
 <ul>
-<li><code>⌘ + P</code> to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut</li>
-<li><code>⌥ + N</code> - a quick access shortcut. You can assign <code>⌥ + 0</code> to <code>⌥ + 9</code> for quickly accessing your notes:
+<li><code>⌘ + P</code> for note selector dialog</li>
+<li>select a note</li>
+<li>press <code>⌥ + 0</code> to <code>⌥ + 9</code> to assign it as quick access shortcut for selected noted</li>
+</ul>
+<p>Default shortcuts are:</p>
 <ul>
-<li>use <code>⌘ + P</code>, select a note and press <code>⌥ + N</code> shortcut</li>
-<li>default shortcuts are:
-<ul>
-<li><code>⌥ + 1</code> : scratch</li>
+<li><code>⌥ + 1</code> : scratch note</li>
 <li><code>⌥ + 2</code> : daily journal</li>
 <li><code>⌥ + 3</code> : inbox</li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <h2 id="blocks-and-notes" tabindex="-1"><a class="header-anchor" href="#blocks-and-notes" target="_blank">Blocks and notes</a></h2>
 <p>Notes consists of blocks.</p>
 <p>Each block has a type: plain text, markdown, JavaScript code, Go code etc.</p>
 <h2 id="features-for-developers" tabindex="-1"><a class="header-anchor" href="#features-for-developers" target="_blank">Features for developers</a></h2>
+<p>Use <code>⌘ + L</code> to assign a type for current block.</p>
+<p>Type can be plain text, markdown or a programming language.</p>
 <p>We have syntax highlighting for markdown and many programming languages.</p>
-<p>You can format many types of blocks:</p>
+<h3 id="formatting-of-blocks" tabindex="-1"><a class="header-anchor" href="#formatting-of-blocks" target="_blank">Formatting of blocks</a></h3>
+<p>You can format current block using:</p>
 <ul>
-<li><code>⌥ + Shift + F</code></li>
-<li>right-click and use context menu</li>
+<li><code>⌥ + Shift + F</code> keyboard shortcut</li>
+<li>right-click and use context menu <code>Block / Format</code></li>
 <li>press format icon in status bar (bottom right)</li>
 </ul>
+<p>We support formatting of Go, JSON, JavaScript, HTML, CSS and Markdown blocks.</p>
+<h3 id="executing-of-code-blocks" tabindex="-1"><a class="header-anchor" href="#executing-of-code-blocks" target="_blank">Executing of code blocks</a></h3>
+<p>We support execution of Go blocks:</p>
+<ul>
+<li><code>⌥ + Shift + R</code> keyboard shortcut</li>
+<li>right-click and use context menu <code>Block / Run</code></li>
+</ul>
+<p>The output of execution will be shown in a new block created below the executed block.</p>
+<p>We have the same capabilities as https://tools.arslexis.io/goplayground/</p>
+<p>The code block must be a valid Go program.</p>
 <h1 id="multiple-notes" tabindex="-1"><a class="header-anchor" href="#multiple-notes" target="_blank">Multiple notes</a></h1>
 <h2 id="create-a-new-note" tabindex="-1"><a class="header-anchor" href="#create-a-new-note" target="_blank">Create a new note</a></h2>
 <ul>
@@ -100,7 +112,7 @@
 <li><code>up</code> / <code>down</code> arrow keys to select a note</li>
 <li><code>Enter</code> to open selected note</li>
 </ul>
-<h2 id="quick-access-shortcut" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut" target="_blank">Quick access shortcut</a></h2>
+<h2 id="quick-access-shortcut-1" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut-1" target="_blank">Quick access shortcut</a></h2>
 <p>You can assign <code>⌥ + 0</code> to <code>⌥ + 9</code> keyboard shortcuts for quickly opening up to 10 notes.</p>
 <ul>
 <li><code>⌘ + P</code></li>
@@ -139,6 +151,10 @@
 <li>pick the same directory</li>
 </ul>
 <p>Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.</p>
+<h1 id="context-menu" tabindex="-1"><a class="header-anchor" href="#context-menu" target="_blank">Context menu</a></h1>
+<p>Right-click to get context menu.</p>
+<p>However, when spellchecking is enabled, we need to show native browser context menu for fixing spellchecking mistakes.</p>
+<p>Use <code>Ctrl + right-click</code>to access</p>
 <h1 id="lists-with-todo-items" tabindex="-1"><a class="header-anchor" href="#lists-with-todo-items" target="_blank">Lists with TODO items</a></h1>
 <p>In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:</p>
 <ul>

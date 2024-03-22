@@ -113,6 +113,7 @@ func main() {
 		flgSetupAndRun    bool
 		flgBuildLocalProd bool
 		flgUpdateGoDeps   bool
+		flgGen            bool
 		flgAdHoc          bool
 	)
 	{
@@ -123,12 +124,18 @@ func main() {
 		flag.BoolVar(&flgBuildLocalProd, "build-local-prod", false, "build for production run locally")
 		flag.BoolVar(&flgSetupAndRun, "setup-and-run", false, "setup and run on the server")
 		flag.BoolVar(&flgUpdateGoDeps, "update-go-deps", false, "update go dependencies")
+		flag.BoolVar(&flgGen, "gen", false, "generate code")
 		flag.BoolVar(&flgAdHoc, "ad-hoc", false, "run ad-hoc code")
 		flag.Parse()
 	}
 
 	if flgAdHoc {
 		testCompress()
+		return
+	}
+
+	if flgGen {
+		u.RunLoggedInDir(".", "yarn", "run", "gen")
 		return
 	}
 

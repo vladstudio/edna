@@ -18,15 +18,21 @@ To see help in HTML, press `?` at the bottom right or visit https://edna.arslexi
 
 ## Speed
 
-Edna is optimized for speed of note taking:
+Edna is optimized for speed of note taking.
 
-- `Mod + P` to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut
-- `Alt + N` - a quick access shortcut. You can assign `Alt + 0` to `Alt + 9` for quickly accessing your notes:
-  - use `Mod + P`, select a note and press `Alt + N` shortcut
-  - default shortcuts are:
-    - `Alt + 1` : scratch
-    - `Alt + 2` : daily journal
-    - `Alt + 3` : inbox
+`Mod + P` to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut
+
+## Quick access shortcut
+
+You can assign `Alt + 0` to `Alt + 9` for quickly accessing your notes:
+- `Mod + P` for note selector dialog
+- select a note
+- press `Alt + 0` to `Alt + 9` to assign it as quick access shortcut for selected noted
+
+ Default shortcuts are:
+- `Alt + 1` : scratch note
+- `Alt + 2` : daily journal
+- `Alt + 3` : inbox
 
 ## Blocks and notes
 
@@ -36,12 +42,32 @@ Each block has a type: plain text, markdown, JavaScript code, Go code etc.
 
 ## Features for developers
 
+Use `Mod + L` to assign a type for current block.
+
+Type can be plain text, markdown or a programming language.
+
 We have syntax highlighting for markdown and many programming languages.
 
-You can format many types of blocks:
-- `Alt + Shift + F`
-- right-click and use context menu
+### Formatting of blocks
+
+You can format current block using:
+- `Alt + Shift + F` keyboard shortcut
+- right-click and use context menu `Block / Format`
 - press format icon in status bar (bottom right)
+
+We support formatting of Go, JSON, JavaScript, HTML, CSS and Markdown blocks.
+
+### Executing of code blocks
+
+We support execution of Go blocks:
+- `Alt + Shift + R` keyboard shortcut
+- right-click and use context menu `Block / Run`
+
+The output of execution will be shown in a new block created below the executed block.
+
+We have the same capabilities as https://tools.arslexis.io/goplayground/
+
+The code block must be a valid Go program.
 
 ∞∞∞markdown
 # Multiple notes
@@ -123,6 +149,7 @@ You can have multiple directories with notes. Use context menu `Notes storage / 
 
 You can go back to storing in browser with context menu `Notes storage / Open notes in browser (localStorage)`. Note that unlike going from browser => directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.
 
+∞∞∞markdown
 # Accessing notes on multiple computers
 
 If you pick a directory managed by Dropbox or One Drive or Google Drive etc. then you'll be able to access notes on multiple computers.
@@ -136,6 +163,15 @@ On other computers:
 - pick the same directory
 
 Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.
+
+∞∞∞markdown
+# Context menu
+
+Right-click to get context menu.
+
+However, when spellchecking is enabled, we need to show native browser context menu for fixing spellchecking mistakes.
+
+Use `Ctrl + right-click`to access
 
 ∞∞∞markdown
 # Lists with TODO items
