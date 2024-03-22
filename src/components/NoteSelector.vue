@@ -345,7 +345,8 @@ export default {
         </li>
       </ul>
       <hr class="mt-1 mb-1 border-gray-400" v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
-      <div class="kbd-grid grid grid-cols-[auto_auto_1fr] gap-x-3 gap-y-3 mt-4 text-gray-700">
+      <div
+        class="kbd-grid grid grid-cols-[auto_auto_1fr] gap-x-3 gap-y-3 mt-4 text-gray-700 text-size-[11px] leading-[1em]">
         <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
         <div v-if="canOpenSelected">open note</div>
         <div v-if="canOpenSelected" class="font-bold truncate">{{ cleanNoteName(selectedName) }}
@@ -420,7 +421,6 @@ export default {
                       background: #1b6540
                       color: rgba(255,255,255, 0.87)
       .kbd-grid
-          font-size: 11px
           +dark-mode
                   color: rgba(255,255,255, 0.53)
       .kbd
