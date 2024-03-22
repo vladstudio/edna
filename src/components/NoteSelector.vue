@@ -17,7 +17,7 @@ import { cloneObjectShallow, isAltNumEvent, len } from '../utils'
 */
 function rebuildNotesInfo() {
   const noteInfos = getLatestNoteInfos()
-  console.log("rebuildNotesInfo, notes", noteInfos)
+  // console.log("rebuildNotesInfo, notes", noteInfos)
   /** @type {NoteInfo2[]} */
   let res = Array(len(noteInfos))
   // let res = [];
@@ -328,10 +328,11 @@ export default {
 </script>
 
 <template>
-  <div class="scroller">
-    <form class="note-selector" tabindex="-1" @focusout="onFocusOut" ref="container">
+  <div class="fixed inset-0 overflow-auto">
+    <form class="note-selector max-h-[94vh] flex flex-col w-[32em] top-0 absolute p-3 " tabindex="-1"
+      @focusout="onFocusOut" ref="container">
       <input type="text" ref="input" @keydown="onKeydown" @input="onInput" v-model="filter" />
-      <ul class="items">
+      <ul class="items overflow-y-auto">
         <li v-for="item, idx in filteredItems" :key="item.path" class="flex" :class="idx === selected ? 'selected' : ''"
           @click="openNote(item)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">
@@ -342,29 +343,28 @@ export default {
         </li>
       </ul>
       <hr class="mt-1 mb-1 border-gray-400" v-if="canOpenSelected || canDeleteSelected || filter.length > 0" />
-      <div class="kbd-grid">
+      <div class="kbd-grid grid grid-cols-[auto_auto_1fr] gap-x-3 gap-y-3 mt-4 text-gray-700">
         <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
         <div v-if="canOpenSelected">open note</div>
-        <div v-if="canOpenSelected" class="bold truncate">{{ cleanNoteName(selectedName) }}
+        <div v-if="canOpenSelected" class="font-bold truncate">{{ cleanNoteName(selectedName) }}
         </div>
 
         <div v-if="canCreateWithEnter"><span class="kbd">Enter</span></div>
         <div v-if="canCreate && !canCreateWithEnter"><span class="kbd">Ctrl + Enter</span></div>
         <div v-if="canCreate">create note</div>
-        <div v-if="canCreate" class="bold truncate">{{ cleanNoteName(filter) }}</div>
+        <div v-if="canCreate" class="font-bold truncate">{{ cleanNoteName(filter) }}</div>
 
         <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
         <div v-if="showDelete" class="red">delete note</div>
-        <div v-if="showDelete && canDeleteSelected" class="bold truncate">{{
-      cleanNoteName(selectedName)
-    }}
+        <div v-if="showDelete && canDeleteSelected" class="font-bold truncate">{{
+        cleanNoteName(selectedName)
+      }}
         </div>
-        <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="bold truncate">{{
-      cleanNoteName(selectedName) }}</span></span></div>
+        <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="font-bold truncate">{{
+        cleanNoteName(selectedName) }}</span></span></div>
 
         <div><span class="kbd">Alt + 0...9</span></div>
-        <div>assign hotkey</div>
-        <div></div>
+        <div class="col-span-2">assign quick access shortcut</div>
 
         <div><span class="kbd">Esc</span></div>
         <div>dismiss</div>
@@ -375,22 +375,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
-  .scroller
-    overflow: auto
-    position: fixed
-    top: 0
-    left: 0
-    bottom: 0
-    right: 0
-
   .note-selector
-      width: 32em
       font-size: 13px
-      padding: 10px
       //background: #48b57e
       background: #efefef
-      position: absolute
-      top: 0
       left: 50%
       transform: translateX(-50%)
       border-radius: 0 0 5px 5px
@@ -443,15 +431,7 @@ export default {
                       background: #1b6540
                       color: rgba(255,255,255, 0.87)
       .kbd-grid
-          display: grid
-          grid-template-columns: auto auto 1fr
-          grid-column-gap: 1em
-          grid-row-gap: 1em
-          margin-top: 1em
           font-size: 11px
-          padding-left: 8px
-          padding-right: 8px
-          color: gray
           +dark-mode
                   color: rgba(255,255,255, 0.53)
       .kbd
@@ -464,8 +444,6 @@ export default {
           +dark-mode
               background-color: #3b3b3b
               color: rgba(255,255,255, 0.9)
-      .bold
-          font-weight: bold
       .red
           color: red
           +dark-mode
