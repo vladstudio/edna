@@ -18,6 +18,7 @@ import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../se
 import { boot } from '../webapp-boot'
 import { langSupportsFormat, langSupportsRun } from '../editor/languages'
 import { useToast, POSITION } from "vue-toastification";
+import { getHistory } from '../history'
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
@@ -78,6 +79,7 @@ export default {
       theme: settings.theme,
       isSpellChecking: false,
       spellcheckToastID: 0,
+      lastEscTime: 0,
     }
   },
 
@@ -138,6 +140,20 @@ export default {
      * @param {KeyboardEvent} e
      */
     onKeyDown(e) {
+
+      if (e.key === "Escape") {
+        let sinceLast = performance.now() - this.lastEscTime
+        let shouldSwitchToPrev = sinceLast < 300
+        // console.log("Escape: sinceLast:", sinceLast)
+        let hist = getHistory()
+        // console.log("Escape: hist:", hist)
+        if (shouldSwitchToPrev && hist.length > 1) {
+          let prev = hist[1];
+          console.log("Escape: switching to previous note:", prev)
+          this.getEditor().openNote(prev)
+        }
+        this.lastEscTime = performance.now()
+      }
 
       // if (e.key === "F2") {
       //   console.log("F2");

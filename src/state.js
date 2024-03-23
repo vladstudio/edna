@@ -13,6 +13,12 @@ import { ref } from "vue";
  * @property {number} noteSaveCount
  */
 
+let sessionStart = performance.now();
+
+export function getSessionDurationInMs() {
+  return Math.round(performance.now() - sessionStart);
+}
+
 export let isDocDirty = ref(false);
 
 const kStatsKey = "stats.json";

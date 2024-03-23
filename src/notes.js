@@ -14,9 +14,9 @@ import {
   incNoteSaveCount,
   isDocDirty,
 } from "./state";
+import { historyPush, removeFromHistory, renameInHistory } from "./history";
 
 import { KV } from "./dbutil";
-import { renameInHistory } from "./history";
 
 // is set if we store notes on disk, null if in localStorage
 /** @type {FileSystemDirectoryHandle | null} */
@@ -432,6 +432,7 @@ export async function loadNote(name) {
       content = await fsReadTextFile(dh, path);
     }
   }
+  historyPush(name);
   // TODO: this should happen in App.vue:onDocChange(); this was easier to write
   content = autoCreateDayInJournal(name, content);
   return fixUpNoteContent(content);
@@ -469,6 +470,7 @@ export async function deleteNote(name) {
     await dh.removeEntry(fileName);
   }
   incNoteDeleteCount();
+  removeFromHistory(name);
   await updateLatestNoteNames();
 }
 

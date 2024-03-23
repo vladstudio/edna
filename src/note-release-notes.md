@@ -2,6 +2,10 @@
 ∞∞∞markdown
 # Release notes for Edna
 
+## 1.1
+
+* add switching to previous note by hitting `Esc` twice quickly
+
 ## 1.0
 
 The first release since forking Heynote. Changes from Heynote:
