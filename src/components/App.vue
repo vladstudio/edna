@@ -254,7 +254,7 @@ export default {
       // unless the user presses ctrl or meta
       // should come up with a better way e.g. custom spellchecking
       if (this.isSpellChecking) {
-        let forceCustom = e.ctrlKey || e.metaKey
+        let forceCustom = e.ctrlKey || e.metaKey || e.shiftKey
         if (!forceCustom) {
           console.log("showing native because neither ctrl nor meta pressed")
           return
