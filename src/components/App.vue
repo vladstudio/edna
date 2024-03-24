@@ -647,12 +647,13 @@ export default {
 </script>
 
 <template>
-  <div class="grid w-screen max-h-screen h-screen fixed grid-rows-[auto_1fr_auto]" @contextmenu="onContextMenu($event)">
+  <div class="grid w-screen max-h-screen h-screen fixed grid-rows-[1fr_auto] bg-blue-100"
+    @contextmenu="onContextMenu($event)">
     <!--TODO: show note name, a drop-down for switching, search icon, menu -->
-    <div class="text-base hidden">
+    <!-- <div class="text-base hidden">
       <div>{{ noteName }}</div>
       <div>23 notes</div>
-    </div>
+    </div> -->
     <Editor @cursorChange="onCursorChange" :theme="theme" :development="development" :debugSyntaxTree="false"
       :keymap="settings.keymap" :emacsMetaKey="settings.emacsMetaKey"
       :showLineNumberGutter="settings.showLineNumberGutter" :showFoldGutter="settings.showFoldGutter"
