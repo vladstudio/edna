@@ -12,13 +12,43 @@ export default defineConfig({
 
   build: {
     // target: "esnext", // needed for top-level await
-    // rollupOptions: {
-    //   output: {
-    //     manualChunks: {
-    //       langjavascript: ["@codemirror/lang-javascript"],
-    //     },
-    //   },
-    // },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          prettier: [
+            "prettier",
+            "prettier/plugins/estree.mjs",
+            "prettier/plugins/babel.mjs",
+            "prettier/esm/parser-postcss.mjs",
+            "prettier/esm/parser-html.mjs",
+            "prettier/esm/parser-markdown.mjs",
+            "prettier/plugins/typescript.mjs",
+            "prettier/plugins/yaml.mjs",
+          ],
+          langjavascript: ["@codemirror/lang-javascript"],
+          langcpp: ["@codemirror/lang-cpp"],
+          langphp: ["@codemirror/lang-php"],
+          langrust: ["@codemirror/lang-rust"],
+          langlegacy: [
+            "@codemirror/legacy-modes/mode/clojure",
+            "@codemirror/legacy-modes/mode/diff",
+            "@codemirror/legacy-modes/mode/erlang",
+            "@codemirror/legacy-modes/mode/go",
+            "@codemirror/legacy-modes/mode/groovy",
+            "@codemirror/legacy-modes/mode/clike",
+            "@codemirror/legacy-modes/mode/powershell",
+            "@codemirror/legacy-modes/mode/ruby",
+            "@codemirror/legacy-modes/mode/shell",
+            "@codemirror/legacy-modes/mode/swift",
+            "@codemirror/legacy-modes/mode/toml",
+            "@codemirror/legacy-modes/mode/yaml",
+
+            // "@codemirror/legacy-modes/mode/lua",
+            // "@codemirror/legacy-modes/mode/octave",
+          ],
+        },
+      },
+    },
   },
 
   css: {
