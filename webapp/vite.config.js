@@ -49,10 +49,10 @@ export default defineConfig({
             "@codemirror/legacy-modes/mode/swift",
             "@codemirror/legacy-modes/mode/toml",
             "@codemirror/legacy-modes/mode/yaml",
-
             // "@codemirror/legacy-modes/mode/lua",
             // "@codemirror/legacy-modes/mode/octave",
           ],
+          zipjs: ["@zip.js/zip.js"],
         },
       },
     },

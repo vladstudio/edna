@@ -118,13 +118,15 @@ export function startTimer() {
   };
 }
 
-export function getDateYYYYMMDD() {
-  let date = new Date();
-  let year = date.getFullYear();
-  let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
-  let day = ("0" + date.getDate()).slice(-2);
-  let formattedDate = `${year}-${month}-${day}`;
-  return formattedDate;
+/**
+ * @param {Date} date
+ * @returns {string}
+ */
+export function formatDateYYYYMMDD(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 const daysOfWeek = [
@@ -137,8 +139,11 @@ const daysOfWeek = [
   "Saturday",
 ];
 
-export function getDateYYYYMMDDDay() {
-  let date = new Date();
+/**
+ * @param {Date} date
+ * @returns {string}
+ */
+export function formatDateYYYYMMDDDay(date = new Date()) {
   let year = date.getFullYear();
   let month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero based
   let day = ("0" + date.getDate()).slice(-2);

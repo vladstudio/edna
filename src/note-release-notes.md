@@ -2,6 +2,10 @@
 ∞∞∞markdown
 # Release notes for Edna
 
+## 1.2
+
+* add export of notes to a .zip file
+
 ## 1.1
 
 * add switching to previous note by hitting `Esc` twice quickly

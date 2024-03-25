@@ -18,7 +18,8 @@ import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../se
 import { boot } from '../webapp-boot'
 import { getLanguage, langSupportsFormat, langSupportsRun } from '../editor/languages'
 import { useToast, POSITION } from "vue-toastification";
-import { getHistory } from '../history'
+import { getHistory } from '../history';
+import { exportNotesToZip } from '../notes-export'
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
@@ -356,7 +357,7 @@ export default {
           shortcut: `${altChar} + Shift + F`,
         })
       }
-      if (langSupportsRun(this.language)) {
+      if (langSupportsRun(lang)) {
         blockChildren.push({
           label: "Run " + this.language,
           onClick: () => { this.getEditor().runCurrentBlock() },
@@ -373,12 +374,10 @@ export default {
             {
               label: "Move notes from browser to directory",
               onClick: () => { this.storeNotesOnDisk() },
-              shortcut: "",
             },
             {
               label: "Open notes in directory",
               onClick: async () => { await this.pickAnotherDirectory() },
-              shortcut: "",
             }
           ]
         } else {
@@ -386,12 +385,10 @@ export default {
             {
               label: "Open notes in browser (localStorage)",
               onClick: async () => { await this.switchToBrowserStorage() },
-              shortcut: "",
             },
             {
               label: "Open notes in directory",
               onClick: async () => { await this.pickAnotherDirectory() },
-              shortcut: "",
             }
           ]
         }
@@ -399,20 +396,22 @@ export default {
           label: "Show help",
           onClick: () => { this.toggleHelp("storing-notes-on-disk") },
           divided: "up",
-          shortcut: "",
         })
         items.push({
           label: "Notes storage",
           children: children,
         })
       }
+      items.push({
+        label: "Export notes to zip file",
+        onClick: () => { this.exportNotesToZipFile() },
+      })
       let s = this.isSpellChecking ? "Disable spell checking" : "Enable spell checking"
       items.push({
         label: s,
         onClick: () => {
           this.toggleSpellCheck();
         },
-        shortcut: "",
       })
       items.push({
         label: "Help",
@@ -465,9 +464,14 @@ export default {
       this.$refs.menuContainer.focus()
     },
 
+    exportNotesToZipFile() {
+      exportNotesToZip()
+    },
+
     openSettings() {
       this.showingSettings = true
     },
+
     closeSettings() {
       this.showingSettings = false
       this.getEditor().focus()
@@ -678,3 +682,4 @@ export default {
   <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
   <RenameNote @close="onCloseRename" @rename="onRename" :oldName="noteName" v-if="showingRenameNote" />
 </template>
+../export../notes-export.js../notes-export

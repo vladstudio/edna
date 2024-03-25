@@ -81,3 +81,13 @@ export async function lazyLoadYamlPrettierPlugin() {
   }
   return yamlPrettierPlugin;
 }
+
+let lazyZipJs;
+export async function lazyLoadZipJs() {
+  if (!lazyZipJs) {
+    const m = await import("@zip.js/zip.js");
+    console.log("lazyLoadZipJs:", m);
+    lazyZipJs = m;
+  }
+  return lazyZipJs;
+}

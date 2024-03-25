@@ -1,10 +1,10 @@
+import { formatDateYYYYMMDDDay, isDev, throwIf } from "./util";
 import {
   fsReadTextFile,
   fsWriteTextFile,
   openDirPicker,
   readDir,
 } from "./fileutil";
-import { getDateYYYYMMDDDay, isDev, throwIf } from "./util";
 import { getHelp, getInitialContent, getReleaseNotes } from "./initial-content";
 import { getSettings, loadSettings, saveSettings } from "./settings";
 import {
@@ -76,7 +76,7 @@ function isEdnaFile(name) {
   return name.endsWith(kEdnaFileExt) || name.endsWith(kEdnaEncrFileExt);
 }
 
-function notePathFromNameFS(name, encrypted = false) {
+export function notePathFromNameFS(name, encrypted = false) {
   if (encrypted) {
     return name + kEdnaEncrFileExt;
   }
@@ -393,7 +393,7 @@ function autoCreateDayInJournal(name, content) {
     return content;
   }
   // create block for a current day
-  const dt = getDateYYYYMMDDDay();
+  const dt = formatDateYYYYMMDDDay();
   if (content === null) {
     content = blockHdrMarkdown + "# " + dt + "\n";
   } else {
