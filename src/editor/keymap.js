@@ -70,6 +70,7 @@ export function heynoteKeymap(editor) {
     ["Alt-0", () => editor.openNoteSelector()],
     ["Mod-o", () => editor.openNoteSelector()],
     ["Mod-p", () => editor.openNoteSelector()],
+    ["Mod-k", () => editor.openNoteSelector()],
     ["Alt-Shift-f", formatBlockContent],
     ["Alt-Shift-r", runBlockContent],
     ["Mod-Alt-ArrowDown", newCursorBelow],
