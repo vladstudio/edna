@@ -17,11 +17,12 @@ export default defineConfig({
         manualChunks: {
           prettier: [
             "prettier",
+            "prettier/standalone",
             "prettier/plugins/estree.mjs",
             "prettier/plugins/babel.mjs",
-            "prettier/esm/parser-postcss.mjs",
-            "prettier/esm/parser-html.mjs",
-            "prettier/esm/parser-markdown.mjs",
+            "prettier/plugins/postcss.mjs",
+            "prettier/plugins/html.mjs",
+            "prettier/plugins/markdown.mjs",
             "prettier/plugins/typescript.mjs",
             "prettier/plugins/yaml.mjs",
           ],

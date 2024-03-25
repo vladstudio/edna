@@ -1,4 +1,8 @@
-import { getLanguage, getPrettierInfo, hasPrettier } from "../languages.js";
+import {
+  getLanguage,
+  getPrettierInfo,
+  langSupportsFormat,
+} from "../languages.js";
 
 import { EditorSelection } from "@codemirror/state";
 import { findEditorByView } from "../../state.js";
@@ -35,8 +39,7 @@ export async function formatBlockContent(view) {
   const block = getActiveNoteBlock(state);
   console.log("formatBlockContent:", block);
   const language = getLanguage(block.language.name);
-  const canFormat = hasPrettier(language) || language.token == "golang";
-  if (!canFormat) {
+  if (!langSupportsFormat(language)) {
     return false;
   }
 
@@ -45,7 +48,7 @@ export async function formatBlockContent(view) {
   // get block content
   const content = state.sliceDoc(block.content.from, block.content.to);
 
-  //console.log("prettier supports:", getSupportInfo())
+  // console.log("prettier supports:", getSupportInfo());
   let editor = findEditorByView(view);
   if (language.token == "golang") {
     // formatGo() is async so we need to prevent changes to the state of the editor
@@ -95,6 +98,7 @@ export async function formatBlockContent(view) {
     return true;
   }
 
+  console.log("formatting with prettier");
   // There is a performance bug in prettier causing formatWithCursor() to be extremely slow in some cases (https://github.com/prettier/prettier/issues/4801)
   // To work around this we use format() when the cursor is in the beginning or the end of the block.
   // This is not a perfect solution, and once the following PR is merged and released, we should be abe to remove this workaround:
@@ -136,30 +140,28 @@ export async function formatBlockContent(view) {
     );
     return false;
   }
-  console.log("formattedContent.formatted:", formattedContent.formatted);
-
-  dispatch(
-    state.update(
-      {
-        changes: {
-          from: block.content.from,
-          to: block.content.to,
-          insert: formattedContent.formatted,
-        },
-        selection: EditorSelection.cursor(
-          block.content.from +
-            Math.min(
-              formattedContent.cursorOffset,
-              formattedContent.formatted.length
-            )
-        ),
+  // console.log("formattedContent.formatted:", formattedContent.formatted);
+  const tr = view.state.update(
+    {
+      changes: {
+        from: block.content.from,
+        to: block.content.to,
+        insert: formattedContent.formatted,
       },
-      {
-        userEvent: "input",
-        scrollIntoView: true,
-      }
-    )
+      selection: EditorSelection.cursor(
+        block.content.from +
+          Math.min(
+            formattedContent.cursorOffset,
+            formattedContent.formatted.length
+          )
+      ),
+    },
+    {
+      userEvent: "input",
+      scrollIntoView: true,
+    }
   );
+  view.dispatch(tr);
   return true;
 }
 
@@ -218,8 +220,6 @@ export async function runBlockContent(view) {
   let editor = findEditorByView(view);
 
   const content = state.sliceDoc(block.content.from, block.content.to);
-
-  //console.log("prettier supports:", getSupportInfo())
 
   let output = "";
   if (language.token == "golang") {

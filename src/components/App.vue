@@ -16,7 +16,7 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../settings'
 import { boot } from '../webapp-boot'
-import { langSupportsFormat, langSupportsRun } from '../editor/languages'
+import { getLanguage, langSupportsFormat, langSupportsRun } from '../editor/languages'
 import { useToast, POSITION } from "vue-toastification";
 import { getHistory } from '../history'
 
@@ -263,7 +263,7 @@ export default {
         }
       }
 
-      console.log("onContextMenu: e:", e)
+      // console.log("onContextMenu: e:", e)
       let modChar = getModChar();
       let altChar = getAltChar();
       let theme = document.documentElement.getAttribute("theme")
@@ -354,7 +354,8 @@ export default {
         // TODO: set plain text, markdown
       ]
       let blockChildren = items[2].children
-      if (langSupportsFormat(this.language)) {
+      let lang = getLanguage(this.language)
+      if (langSupportsFormat(lang)) {
         blockChildren.push({
           label: "Format " + this.language,
           onClick: () => { this.getEditor().formatCurrentBlock() },
