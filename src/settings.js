@@ -28,7 +28,7 @@ export let kDefaultFontFamily = platform.isMac ? "Menlo" : "Cascadia Code";
 export const isMobileDevice = window.matchMedia("(max-width: 600px)").matches;
 export let kDefaultFontSize = isMobileDevice ? 16 : 12;
 
-const kSettingsPath = "settings.json";
+export const kSettingsPath = "settings.json";
 
 // current settings, kept in sync with persisted settings
 // shouldn't be modified directly but via setSetting)

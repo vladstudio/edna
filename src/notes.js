@@ -587,7 +587,7 @@ export async function pickAnotherDirectory() {
 }
 
 // meta-data about notes
-const kMetadataName = "notes.metadata.edna.json";
+export const kMetadataName = "notes.metadata.edna.json";
 
 /**
  * @typedef {Object} NoteMetadata

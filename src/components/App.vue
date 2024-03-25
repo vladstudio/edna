@@ -402,16 +402,17 @@ export default {
           children: children,
         })
       }
-      items.push({
-        label: "Export notes to zip file",
-        onClick: () => { this.exportNotesToZipFile() },
-      })
       let s = this.isSpellChecking ? "Disable spell checking" : "Enable spell checking"
       items.push({
         label: s,
         onClick: () => {
           this.toggleSpellCheck();
         },
+      })
+      items.push({
+        label: "Export notes to zip file",
+        onClick: () => { this.exportNotesToZipFile() },
+        divided: "up",
       })
       items.push({
         label: "Help",
