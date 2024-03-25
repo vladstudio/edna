@@ -175,12 +175,12 @@ export default {
       // in NoteSelector also seems to propagate here and immediately opens the note.
       if (!this.showingNoteSelector) {
         let altN = isAltNumEvent(e)
-        console.log("onKeyDown: e:", e, "altN:", altN)
+        // console.log("onKeyDown: e:", e, "altN:", altN)
         if (altN) {
           let meta = getNotesMetadata()
           for (let o of meta) {
             if (o.altShortcut == altN && o.name !== this.noteName) {
-              console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
+              // console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
               this.getEditor().openNote(o.name)
               this.getEditor().focus()
               e.preventDefault()
