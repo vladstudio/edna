@@ -11,13 +11,13 @@ import {
   setStorageFS,
 } from "./notes";
 import { getSettings, loadInitialSettings } from "./settings";
+import { isDev, len } from "./util";
 
 import App from "./components/App.vue";
 import AskFSPermissions from "./components/AskFSPermissions.vue";
-import Toast from "vue-toastification";
+import Toast from "vue-toastification/dist/index.mjs";
 import { createApp } from "vue";
 import { hasHandlePermission } from "./fileutil";
-import { isDev } from "./util";
 import { startLoadCurrencies } from "./currency";
 
 /** @typedef {import("./settings").Settings} Settings */
@@ -45,8 +45,8 @@ export async function boot() {
     console.log("storing data in localStorage");
   }
 
-  let noteInfos = await loadNoteNames();
-  createDefaultNotes(noteInfos);
+  let noteNames = await loadNoteNames();
+  let createdNotes = await createDefaultNotes(noteNames);
   await loadNotesMetadata(); // pre-load
 
   let settings = getSettings();
@@ -61,18 +61,27 @@ export async function boot() {
   hashName = decodeURIComponent(hashName);
   let settingsName = settings.currentNoteName;
 
-  noteInfos = await loadNoteNames(); // re-do because could have created default notes
-  // need to do this twice to make sure hashName takes precedence over settings.currentNoteName
-  function isValidNote(name) {
-    return noteInfos.some((ni) => ni.name === name) || isSystemNoteName(name);
+  // re-do because could have created default notes
+  if (len(createdNotes) > 0) {
+    noteNames = await loadNoteNames();
   }
+
+  /**
+   * @param {string} name
+   * @returns {boolean}
+   */
+  function isValidNote(name) {
+    return noteNames.includes(name) || isSystemNoteName(name);
+  }
+
+  // need to do this twice to make sure hashName takes precedence over settings.currentNoteName
   if (isValidNote(settingsName)) {
     toOpenAtStartup = settingsName;
-    // console.log("will open note from settings.currentNoteName:", settingsName);
+    console.log("will open note from settings.currentNoteName:", settingsName);
   }
   if (isValidNote(hashName)) {
     toOpenAtStartup = hashName;
-    // console.log("will open note from url #hash:", hashName);
+    console.log("will open note from url #hash:", hashName);
   }
 
   // will open this note in Editor.vue on mounted()
