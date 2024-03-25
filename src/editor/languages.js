@@ -51,25 +51,6 @@ class Language {
     this._getParser = getParser;
     this.guesslang = guesslang;
   }
-
-  get supportsRun() {
-    if (this.token == "golang") {
-      return true;
-    }
-    return false;
-  }
-
-  // TODO: this needs to be async
-  get parser() {
-    if (!this._parser) {
-      if (!this._getParser) {
-        return null;
-      }
-      console.log("calling getParser for", this.token, "language");
-      this._parser = this._getParser();
-    }
-    return this._parser;
-  }
 }
 
 /** @type {Language[]} */
@@ -283,16 +264,34 @@ export function getLanguage(token) {
   return languageMapping[token];
 }
 
-export function langSupportsRun(token) {
-  return getLanguage(token).supportsRun;
+/**
+ * @param {Language} lang
+ * @returns {boolean}
+ */
+export function langSupportsRun(lang) {
+  if (!lang) {
+    return false;
+  }
+  if (lang.token === "golang") {
+    return true;
+  }
+  return false;
 }
 
 // TODO: should be async to support on-demand loading of parsers
-export function langGetParser(token) {
-  let lang = getLanguage(token);
-  if (lang) {
-    return lang.parser;
+/**
+ * @param {Language} lang
+ * @returns
+ */
+export function langGetParser(lang) {
+  if (lang._parser) {
+    return lang._parser;
   }
+  if (lang._getParser) {
+    lang._parser = lang._getParser();
+    return lang._parser;
+  }
+  return null;
 }
 
 /**
@@ -305,7 +304,7 @@ export function langGetParser(token) {
  * @param {Language} lang
  * @returns {Promise<PrettierInfo>}
  */
-export async function getPrettierInfo(lang) {
+export async function langGetPrettierInfo(lang) {
   console.log("getPrettierInfo:", lang.token);
   let token = lang.token;
   if (token == "json") {

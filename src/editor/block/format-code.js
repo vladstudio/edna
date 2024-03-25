@@ -1,7 +1,8 @@
 import {
   getLanguage,
-  getPrettierInfo,
+  langGetPrettierInfo,
   langSupportsFormat,
+  langSupportsRun,
 } from "../languages.js";
 
 import { EditorSelection } from "@codemirror/state";
@@ -109,7 +110,7 @@ export async function formatBlockContent(view) {
   }
 
   const prettier = await lazyLoadPrettier();
-  const { parser, plugins } = await getPrettierInfo(language);
+  const { parser, plugins } = await langGetPrettierInfo(language);
 
   let formattedContent;
   try {
@@ -212,8 +213,8 @@ export async function runBlockContent(view) {
   }
   const block = getActiveNoteBlock(state);
   console.log("runBlockContent:", block);
-  const language = getLanguage(block.language.name);
-  if (!language.supportsRun) {
+  const lang = getLanguage(block.language.name);
+  if (!langSupportsRun(lang)) {
     return false;
   }
 
@@ -222,7 +223,7 @@ export async function runBlockContent(view) {
   const content = state.sliceDoc(block.content.from, block.content.to);
 
   let output = "";
-  if (language.token == "golang") {
+  if (lang.token == "golang") {
     // formatGo() is async so we need to prevent changes to the state of the editor
     // we make it read-only
     // TODO: maybe show some indication that we're doing an operation
@@ -248,21 +249,19 @@ export async function runBlockContent(view) {
   // const block = getActiveNoteBlock(state)
   const delimText = "\n∞∞∞text-a\n" + "output of running the code:\n" + output;
 
-  view.dispatch(
-    view.state.update(
-      {
-        changes: {
-          from: block.content.to,
-          insert: delimText,
-        },
-        selection: EditorSelection.cursor(block.content.to + delimText.length),
+  let tr = view.state.update(
+    {
+      changes: {
+        from: block.content.to,
+        insert: delimText,
       },
-      {
-        scrollIntoView: true,
-        userEvent: "input",
-      }
-    )
+      selection: EditorSelection.cursor(block.content.to + delimText.length),
+    },
+    {
+      scrollIntoView: true,
+      userEvent: "input",
+    }
   );
-
+  view.dispatch(tr);
   return true;
 }
