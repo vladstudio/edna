@@ -399,7 +399,7 @@ func mkServeFileOptions(fsys fs.FS) *hutil.ServeFileOptions {
 		FS:                   fsys,
 		DirPrefix:            "dist/",
 		LongLivedURLPrefixes: []string{"/assets/"},
-		ServeCompressed:      true,
+		ServeCompressed:      false, // when served via Cloudflare, no need to compress
 	}
 }
 
