@@ -274,7 +274,7 @@ export default {
         {
           label: "Open / create / delete note",
           onClick: () => { this.openNoteSelector() },
-          shortcut: `${modChar} + P`,
+          shortcut: `${modChar} + K`,
         },
         {
           label: "Note",
