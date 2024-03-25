@@ -12,6 +12,12 @@ export default defineConfig({
 
   build: {
     // target: "esnext", // needed for top-level await
+    // this prevents pre-laoding manual chunks
+    modulePreload: {
+      resolveDependencies: (url, deps, context) => {
+        return [];
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
