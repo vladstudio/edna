@@ -353,3 +353,24 @@ export function langGetParser(token) {
     return lang.parser;
   }
 }
+
+/**
+ * @typedef {Object} PrettierInfo
+ * @property {string} parser
+ * @property {any[]} plugins
+ */
+
+/**
+ * @param {Language} lang
+ * @returns {Promise<PrettierInfo>}
+ */
+export async function getPrettierInfo(lang) {
+  return lang.prettier;
+}
+
+/**
+ * @param {Language} lang
+ */
+export function hasPrettier(lang) {
+  return null;
+}

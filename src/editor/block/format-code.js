@@ -1,9 +1,9 @@
-import * as prettier from "prettier/standalone";
+import { getLanguage, getPrettierInfo, hasPrettier } from "../languages.js";
 
 import { EditorSelection } from "@codemirror/state";
 import { findEditorByView } from "../../state.js";
 import { getActiveNoteBlock } from "./block.js";
-import { getLanguage } from "../languages.js";
+import { lazyLoadPrettier } from "../../lazyimport.js";
 
 async function formatGo(s) {
   // setProcessingMessage("Formatting code...");
@@ -35,7 +35,7 @@ export async function formatBlockContent(view) {
   const block = getActiveNoteBlock(state);
   console.log("formatBlockContent:", block);
   const language = getLanguage(block.language.name);
-  const canFormat = language.prettier || language.token == "golang";
+  const canFormat = hasPrettier(language) || language.token == "golang";
   if (!canFormat) {
     return false;
   }
@@ -104,13 +104,16 @@ export async function formatBlockContent(view) {
     useFormat = true;
   }
 
+  const prettier = await lazyLoadPrettier();
+  const { parser, plugins } = await getPrettierInfo(language);
+
   let formattedContent;
   try {
     if (useFormat) {
       formattedContent = {
         formatted: await prettier.format(content, {
-          parser: language.prettier.parser,
-          plugins: language.prettier.plugins,
+          parser: parser,
+          plugins: plugins,
           tabWidth: state.tabSize,
         }),
         cursorOffset: 0,
@@ -120,8 +123,8 @@ export async function formatBlockContent(view) {
     } else {
       formattedContent = await prettier.formatWithCursor(content, {
         cursorOffset: cursorPos - block.content.from,
-        parser: language.prettier.parser,
-        plugins: language.prettier.plugins,
+        parser: parser,
+        plugins: plugins,
         tabWidth: state.tabSize,
       });
     }
