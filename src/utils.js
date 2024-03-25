@@ -163,17 +163,21 @@ export function fileExt(fileName) {
 }
 
 /**
+ * Alt +
  * @param {KeyboardEvent} e
- * @returns {string|null} - returns "1" - "9" or null
+ * @returns {string|null} - returns "0" - "9" or null
  */
 export function isAltNumEvent(e) {
   if (e.metaKey || e.ctrlKey || e.shiftKey || !e.altKey) {
     return null;
   }
-  if (e.key < "0" || e.key > "9") {
+  // on Mac we can't use e.key because it ends up some composed character
+  // we can use e.code whch is "Digit0" => "Digit9"
+  // or e.keyCode (48-57) or e.which (48-57)
+  if (e.keyCode < 48 || e.keyCode > 57) {
     return null;
   }
-  return e.key;
+  return String.fromCharCode(e.keyCode);
 }
 
 /**

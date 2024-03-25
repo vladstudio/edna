@@ -174,6 +174,7 @@ export default {
       // in NoteSelector also seems to propagate here and immediately opens the note.
       if (!this.showingNoteSelector) {
         let altN = isAltNumEvent(e)
+        console.log("onKeyDown: e:", e, "altN:", altN)
         if (altN) {
           let meta = getNotesMetadata()
           for (let o of meta) {

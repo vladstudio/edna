@@ -1,7 +1,7 @@
 <script>
 import { getLatestNoteNames, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
-import { isAltNumEvent, len } from '../utils'
+import { getAltChar, isAltNumEvent, len } from '../utils'
 
 /**
  * @typedef {Object} Item
@@ -9,6 +9,8 @@ import { isAltNumEvent, len } from '../utils'
  * @property {string} [nameLC]
  * @property {number} [altShortcut] - -1 if no shortcut, 0 to 9 for Alt-0 to Alt-9
  */
+
+let altChar = getAltChar();
 
 /**
 * @returns {Item[]}
@@ -218,7 +220,7 @@ export default {
      * @returns {string}
      */
     noteShortcut(note) {
-      return note.altShortcut ? "Alt + " + note.altShortcut : ""
+      return note.altShortcut ? altChar + " + " + note.altShortcut : ""
     },
 
     /**
@@ -232,7 +234,6 @@ export default {
         event.preventDefault()
         let note = this.selectedNote
         if (note) {
-          console.log("altN", altN, "n", note);
           reassignNoteShortcut(note.name, altN).then(() => {
             this.items = rebuildNotesInfo()
           })
