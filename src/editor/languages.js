@@ -43,187 +43,186 @@ import { vueLanguage } from "@codemirror/lang-vue";
 import { xmlLanguage } from "@codemirror/lang-xml";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 
-class Language {
-  constructor({ token, name, guesslang }) {
-    this.token = token;
-    this.name = name;
-    this.guesslang = guesslang;
-  }
-}
+/**
+ * @typedef {Object} Language
+ * @property {string} token
+ * @property {string} name
+ * @property {string} guesslang
+ */
 
 /** @type {Language[]} */
 export const LANGUAGES = [
-  new Language({
+  {
     token: "text",
     name: "Plain Text",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "math",
     name: "Math",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "json",
     name: "JSON",
     guesslang: "json",
-  }),
-  new Language({
+  },
+  {
     token: "python",
     name: "Python",
     guesslang: "py",
-  }),
-  new Language({
+  },
+  {
     token: "html",
     name: "HTML",
     guesslang: "html",
-  }),
-  new Language({
+  },
+  {
     token: "sql",
     name: "SQL",
     guesslang: "sql",
-  }),
-  new Language({
+  },
+  {
     token: "markdown",
     name: "Markdown",
     guesslang: "md",
-  }),
-  new Language({
+  },
+  {
     token: "java",
     name: "Java",
     guesslang: "java",
-  }),
-  new Language({
+  },
+  {
     token: "lezer",
     name: "Lezer",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "php",
     name: "PHP",
     guesslang: "php",
-  }),
-  new Language({
+  },
+  {
     token: "css",
     name: "CSS",
     guesslang: "css",
-  }),
-  new Language({
+  },
+  {
     token: "xml",
     name: "XML",
     guesslang: "xml",
-  }),
-  new Language({
+  },
+  {
     token: "vue",
     name: "Vue",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "cpp",
     name: "C++",
     guesslang: "cpp",
-  }),
-  new Language({
+  },
+  {
     token: "rust",
     name: "Rust",
     guesslang: "rs",
-  }),
-  new Language({
+  },
+  {
     token: "csharp",
     name: "C#",
     guesslang: "cs",
-  }),
-  new Language({
+  },
+  {
     token: "svelte",
     name: "Svelte",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "ruby",
     name: "Ruby",
     guesslang: "rb",
-  }),
-  new Language({
+  },
+  {
     token: "shell",
     name: "Shell",
     guesslang: "sh",
-  }),
-  new Language({
+  },
+  {
     token: "yaml",
     name: "YAML",
     guesslang: "yaml",
-  }),
-  new Language({
+  },
+  {
     token: "toml",
     name: "TOML",
     guesslang: "toml",
-  }),
-  new Language({
+  },
+  {
     token: "golang",
     name: "Go",
     guesslang: "go",
-  }),
-  new Language({
+  },
+  {
     token: "clojure",
     name: "Clojure",
     guesslang: "clj",
-  }),
-  new Language({
+  },
+  {
     token: "erlang",
     name: "Erlang",
     guesslang: "erl",
-  }),
-  new Language({
+  },
+  {
     token: "javascript",
     name: "JavaScript",
     guesslang: "js",
-  }),
-  new Language({
+  },
+  {
     token: "jsx",
     name: "JSX",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "typescript",
     name: "TypeScript",
     guesslang: "ts",
-  }),
-  new Language({
+  },
+  {
     token: "tsx",
     name: "TSX",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "swift",
     name: "Swift",
     guesslang: "swift",
-  }),
-  new Language({
+  },
+  {
     token: "kotlin",
     name: "Kotlin",
     guesslang: "kt",
-  }),
-  new Language({
+  },
+  {
     token: "groovy",
     name: "Groovy",
     guesslang: "groovy",
-  }),
-  new Language({
+  },
+  {
     token: "diff",
     name: "Diff",
     guesslang: null,
-  }),
-  new Language({
+  },
+  {
     token: "powershell",
     name: "PowerShell",
     guesslang: "ps1",
-  }),
+  },
 ];
 
-const languageMapping = Object.fromEntries(LANGUAGES.map((l) => [l.token, l]));
+const tokenToLanguage = Object.fromEntries(LANGUAGES.map((l) => [l.token, l]));
 
 export function getLanguage(token) {
-  return languageMapping[token];
+  return tokenToLanguage[token];
 }
 
 /**
