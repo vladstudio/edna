@@ -10,8 +10,6 @@ import { getAltChar, isAltNumEvent, len } from '../utils'
  * @property {number} [altShortcut] - -1 if no shortcut, 0 to 9 for Alt-0 to Alt-9
  */
 
-let altChar = getAltChar();
-
 /**
 * @returns {Item[]}
 */
@@ -71,6 +69,7 @@ export default {
       items: items,
       selected: 0,
       filter: "",
+      altChar: getAltChar(),
     }
   },
 
@@ -220,7 +219,7 @@ export default {
      * @returns {string}
      */
     noteShortcut(note) {
-      return note.altShortcut ? altChar + " + " + note.altShortcut : ""
+      return note.altShortcut ? this.altChar + " + " + note.altShortcut : ""
     },
 
     /**
@@ -368,7 +367,7 @@ export default {
         <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="font-bold truncate">{{
         cleanNoteName(selectedName) }}</span></span></div>
 
-        <div><span class="kbd">Alt + 0...9</span></div>
+        <div><span class="kbd">{{ altChar }} + 0...9</span></div>
         <div class="col-span-2">assign quick access shortcut</div>
 
         <div><span class="kbd">Esc</span></div>

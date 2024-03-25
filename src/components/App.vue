@@ -80,6 +80,7 @@ export default {
       isSpellChecking: false,
       spellcheckToastID: 0,
       lastEscTime: 0,
+      altChar: getAltChar(),
     }
   },
 
@@ -108,7 +109,7 @@ export default {
       let name = this.noteName
       let m = getMetadataForNote(name)
       if (m && m.altShortcut) {
-        name = `${name} (Alt + ${m.altShortcut})`
+        name = `${name} (${this.altChar} + ${m.altShortcut})`
       }
       return name
     },
