@@ -9,6 +9,7 @@ release
 /blob-report/
 /playwright/.cache/
 yarn.lock
+bun.lockb
+package-lock.json
 secrets.env
 edna-*
-package-lock.json
