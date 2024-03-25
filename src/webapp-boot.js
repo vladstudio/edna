@@ -18,12 +18,11 @@ import Toast from "vue-toastification";
 import { createApp } from "vue";
 import { hasHandlePermission } from "./fileutil";
 import { isDev } from "./util";
-import { loadCurrencies } from "./currency";
+import { startLoadCurrencies } from "./currency";
 
 /** @typedef {import("./settings").Settings} Settings */
 
-loadCurrencies();
-setInterval(loadCurrencies, 1000 * 3600 * 4);
+startLoadCurrencies();
 
 let app;
 
