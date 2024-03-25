@@ -225,6 +225,11 @@ export function getLanguage(token) {
   return tokenToLanguage[token];
 }
 
+export function getLanguageNameFromToken(token) {
+  let lang = getLanguage(token);
+  return lang ? lang.name : "Unknown";
+}
+
 /**
  * @param {Language} lang
  * @returns {boolean}
@@ -243,9 +248,12 @@ export function langSupportsRun(lang) {
 // TODO: StreamLanguage.define() should only happen once
 /**
  * @param {Language} lang
- * @returns
+ * @returns {any}
  */
 export function langGetParser(lang) {
+  if (!lang) {
+    return null;
+  }
   let token = lang.token;
   if (token === "json") {
     return jsonLanguage.parser;
@@ -354,6 +362,10 @@ export function langGetParser(lang) {
  * @returns {Promise<PrettierInfo>}
  */
 export async function langGetPrettierInfo(lang) {
+  if (!lang) {
+    return null;
+  }
+
   console.log("getPrettierInfo:", lang.token);
   let token = lang.token;
   if (token == "json") {
@@ -420,6 +432,9 @@ export async function langGetPrettierInfo(lang) {
  * @returns {boolean}
  */
 export function langSupportsFormat(lang) {
+  if (!lang) {
+    return false;
+  }
   if (lang.token == "golang") {
     return true;
   }

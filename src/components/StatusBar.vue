@@ -1,10 +1,7 @@
 <script>
-import { LANGUAGES } from '../editor/languages.js'
+import { LANGUAGES, getLanguage, getLanguageNameFromToken, langSupportsFormat, langSupportsRun } from '../editor/languages.js'
 import { fmtSize, platform } from '../util'
 import { isDocDirty } from '../state'
-
-const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))
-const LANGUAGE_NAMES = Object.fromEntries(LANGUAGES.map(l => [l.token, l.name]))
 
 export default {
   props: [
@@ -39,17 +36,17 @@ export default {
 
   computed: {
     languageName() {
-      return LANGUAGE_NAMES[this.language] || this.language
+      return getLanguageNameFromToken(this.language);
     },
 
     supportsFormat() {
-      const lang = LANGUAGE_MAP[this.language]
-      return !!lang ? lang.supportsFormat : false
+      const lang = getLanguage(this.language)
+      return langSupportsFormat(lang)
     },
 
     supportsRun() {
-      const lang = LANGUAGE_MAP[this.language]
-      return !!lang ? lang.supportsRun : false
+      const lang = getLanguage(this.language)
+      return langSupportsRun(lang)
     },
 
     cmdKey() {

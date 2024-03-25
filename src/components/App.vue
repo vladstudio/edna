@@ -133,7 +133,7 @@ export default {
       this.isSpellChecking = !this.isSpellChecking
       this.getEditor().setSpellChecking(this.isSpellChecking)
       if (this.isSpellChecking) {
-        this.toast("Press Ctrl + right mouse click for context menu when spell checking is enabled", toastOptions)
+        this.toast("Press Shift + right mouse click for context menu when spell checking is enabled", toastOptions)
       }
     },
 
