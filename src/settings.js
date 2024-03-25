@@ -1,4 +1,4 @@
-import { cloneObjectDeep, objectEqualDeep, platform } from "./utils";
+import { cloneObjectDeep, objectEqualDeep, platform } from "./util";
 
 import { ipcRenderer } from "./ipcrenderer";
 

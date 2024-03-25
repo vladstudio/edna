@@ -1,7 +1,7 @@
 <script>
 import { getLatestNoteNames, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
 import sanitize from "sanitize-filename"
-import { getAltChar, isAltNumEvent, len } from '../utils'
+import { getAltChar, isAltNumEvent, len } from '../util'
 
 /**
  * @typedef {Object} Item

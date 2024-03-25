@@ -2,7 +2,7 @@
 import TabListItem from "./TabListItem.vue"
 import TabContent from "./TabContent.vue"
 import { kDefaultFontFamily, kDefaultFontSize, getVersion, saveSettings, setSetting } from "../../settings"
-import { platform } from "../../utils"
+import { platform } from "../../util"
 
 export default {
   props: {

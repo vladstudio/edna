@@ -1,6 +1,6 @@
 import { Decoration, MatchDecorator, ViewPlugin } from "@codemirror/view";
 
-import { platform } from "../utils";
+import { platform } from "../util";
 
 const modChar = platform.isMac ? "⌘" : "Ctrl";
 const eventKeyModAttribute = platform.isMac ? "metaKey" : "ctrlKey";

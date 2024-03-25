@@ -1,6 +1,6 @@
 <script>
 import { LANGUAGES } from '../editor/languages.js'
-import { fmtSize, platform } from '../utils'
+import { fmtSize, platform } from '../util'
 import { isDocDirty } from '../state'
 
 const LANGUAGE_MAP = Object.fromEntries(LANGUAGES.map(l => [l.token, l]))

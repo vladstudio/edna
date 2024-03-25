@@ -4,7 +4,7 @@ import {
   openDirPicker,
   readDir,
 } from "./fileutil";
-import { getDateYYYYMMDDDay, isDev, throwIf } from "./utils";
+import { getDateYYYYMMDDDay, isDev, throwIf } from "./util";
 import { getHelp, getInitialContent, getReleaseNotes } from "./initial-content";
 import { getSettings, loadSettings, saveSettings } from "./settings";
 import {

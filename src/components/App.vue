@@ -9,9 +9,9 @@ import RenameNote from './RenameNote.vue'
 import ToastUndo from './ToastUndo.vue'
 
 import Settings from './settings/Settings.vue'
-import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes } from '../utils'
+import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes } from '../util'
 import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName, kReleaseNotesSystemNoteName } from '../notes'
-import { getModChar, getAltChar } from "../../src/utils"
+import { getModChar, getAltChar } from "../../src/util"
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { supportsFileSystem, openDirPicker } from '../fileutil'
 import { onOpenSettings, getSettings, onSettingsChange, setSetting } from '../settings'

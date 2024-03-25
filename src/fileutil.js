@@ -1,4 +1,4 @@
-import { throwIf } from "./utils";
+import { throwIf } from "./util";
 
 /**
  * @param {any} fileHandle

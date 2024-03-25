@@ -1,5 +1,5 @@
 <script>
-import { platformName } from "../utils"
+import { platformName } from "../util"
 
 export default {
   props: [

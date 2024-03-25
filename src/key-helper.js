@@ -1,4 +1,4 @@
-import { getAltChar, getModChar, platformName } from "./utils.js";
+import { getAltChar, getModChar, platformName } from "./util.js";
 
 // TODO: duplicated in gen.mjs
 function getKeyHelp(platform = platformName) {

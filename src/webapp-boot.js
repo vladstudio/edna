@@ -17,7 +17,7 @@ import AskFSPermissions from "./components/AskFSPermissions.vue";
 import Toast from "vue-toastification";
 import { createApp } from "vue";
 import { hasHandlePermission } from "./fileutil";
-import { isDev } from "./utils";
+import { isDev } from "./util";
 import { loadCurrencies } from "./currency";
 
 /** @typedef {import("./settings").Settings} Settings */

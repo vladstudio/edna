@@ -1,4 +1,4 @@
-import { startTimer } from "./utils";
+import { startTimer } from "./util";
 
 let currencyData = null;
 

@@ -1,4 +1,4 @@
-import { getAltChar, getModChar, platformName } from "./utils.js";
+import { getAltChar, getModChar, platformName } from "./util.js";
 
 import dailyJournalRaw from "./note-daily-journal.md?raw";
 import helpRaw from "./note-help.md?raw";
