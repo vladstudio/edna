@@ -44,11 +44,9 @@ import { xmlLanguage } from "@codemirror/lang-xml";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 
 class Language {
-  constructor({ token, name, parser, guesslang, getParser = null }) {
+  constructor({ token, name, guesslang }) {
     this.token = token;
     this.name = name;
-    this._parser = parser || null;
-    this._getParser = getParser;
     this.guesslang = guesslang;
   }
 }
@@ -58,202 +56,166 @@ export const LANGUAGES = [
   new Language({
     token: "text",
     name: "Plain Text",
-    parser: null,
     guesslang: null,
   }),
   new Language({
     token: "math",
     name: "Math",
-    parser: null,
     guesslang: null,
   }),
   new Language({
     token: "json",
     name: "JSON",
-    parser: null,
-    getParser: () => {
-      return jsonLanguage.parser;
-    },
     guesslang: "json",
   }),
   new Language({
     token: "python",
     name: "Python",
-    parser: pythonLanguage.parser,
     guesslang: "py",
   }),
   new Language({
     token: "html",
     name: "HTML",
-    parser: htmlLanguage.parser,
     guesslang: "html",
   }),
   new Language({
     token: "sql",
     name: "SQL",
-    parser: StandardSQL.language.parser,
     guesslang: "sql",
   }),
   new Language({
     token: "markdown",
     name: "Markdown",
-    parser: markdownLanguage.parser,
     guesslang: "md",
   }),
   new Language({
     token: "java",
     name: "Java",
-    parser: javaLanguage.parser,
     guesslang: "java",
   }),
   new Language({
     token: "lezer",
     name: "Lezer",
-    parser: lezerLanguage.parser,
     guesslang: null,
   }),
   new Language({
     token: "php",
     name: "PHP",
-    parser: phpLanguage.parser,
     guesslang: "php",
   }),
   new Language({
     token: "css",
     name: "CSS",
-    parser: cssLanguage.parser,
     guesslang: "css",
   }),
   new Language({
     token: "xml",
     name: "XML",
-    parser: xmlLanguage.parser,
     guesslang: "xml",
   }),
   new Language({
     token: "vue",
     name: "Vue",
-    parser: vueLanguage.parser,
     guesslang: null,
   }),
   new Language({
     token: "cpp",
     name: "C++",
-    parser: cppLanguage.parser,
     guesslang: "cpp",
   }),
   new Language({
     token: "rust",
     name: "Rust",
-    parser: rustLanguage.parser,
     guesslang: "rs",
   }),
   new Language({
     token: "csharp",
     name: "C#",
-    parser: csharpLanguage.parser,
     guesslang: "cs",
   }),
   new Language({
     token: "svelte",
     name: "Svelte",
-    parser: svelteLanguage.parser,
     guesslang: null,
   }),
   new Language({
     token: "ruby",
     name: "Ruby",
-    parser: StreamLanguage.define(ruby).parser,
     guesslang: "rb",
   }),
   new Language({
     token: "shell",
     name: "Shell",
-    parser: StreamLanguage.define(shell).parser,
     guesslang: "sh",
   }),
   new Language({
     token: "yaml",
     name: "YAML",
-    parser: StreamLanguage.define(yaml).parser,
     guesslang: "yaml",
   }),
   new Language({
     token: "toml",
     name: "TOML",
-    parser: StreamLanguage.define(toml).parser,
     guesslang: "toml",
   }),
   new Language({
     token: "golang",
     name: "Go",
-    parser: StreamLanguage.define(go).parser,
     guesslang: "go",
   }),
   new Language({
     token: "clojure",
     name: "Clojure",
-    parser: StreamLanguage.define(clojure).parser,
     guesslang: "clj",
   }),
   new Language({
     token: "erlang",
     name: "Erlang",
-    parser: StreamLanguage.define(erlang).parser,
     guesslang: "erl",
   }),
   new Language({
     token: "javascript",
     name: "JavaScript",
-    parser: javascriptLanguage.parser,
     guesslang: "js",
   }),
   new Language({
     token: "jsx",
     name: "JSX",
-    parser: jsxLanguage.parser,
     guesslang: null,
   }),
   new Language({
     token: "typescript",
     name: "TypeScript",
-    parser: typescriptLanguage.parser,
     guesslang: "ts",
   }),
   new Language({
     token: "tsx",
     name: "TSX",
-    parser: tsxLanguage.parser,
     guesslang: null,
   }),
   new Language({
     token: "swift",
     name: "Swift",
-    parser: StreamLanguage.define(swift).parser,
     guesslang: "swift",
   }),
   new Language({
     token: "kotlin",
     name: "Kotlin",
-    parser: StreamLanguage.define(kotlin).parser,
     guesslang: "kt",
   }),
   new Language({
     token: "groovy",
     name: "Groovy",
-    parser: StreamLanguage.define(groovy).parser,
     guesslang: "groovy",
   }),
   new Language({
     token: "diff",
     name: "Diff",
-    parser: StreamLanguage.define(diff).parser,
     guesslang: null,
   }),
   new Language({
     token: "powershell",
     name: "PowerShell",
-    parser: StreamLanguage.define(powerShell).parser,
     guesslang: "ps1",
   }),
 ];
@@ -279,17 +241,105 @@ export function langSupportsRun(lang) {
 }
 
 // TODO: should be async to support on-demand loading of parsers
+// TODO: StreamLanguage.define() should only happen once
 /**
  * @param {Language} lang
  * @returns
  */
 export function langGetParser(lang) {
-  if (lang._parser) {
-    return lang._parser;
+  let token = lang.token;
+  if (token === "json") {
+    return jsonLanguage.parser;
   }
-  if (lang._getParser) {
-    lang._parser = lang._getParser();
-    return lang._parser;
+  if (token === "python") {
+    return pythonLanguage.parser;
+  }
+  if (token === "html") {
+    return htmlLanguage.parser;
+  }
+  if (token === "markdown") {
+    return markdownLanguage.parser;
+  }
+  if (token == "sql") {
+    return StandardSQL.language.parser;
+  }
+  if (token === "java") {
+    return javaLanguage.parser;
+  }
+  if (token === "lezer") {
+    return lezerLanguage.parser;
+  }
+  if (token === "php") {
+    return phpLanguage.parser;
+  }
+  if (token === "css") {
+    return cssLanguage.parser;
+  }
+  if (token === "xml") {
+    return xmlLanguage.parser;
+  }
+  if (token === "vue") {
+    return vueLanguage.parser;
+  }
+  if (token === "cpp") {
+    return cppLanguage.parser;
+  }
+  if (token === "rust") {
+    return rustLanguage.parser;
+  }
+  if (token === "csharp") {
+    return csharpLanguage.parser;
+  }
+  if (token === "svelte") {
+    return svelteLanguage.parser;
+  }
+  if (token === "ruby") {
+    return StreamLanguage.define(ruby).parser;
+  }
+  if (token === "shell") {
+    return StreamLanguage.define(shell).parser;
+  }
+  if (token === "yaml") {
+    return StreamLanguage.define(yaml).parser;
+  }
+  if (token === "toml") {
+    return StreamLanguage.define(toml).parser;
+  }
+  if (token === "golang") {
+    return StreamLanguage.define(go).parser;
+  }
+  if (token === "clojure") {
+    return StreamLanguage.define(clojure).parser;
+  }
+  if (token === "erlang") {
+    return StreamLanguage.define(erlang).parser;
+  }
+  if (token === "javascript") {
+    return javascriptLanguage.parser;
+  }
+  if (token === "jsx") {
+    return jsxLanguage.parser;
+  }
+  if (token === "typescript") {
+    return typescriptLanguage.parser;
+  }
+  if (token === "tsx") {
+    return tsxLanguage.parser;
+  }
+  if (token === "swift") {
+    return StreamLanguage.define(swift).parser;
+  }
+  if (token === "kotlin") {
+    return StreamLanguage.define(kotlin).parser;
+  }
+  if (token === "groovy") {
+    return StreamLanguage.define(groovy).parser;
+  }
+  if (token === "diff") {
+    return StreamLanguage.define(diff).parser;
+  }
+  if (token === "powershell") {
+    return StreamLanguage.define(powerShell).parser;
   }
   return null;
 }
