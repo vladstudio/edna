@@ -4,7 +4,7 @@
 
 Edna is a scratchpad and note taker for developers and power users.
 
-This is a help note. To switch to a different note, press `Mod + P`.
+This is a help note. To switch to a different note, press `Mod + K`.
 
 To see help in HTML, press `?` at the bottom right or visit https://edna.arslexis.io/help
 
@@ -20,19 +20,25 @@ To see help in HTML, press `?` at the bottom right or visit https://edna.arslexi
 
 Edna is optimized for speed of note taking.
 
-`Mod + P` to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut
+Use `Mod + K` to show note selector and:
+- switch between notes
+- create new note
+- delete a note
+- assign a quick access `Alt + N` shortcut
 
 ## Quick access shortcut
 
-You can assign `Alt + 0` to `Alt + 9` for quickly accessing your notes:
-- `Mod + P` for note selector dialog
+You can assign `Alt + 0` to `Alt + 9` for quickly accessing notes:
+- `Mod + K` for note selector dialog
 - select a note
-- press `Alt + 0` to `Alt + 9` to assign it as quick access shortcut for selected noted
+- press `Alt + 0` to `Alt + 9` to assign it as quick access shortcut
 
  Default shortcuts are:
 - `Alt + 1` : scratch note
 - `Alt + 2` : daily journal
 - `Alt + 3` : inbox
+
+Notes with quick access shortcut are shown at the top of note selector (`Ctrl + K`).
 
 ## Blocks and notes
 
@@ -40,19 +46,19 @@ Notes consists of blocks.
 
 Each block has a type: plain text, markdown, JavaScript code, Go code etc.
 
-## Features for developers
-
 Use `Mod + L` to assign a type for current block.
 
-Type can be plain text, markdown or a programming language.
+## Features for developers
 
-We have syntax highlighting for markdown and many programming languages.
+### Syntax highlighting of blocks
+
+Blocks are syntax highlighted based on their type.
 
 ### Formatting of blocks
 
 You can format current block using:
 - `Alt + Shift + F` keyboard shortcut
-- right-click and use context menu `Block / Format`
+- right-click and use context menu `Block / Format as ${type}`
 - press format icon in status bar (bottom right)
 
 We support formatting of Go, JSON, JavaScript, HTML, CSS and Markdown blocks.
@@ -74,7 +80,7 @@ The code block must be a valid Go program.
 
 ## Create a new note
 
-- `Mod + P` to open note selector
+- `Mod + K` to open note selector
 - type name of the note to create
 - `Enter` to create if the name doesn't match any existing note
 - `Mod + Enter` to create if the name partially matches an existing note
@@ -91,7 +97,7 @@ We'll auto-create a unique name `scratch-N`
 
 or:
 
-- `Mod + P`
+- `Mod + K`
 - select a note with arrow key or by typing a partial name match
 - `Mod + Delete` or `Mod + Backspace` to delete selected note
 
@@ -109,7 +115,7 @@ You can efficiently move between blocks, create new blocks and delete them with 
 
 ## Open a different note
 
-- `Mod + P`
+- `Mod + K`
 - click on note to open or
 - enter text to narrow down list of notes
 - `up` / `down` arrow keys to select a note
@@ -119,11 +125,11 @@ You can efficiently move between blocks, create new blocks and delete them with 
 
 You can assign `Alt + 0` to `Alt + 9` keyboard shortcuts for quickly opening up to 10 notes.
 
-- `Mod + P`
+- `Mod + K`
 - select a note
 - press `Alt + N` shortcut to re-assign it to selected note
 
-Notes with assigned shortcut show up at the top of note selector (`Mod + P`).
+Notes with assigned shortcut show up at the top of note selector (`Mod + K`).
 
 ∞∞∞markdown
 # Default notes
@@ -265,9 +271,9 @@ You can find more software by [me](https://blog.kowalczyk.info/) on https://arsl
 # Credits
 
 Edna is a fork of [Heynote](https://github.com/heyman/heynote) with the following differences:
-* web first (no desktop apps)
-* multiple notes
-* ability to access notes on multiple devices by storing them on folder managed by Dropbox / One Drive / Google Drive
+- web first (no desktop apps)
+- multiple notes
+- ability to access notes on multiple devices by storing them on folder managed by Dropbox / One Drive / Google Drive
 
 There's a spirit of Notational Velocity and Simplenote in Edna in how it allows quickly creating notes and switching between them.
 

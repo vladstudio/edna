@@ -37,13 +37,19 @@ Ctrl + F               Search / replace within a note
 <h1 id="why-edna%3F" tabindex="-1"><a class="header-anchor" href="#why-edna%3F" target="_blank">Why <a href="https://edna.arslexis.io" target="_blank">Edna</a>?</a></h1>
 <h2 id="speed" tabindex="-1"><a class="header-anchor" href="#speed" target="_blank">Speed</a></h2>
 <p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is optimized for speed of note taking.</p>
-<p><code>Ctrl + P</code> to switch between notes, create new notes, delete existing notes or assigning a quick access shortcut</p>
-<h2 id="quick-access-shortcut" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut" target="_blank">Quick access shortcut</a></h2>
-<p>You can assign <code>Alt + 0</code> to <code>Alt + 9</code> for quickly accessing your notes:</p>
+<p>Use <code>Ctrl + K</code> to show note selector and:</p>
 <ul>
-<li><code>Ctrl + P</code> for note selector dialog</li>
+<li>switch between notes</li>
+<li>create new note</li>
+<li>delete a note</li>
+<li>assign a quick access <code>Alt + N</code> shortcut</li>
+</ul>
+<h2 id="quick-access-shortcut" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut" target="_blank">Quick access shortcut</a></h2>
+<p>You can assign <code>Alt + 0</code> to <code>Alt + 9</code> for quickly accessing notes:</p>
+<ul>
+<li><code>Ctrl + K</code> for note selector dialog</li>
 <li>select a note</li>
-<li>press <code>Alt + 0</code> to <code>Alt + 9</code> to assign it as quick access shortcut for selected noted</li>
+<li>press <code>Alt + 0</code> to <code>Alt + 9</code> to assign it as quick access shortcut</li>
 </ul>
 <p>Default shortcuts are:</p>
 <ul>
@@ -51,18 +57,19 @@ Ctrl + F               Search / replace within a note
 <li><code>Alt + 2</code> : daily journal</li>
 <li><code>Alt + 3</code> : inbox</li>
 </ul>
+<p>Notes with quick access shortcut are shown at the top of note selector (<code>Ctrl + K</code>).</p>
 <h2 id="blocks-and-notes" tabindex="-1"><a class="header-anchor" href="#blocks-and-notes" target="_blank">Blocks and notes</a></h2>
 <p>Notes consists of blocks.</p>
 <p>Each block has a type: plain text, markdown, JavaScript code, Go code etc.</p>
-<h2 id="features-for-developers" tabindex="-1"><a class="header-anchor" href="#features-for-developers" target="_blank">Features for developers</a></h2>
 <p>Use <code>Ctrl + L</code> to assign a type for current block.</p>
-<p>Type can be plain text, markdown or a programming language.</p>
-<p>We have syntax highlighting for markdown and many programming languages.</p>
+<h2 id="features-for-developers" tabindex="-1"><a class="header-anchor" href="#features-for-developers" target="_blank">Features for developers</a></h2>
+<h3 id="syntax-highlighting-of-blocks" tabindex="-1"><a class="header-anchor" href="#syntax-highlighting-of-blocks" target="_blank">Syntax highlighting of blocks</a></h3>
+<p>Blocks are syntax highlighted based on their type.</p>
 <h3 id="formatting-of-blocks" tabindex="-1"><a class="header-anchor" href="#formatting-of-blocks" target="_blank">Formatting of blocks</a></h3>
 <p>You can format current block using:</p>
 <ul>
 <li><code>Alt + Shift + F</code> keyboard shortcut</li>
-<li>right-click and use context menu <code>Block / Format</code></li>
+<li>right-click and use context menu <code>Block / Format as ${type}</code></li>
 <li>press format icon in status bar (bottom right)</li>
 </ul>
 <p>We support formatting of Go, JSON, JavaScript, HTML, CSS and Markdown blocks.</p>
@@ -78,7 +85,7 @@ Ctrl + F               Search / replace within a note
 <h1 id="multiple-notes" tabindex="-1"><a class="header-anchor" href="#multiple-notes" target="_blank">Multiple notes</a></h1>
 <h2 id="create-a-new-note" tabindex="-1"><a class="header-anchor" href="#create-a-new-note" target="_blank">Create a new note</a></h2>
 <ul>
-<li><code>Ctrl + P</code> to open note selector</li>
+<li><code>Ctrl + K</code> to open note selector</li>
 <li>type name of the note to create</li>
 <li><code>Enter</code> to create if the name doesn't match any existing note</li>
 <li><code>Ctrl + Enter</code> to create if the name partially matches an existing note</li>
@@ -92,7 +99,7 @@ Ctrl + F               Search / replace within a note
 </ul>
 <p>or:</p>
 <ul>
-<li><code>Ctrl + P</code></li>
+<li><code>Ctrl + K</code></li>
 <li>select a note with arrow key or by typing a partial name match</li>
 <li><code>Ctrl + Delete</code> or <code>Ctrl + Backspace</code> to delete selected note</li>
 </ul>
@@ -106,7 +113,7 @@ Ctrl + F               Search / replace within a note
 <p>You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.</p>
 <h2 id="open-a-different-note" tabindex="-1"><a class="header-anchor" href="#open-a-different-note" target="_blank">Open a different note</a></h2>
 <ul>
-<li><code>Ctrl + P</code></li>
+<li><code>Ctrl + K</code></li>
 <li>click on note to open or</li>
 <li>enter text to narrow down list of notes</li>
 <li><code>up</code> / <code>down</code> arrow keys to select a note</li>
@@ -115,11 +122,11 @@ Ctrl + F               Search / replace within a note
 <h2 id="quick-access-shortcut-1" tabindex="-1"><a class="header-anchor" href="#quick-access-shortcut-1" target="_blank">Quick access shortcut</a></h2>
 <p>You can assign <code>Alt + 0</code> to <code>Alt + 9</code> keyboard shortcuts for quickly opening up to 10 notes.</p>
 <ul>
-<li><code>Ctrl + P</code></li>
+<li><code>Ctrl + K</code></li>
 <li>select a note</li>
 <li>press <code>Alt + N</code> shortcut to re-assign it to selected note</li>
 </ul>
-<p>Notes with assigned shortcut show up at the top of note selector (<code>Ctrl + P</code>).</p>
+<p>Notes with assigned shortcut show up at the top of note selector (<code>Ctrl + K</code>).</p>
 <h1 id="default-notes" tabindex="-1"><a class="header-anchor" href="#default-notes" target="_blank">Default notes</a></h1>
 <p>We create 3 default notes for you:</p>
 <ul>
@@ -138,6 +145,12 @@ Ctrl + F               Search / replace within a note
 </ul>
 <p>You can have multiple directories with notes. Use context menu <code>Notes storage / Open notes in directory</code> to open notes in a different directory. If it's a new directory, without existing notes, we'll create default <code>scratch</code> note.</p>
 <p>You can go back to storing in browser with context menu <code>Notes storage / Open notes in browser (localStorage)</code>. Note that unlike going from browser =&gt; directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.</p>
+<h1 id="exporting-notes-to-a-.zip-file" tabindex="-1"><a class="header-anchor" href="#exporting-notes-to-a-.zip-file" target="_blank">Exporting notes to a .zip file</a></h1>
+<p>There's no lock in with <a href="https://edna.arslexis.io" target="_blank">Edna</a>.</p>
+<p>You can export all the notes to a .zip file.</p>
+<p>Use right-click context menu and <code>Export notes to zip file</code> menu.</p>
+<p>We pack all the notes into a .zip file and initiate auto-download as <code>edna.notes.export-YYYY-MM-DD.zip</code> file.</p>
+<p>Look in the browser downloads directory.</p>
 <h1 id="accessing-notes-on-multiple-computers" tabindex="-1"><a class="header-anchor" href="#accessing-notes-on-multiple-computers" target="_blank">Accessing notes on multiple computers</a></h1>
 <p>If you pick a directory managed by Dropbox or One Drive or Google Drive etc. then you'll be able to access notes on multiple computers.</p>
 <p>On the first computer export notes from browser to disk:</p>

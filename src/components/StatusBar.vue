@@ -54,7 +54,7 @@ export default {
     },
 
     formatBlockTitle() {
-      return `Format Block Content (Alt + Shift + F)`
+      return `Format Block (Alt + Shift + F)`
     },
 
     runBlockTitle() {

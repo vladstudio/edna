@@ -352,7 +352,7 @@ export default {
       let lang = getLanguage(this.language)
       if (langSupportsFormat(lang)) {
         blockChildren.push({
-          label: "Format " + this.language,
+          label: "Format as " + this.language,
           onClick: () => { this.getEditor().formatCurrentBlock() },
           shortcut: `${altChar} + Shift + F`,
         })
