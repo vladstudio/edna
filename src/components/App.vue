@@ -132,9 +132,9 @@ export default {
     toggleSpellCheck() {
       this.isSpellChecking = !this.isSpellChecking
       this.getEditor().setSpellChecking(this.isSpellChecking)
-      if (this.isSpellChecking) {
-        this.toast("Press Shift + right mouse click for context menu when spell checking is enabled", toastOptions)
-      }
+      // if (this.isSpellChecking) {
+      //   this.toast("Press Shift + right mouse click for context menu when spell checking is enabled", toastOptions)
+      // }
     },
 
     /**
@@ -251,19 +251,13 @@ export default {
       if (this.showingNoteSelector || this.showingLanguageSelector || this.showingSettings) {
         return
       }
-      // hack: if spellchecking is enabled we show native context menu
-      // to allow fix spellings.
-      // unless the user presses ctrl or meta
-      // should come up with a better way e.g. custom spellchecking
-      if (this.isSpellChecking) {
-        let forceCustom = e.ctrlKey || e.metaKey || e.shiftKey
-        if (!forceCustom) {
-          console.log("showing native because neither ctrl nor meta pressed")
-          return
-        }
+      // show native context menu if ctrl or shift is pressed
+      // especially important for spell checking
+      let forceNativeMenu = e.ctrlKey;
+      if (forceNativeMenu) {
+        return
       }
 
-      // console.log("onContextMenu: e:", e)
       let modChar = getModChar();
       let altChar = getAltChar();
       let theme = document.documentElement.getAttribute("theme")
@@ -442,7 +436,10 @@ export default {
           }
         ]
       })
-
+      items.push({
+        label: "Tip: Ctrl + click for native context menu",
+        disabled: true,
+      })
       ContextMenu.showContextMenu({
         x: e.x,
         y: e.y,

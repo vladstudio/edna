@@ -169,9 +169,7 @@ Please note that that the last written version wins. If you switch really quickl
 
 Right-click to get context menu.
 
-However, when spellchecking is enabled, we need to show native browser context menu for fixing spellchecking mistakes.
-
-Use `Ctrl + right-click`to access
+For native context menu do `Ctrl + right-click`. This is especially useful when spell checking to correct mis-spellings.
 
 ∞∞∞markdown
 # Lists with TODO items
