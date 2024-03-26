@@ -154,19 +154,6 @@ You can have multiple directories with notes. Use context menu `Notes storage / 
 You can go back to storing in browser with context menu `Notes storage / Open notes in browser (localStorage)`. Note that unlike going from browser => directory, it doesn't import the notes from directory. If you moved notes from localStorage to directory, we deleted them from localStorage.
 
 ∞∞∞markdown
-# Exporting notes to a .zip file
-
-There's no lock in with Edna.
-
-You can export all the notes to a .zip file.
-
-Use right-click context menu and `Export notes to zip file` menu.
-
-We pack all the notes into a .zip file and initiate auto-download as `edna.notes.export-YYYY-MM-DD.zip` file.
-
-Look in the browser downloads directory.
-
-∞∞∞markdown
 # Accessing notes on multiple computers
 
 If you pick a directory managed by Dropbox or One Drive or Google Drive etc. then you'll be able to access notes on multiple computers.
@@ -180,6 +167,19 @@ On other computers:
 - pick the same directory
 
 Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.
+
+∞∞∞markdown
+# Exporting notes to a .zip file
+
+There's no lock in with Edna.
+
+You can export all the notes to a .zip file.
+
+Use right-click context menu and `Export notes to zip file` menu.
+
+We pack all the notes into a .zip file and initiate auto-download as `edna.notes.export-YYYY-MM-DD.zip` file.
+
+Look in the browser downloads directory.
 
 ∞∞∞markdown
 # Context menu
