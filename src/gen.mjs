@@ -108,7 +108,7 @@ function getHelp(platform) {
   let help = fixUpShortcuts(helpRaw, platform);
   help = help.replace("{{keyHelp}}", keyHelp);
   // link Edna to website
-  help = help.replace(/Edna/g, "[Edna](https://edna.arslexis.io)");
+  // help = help.replace(/Edna/g, "[Edna](https://edna.arslexis.io)");
 
   return help;
 }
