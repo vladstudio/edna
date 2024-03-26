@@ -67,7 +67,7 @@ function fixUpShortcuts(s, platform) {
 function removeMathBlock(s) {
   // remove text between "∞∞∞math" and "∞∞∞"
   // that part is not appropriate for HTML
-  return s.replace(/(\n)(∞∞∞math[\s\S]*)(∞∞∞markdown)/gm, "$1$3");
+  return s.replace(/(\n)(∞∞∞math[\s\S]*)(∞∞∞markdown\n# Privacy)/gm, "$1$3");
 }
 
 function removeLineStartingWith(lines, s) {
@@ -168,7 +168,9 @@ function addTargetBlank(md) {
 }
 
 function genHTMLFromMarkdown() {
-  let md = markdownIt();
+  let md = markdownIt({
+    linkify: true,
+  });
   md.use(markdownItAnchor, {
     // Here you can pass options to markdown-it-anchor
     // For example, setting the permalink option:

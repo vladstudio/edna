@@ -80,7 +80,7 @@ Ctrl + F               Search / replace within a note
 <li>right-click and use context menu <code>Block / Run</code></li>
 </ul>
 <p>The output of execution will be shown in a new block created below the executed block.</p>
-<p>We have the same capabilities as https://tools.arslexis.io/goplayground/</p>
+<p>We have the same capabilities as <a href="https://tools.arslexis.io/goplayground/" target="_blank">https://tools.arslexis.io/goplayground/</a></p>
 <p>The code block must be a valid Go program.</p>
 <h1 id="multiple-notes" tabindex="-1"><a class="header-anchor" href="#multiple-notes" target="_blank">Multiple notes</a></h1>
 <h2 id="create-a-new-note" tabindex="-1"><a class="header-anchor" href="#create-a-new-note" target="_blank">Create a new note</a></h2>
@@ -94,10 +94,7 @@ Ctrl + F               Search / replace within a note
 <p><code>Alt + N</code> if you just want a temporary scratch note.</p>
 <p>We'll auto-create a unique name <code>scratch-N</code></p>
 <h2 id="delete-a-note" tabindex="-1"><a class="header-anchor" href="#delete-a-note" target="_blank">Delete a note</a></h2>
-<ul>
-<li>right-click for context menu, <code>Note / Delete current note</code></li>
-</ul>
-<p>or:</p>
+<p>Right-click for context menu, <code>Note / Delete current note</code>, or:</p>
 <ul>
 <li><code>Ctrl + K</code></li>
 <li>select a note with arrow key or by typing a partial name match</li>
@@ -105,9 +102,7 @@ Ctrl + F               Search / replace within a note
 </ul>
 <p>A <code>scratch</code> note is always available. If you delete it, we'll re-create an empty note.</p>
 <h2 id="rename-a-note" tabindex="-1"><a class="header-anchor" href="#rename-a-note" target="_blank">Rename a note</a></h2>
-<ul>
-<li>right-click for context menu, <code>Note / Rename current note</code></li>
-</ul>
+<p>Right-click for context menu, <code>Note / Rename current note</code></p>
 <p>Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.</p>
 <p>Each block has its own type for syntax highlighting.</p>
 <p>You can efficiently move between blocks, create new blocks and delete them with keyboard shortcuts.</p>
@@ -165,7 +160,7 @@ Ctrl + F               Search / replace within a note
 </ul>
 <p>Please note that that the last written version wins. If you switch really quickly between computers, before the directory with notes has been replicated, you might over-write previous content.</p>
 <h1 id="context-menu" tabindex="-1"><a class="header-anchor" href="#context-menu" target="_blank">Context menu</a></h1>
-<p>Right-click to get context menu.</p>
+<p>Right-click for context menu.</p>
 <p>For native context menu do <code>Ctrl + right-click</code>. This is especially useful when spell checking to correct mis-spellings.</p>
 <h1 id="lists-with-todo-items" tabindex="-1"><a class="header-anchor" href="#lists-with-todo-items" target="_blank">Lists with TODO items</a></h1>
 <p>In Markdown blocks, lists with [x] and [ ] are rendered as checkboxes:</p>
@@ -173,6 +168,32 @@ Ctrl + F               Search / replace within a note
 <li>[ ] Try out <a href="https://edna.arslexis.io" target="_blank">Edna</a></li>
 <li>[ ] Do laundry</li>
 </ul>
+<h1 id="privacy-and-security" tabindex="-1"><a class="header-anchor" href="#privacy-and-security" target="_blank">Privacy and security</a></h1>
+<p>Your notes are private and secure.</p>
+<p>Your notes are stored in the browser or on your computer.</p>
+<p>The code is <a href="https:/github.com/kjk/edna" target="_blank">open source</a> so you can audit it.</p>
+<h1 id="no-lock-in" tabindex="-1"><a class="header-anchor" href="#no-lock-in" target="_blank">No lock in</a></h1>
+<p>The notes are stored in plain text files on disk (or in localStorage under <code>note:${name}</code> key)</p>
+<p>Blocks are marked with <code>\n∞∞∞${type}\n</code> e.g. <code>\n∞∞∞markdown\n</code> marks the beginning of markdown block.</p>
+<p>You can edit the notes in any text editor (just be mindful of the above block markers).</p>
+<p>You can back them up, store in git repositories, write scripts to process them.</p>
+<p>They are not locked in a proprietary <a href="https://edna.arslexis.io" target="_blank">Edna</a> format.</p>
+<h1 id="how-i-use-edna" tabindex="-1"><a class="header-anchor" href="#how-i-use-edna" target="_blank">How I use <a href="https://edna.arslexis.io" target="_blank">Edna</a></a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is flexible and you should find your own way of using it.</p>
+<p>I use <a href="https://edna.arslexis.io" target="_blank">Edna</a> daily::</p>
+<ul>
+<li>I use <code>scratch</code> note for temporary notes</li>
+<li>I use <code>daily journal</code> for keeping track of what I do</li>
+<li>I have <code>todo</code> note for keeping track of short term todos</li>
+<li>I have a note for each project I work on</li>
+<li>I have a note for each programming language / technology I use. I keep code snippets and notes about it</li>
+<li>I have <code>ideas</code> note for jotting down ideas</li>
+<li>I have <code>investing</code> note for keeping track of various stock investment ideas</li>
+</ul>
+<h1 id="code%2C-feedback%2C-more-software" tabindex="-1"><a class="header-anchor" href="#code%2C-feedback%2C-more-software" target="_blank">Code, feedback, more software</a></h1>
+<p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is open source: <a href="https://github.com/kjk/edna" target="_blank">https://github.com/kjk/edna</a></p>
+<p>To report a bug or request a feature: <a href="https://github.com/kjk/edna/issues" target="_blank">https://github.com/kjk/edna/issues</a></p>
+<p>You can find more software by <a href="https://blog.kowalczyk.info/" target="_blank">me</a> on <a href="https://arslexis.io" target="_blank">https://arslexis.io</a></p>
 <h1 id="credits" tabindex="-1"><a class="header-anchor" href="#credits" target="_blank">Credits</a></h1>
 <p><a href="https://edna.arslexis.io" target="_blank">Edna</a> is a fork of <a href="https://github.com/heyman/heynote" target="_blank">Heynote</a> with the following differences:</p>
 <ul>

@@ -93,9 +93,7 @@ We'll auto-create a unique name `scratch-N`
 
 ## Delete a note
 
-- right-click for context menu, `Note / Delete current note`
-
-or:
+Right-click for context menu, `Note / Delete current note`, or:
 
 - `Mod + K`
 - select a note with arrow key or by typing a partial name match
@@ -105,7 +103,7 @@ A `scratch` note is always available. If you delete it, we'll re-create an empty
 
 ## Rename a note
 
-- right-click for context menu, `Note / Rename current note`
+Right-click for context menu, `Note / Rename current note`
 
 Each note consists of multiple blocks. They are like sub-notes so that you can divide your scratchpad into logical parts.
 
@@ -186,7 +184,7 @@ Please note that that the last written version wins. If you switch really quickl
 ∞∞∞markdown
 # Context menu
 
-Right-click to get context menu.
+Right-click for context menu.
 
 For native context menu do `Ctrl + right-click`. This is especially useful when spell checking to correct mis-spellings.
 
@@ -244,7 +242,7 @@ You can back them up, store in git repositories, write scripts to process them.
 They are not locked in a proprietary Edna format.
 
 ∞∞∞markdown
-# How to use Edna
+# How I use Edna
 
 Edna is flexible and you should find your own way of using it.
 
@@ -263,7 +261,7 @@ I use Edna daily::
 
 Edna is open source: https://github.com/kjk/edna
 
-To report a bug or request a feature: https://github.com/kjk/edna
+To report a bug or request a feature: https://github.com/kjk/edna/issues
 
 You can find more software by [me](https://blog.kowalczyk.info/) on https://arslexis.io
 

@@ -563,7 +563,8 @@ export default {
     },
 
     showHelpInNewTab() {
-      window.open("https://edna.arslexis.io/help", "_blank");
+      // let uri = window.location.origin + "/help"
+      window.open("/help", "_blank");
     },
 
     showHelpAsNote() {
