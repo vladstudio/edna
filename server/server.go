@@ -308,15 +308,13 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 		m := httpsnoop.CaptureMetrics(http.HandlerFunc(mainHandler), w, r)
 		defer func() {
 			if p := recover(); p != nil {
-				logf("handlerWithMetrics: panicked with with %v\n", p)
+				logErrorf("handlerWithMetrics: panicked with with %v\n", p)
 				errStr := fmt.Sprintf("Error: %v", p)
 				http.Error(w, errStr, http.StatusInternalServerError)
 				return
 			}
 			logHTTPReq(r, m.Code, m.Written, m.Duration)
-			if m.Code == 200 {
-				// pirschSendHit(r)
-			}
+			logtasticHit(r, m.Code, m.Written, m.Duration)
 			// axiomLogHTTPReq(ctx(), r, m.Code, int(m.Written), m.Duration)
 		}()
 	})

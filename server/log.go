@@ -4,11 +4,21 @@ import (
 	"fmt"
 )
 
+// only logs locally so no need to worry about recursive logging calls
+func logfLocal(s string, args ...interface{}) {
+	if len(args) > 0 {
+		s = fmt.Sprintf(s, args...)
+	}
+	fmt.Print(s)
+}
+
 func logf(s string, args ...interface{}) {
 	if len(args) > 0 {
 		s = fmt.Sprintf(s, args...)
 	}
 	fmt.Print(s)
+	// note: take care to not use logf() in logtastic.go
+	logtasticLog(s)
 }
 
 func logErrorf(format string, args ...interface{}) {
@@ -17,7 +27,9 @@ func logErrorf(format string, args ...interface{}) {
 		s = fmt.Sprintf(format, args...)
 	}
 	cs := getCallstack(1)
-	logf("Error: %s\n%s\n", s, cs)
+	s = fmt.Sprintf("Error: %s\n%s\n", s, cs)
+	fmt.Print(s)
+	logtasticError(nil, s)
 }
 
 // return true if there was an error
@@ -35,11 +47,13 @@ func logIfErrf(err error, msgAndArgs ...interface{}) bool {
 	}
 
 	cs := getCallstack(1)
+	var s string
 	if msg != "" {
-		logf("Error: %s\n%s\n%s\n", err, msg, cs)
-
+		s = fmt.Sprintf("Error: %s\n%s\n%s\n", err, msg, cs)
 	} else {
-		logf("Error: %s\n%s\n", err, cs)
+		s = fmt.Sprintf("Error: %s\n%s\n", err, cs)
 	}
+	fmt.Print(s)
+	logtasticError(nil, s)
 	return true
 }

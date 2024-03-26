@@ -1,0 +1,180 @@
+package main
+
+import (
+	"encoding/json"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/carlmjohnson/requests"
+)
+
+var (
+	logtasticServer = "127.0.0.1:9327"
+	// logtasticServer = "l.arslexis.io"
+	logtasticApiKey        = ""
+	logtasticThrottleUntil time.Time
+)
+
+func getBestIPAddress(r *http.Request) string {
+	h := r.Header
+	potentials := []string{h.Get("CF-Connecting-IP"), h.Get("X-Real-Ip"), h.Get("X-Forwarded-For"), r.RemoteAddr}
+	for _, v := range potentials {
+		// sometimes they are stored as "ip1, ip2, ip3" with ip1 being the best
+		parts := strings.Split(v, ",")
+		res := strings.TrimSpace(parts[0])
+		if res != "" {
+			return res
+		}
+	}
+	return ""
+}
+
+func logtasticPOST(uriPath string, d []byte, mime string) error {
+	uri := "http://" + logtasticServer + uriPath
+
+	throttleLeft := time.Until(logtasticThrottleUntil)
+	if throttleLeft > 0 {
+		logfLocal(" skipping because throttling for %s\n", throttleLeft)
+		return nil
+	}
+	// logfLocal("logtasticPOST %s\n", uri)
+	var s string
+	r := requests.
+		URL(uri).
+		BodyBytes(d).
+		ContentType(mime)
+	if logtasticApiKey != "" {
+		r = r.Header("X-Logtastic-Api-Key", logtasticApiKey)
+	}
+	err := r.ToString(&s).
+		Fetch(ctx())
+	if err != nil {
+		logfLocal("logtasticPOST %s failed: %v, will throttle for 5 mins\n", uri, err)
+		logtasticThrottleUntil = time.Now().Add(time.Minute * 5)
+		return err
+	}
+	return nil
+}
+
+func logtasticPOSTJsonData(uriPath string, d []byte) error {
+	return logtasticPOST(uriPath, d, "application/json")
+}
+
+func logtasticPOSTJson(uriPath string, v interface{}) error {
+	d, _ := json.Marshal(v)
+	return logtasticPOST(uriPath, d, "application/json")
+}
+
+func logtasticPOSTPlainText(uriPath string, d []byte) error {
+	return logtasticPOST(uriPath, d, "text/plain")
+}
+
+func logtasticPOSTPlainTextString(uriPath string, s string) error {
+	return logtasticPOST(uriPath, []byte(s), "text/plain")
+}
+
+func getHeader(h http.Header, hdrKey string, mapKey string, m map[string]interface{}) {
+	val := h.Get(hdrKey)
+	if len(val) > 0 {
+		m[mapKey] = val
+	}
+}
+
+var referrerQueryParams = []string{
+	"ref",
+	"referer",
+	"referrer",
+	"source",
+	"utm_source",
+}
+
+func getReferrerFromHeaderOrQuery(r *http.Request) string {
+	referrer := r.Header.Get("Referer")
+	if referrer == "" {
+		for _, param := range referrerQueryParams {
+			referrer = r.URL.Query().Get(param)
+			if referrer != "" {
+				return referrer
+			}
+		}
+	}
+	return referrer
+}
+
+func getRequestInfo(r *http.Request, m map[string]interface{}) {
+	m["method"] = r.Method
+	m["url"] = r.URL.String()
+	m["ip"] = getBestIPAddress(r)
+	m["user_agent"] = r.UserAgent()
+	m["referrer"] = getReferrerFromHeaderOrQuery(r)
+	hdr := r.Header
+	getHeader(hdr, "Accept-Language", "accept_accept_language", m)
+	getHeader(hdr, "Sec-CH-UA", "sec_ch_ua", m)
+	getHeader(hdr, "Sec-CH-UA-Mobile", "sec_ch_ua_mobile", m)
+	getHeader(hdr, "Sec-CH-UA-Platform", "sec_ch_ua_platform", m)
+	getHeader(hdr, "Sec-CH-UA-Platform-Version", "sec_ch_ua_platform_version", m)
+	getHeader(hdr, "Sec-CH-Width", "sec_ch_width", m)
+	getHeader(hdr, "Sec-CH-Viewport-Width", "sec_ch_viewport_width", m)
+}
+
+// https://github.com/pirsch-analytics/pirsch-go-sdk/blob/master/pkg/client.go
+/*
+func (client *Client) getPageViewData(r *http.Request, options *PageViewOptions) PageView {
+	return PageView{
+		URL:                    client.selectField(options.URL, r.URL.String()),
+		IP:                     client.selectField(options.IP, r.RemoteAddr),
+		UserAgent:              client.selectField(options.UserAgent, r.Header.Get("User-Agent")),
+		AcceptLanguage:         client.selectField(options.AcceptLanguage, r.Header.Get("Accept-Language")),
+		SecCHUA:                client.selectField(options.SecCHUA, r.Header.Get("Sec-CH-UA")),
+		SecCHUAMobile:          client.selectField(options.SecCHUAMobile, r.Header.Get("Sec-CH-UA-Mobile")),
+		SecCHUAPlatform:        client.selectField(options.SecCHUAPlatform, r.Header.Get("Sec-CH-UA-Platform")),
+		SecCHUAPlatformVersion: client.selectField(options.SecCHUAPlatformVersion, r.Header.Get("Sec-CH-UA-Platform-Version")),
+		SecCHWidth:             client.selectField(options.SecCHWidth, r.Header.Get("Sec-CH-Width")),
+		SecCHViewportWidth:     client.selectField(options.SecCHViewportWidth, r.Header.Get("Sec-CH-Viewport-Width")),
+		Title:                  options.Title,
+		Referrer:               client.selectField(options.Referrer, client.getReferrerFromHeaderOrQuery(r)),
+		ScreenWidth:            options.ScreenWidth,
+		ScreenHeight:           options.ScreenHeight,
+		Tags:                   options.Tags,
+	}
+}
+*/
+
+func logtasticLog(s string) error {
+	return logtasticPOSTPlainTextString("/api/v1/log", s)
+}
+
+func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
+	m := map[string]interface{}{}
+	getRequestInfo(r, m)
+	if dur > 0 {
+		m["dur_ms"] = float64(dur) / float64(time.Millisecond)
+	}
+	if code >= 400 {
+		m["status"] = code
+	}
+	if size > 0 {
+		m["size"] = size
+	}
+	logtasticPOSTJson("/api/v1/hit", m)
+}
+
+func logtasticEvent(r *http.Request, m map[string]interface{}) {
+	if r != nil {
+		getRequestInfo(r, m)
+	}
+	logtasticPOSTJson("/api/v1/event", m)
+}
+
+// TODO: send callstack as a separate field
+// TODO: send server build hash so we can auto-link callstack lines
+// to	source code on github
+func logtasticError(r *http.Request, s string) {
+	m := map[string]interface{}{}
+	if r != nil {
+		getRequestInfo(r, m)
+	}
+	m["msg"] = s
+	logtasticPOSTJson("/api/v1/error", m)
+}
