@@ -146,37 +146,23 @@ var (
 	currencyRatesLastUpdate time.Time
 	muCurrency              sync.Mutex
 	currencyUpdateFreq      = time.Hour * 24
-	// https://www.exchangerate-api.com/docs/fre, free for 1 per day
+	// https://www.exchangerate-api.com/docs/free, rate limited, updates rates once a day
 	currencyRatesURL1 = "https://open.er-api.com/v6/latest/EUR"
-	currencyRatesURL2 = "https://currencies.heynote.com/rates.json"
 	// I also have https://apilayer.com/marketplace/fixer-api account
 	// on https://apilayer.com/account
 	// which is free for 100 reqs per month
 )
 
 func getCurrencyRates() ([]byte, error) {
-	{
-		rsp, err := http.Get(currencyRatesURL1)
-		if err != nil {
-			return nil, err
-		}
-		defer rsp.Body.Close()
-		if rsp.StatusCode == 200 {
-			return io.ReadAll(rsp.Body)
-		}
+	rsp, err := http.Get(currencyRatesURL1)
+	if err != nil {
+		return nil, err
 	}
-
-	{
-		rsp, err := http.Get(currencyRatesURL2)
-		if err != nil {
-			return nil, err
-		}
-		defer rsp.Body.Close()
-		if rsp.StatusCode != 200 {
-			return nil, e("failed to get currency rates")
-		}
+	defer rsp.Body.Close()
+	if rsp.StatusCode == 200 {
 		return io.ReadAll(rsp.Body)
 	}
+	return nil, e("getCurrencyRates: got status code %d", rsp.StatusCode)
 }
 
 // TODO: implement without using https://currencies.heynote.com/rates.json

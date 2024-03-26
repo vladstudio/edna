@@ -63,7 +63,7 @@ func logtasticPOSTJsonData(uriPath string, d []byte) error {
 
 func logtasticPOSTJson(uriPath string, v interface{}) error {
 	d, _ := json.Marshal(v)
-	return logtasticPOST(uriPath, d, "application/json")
+	return logtasticPOSTJsonData(uriPath, d)
 }
 
 func logtasticPOSTPlainText(uriPath string, d []byte) error {
@@ -71,7 +71,7 @@ func logtasticPOSTPlainText(uriPath string, d []byte) error {
 }
 
 func logtasticPOSTPlainTextString(uriPath string, s string) error {
-	return logtasticPOST(uriPath, []byte(s), "text/plain")
+	return logtasticPOSTPlainText(uriPath, []byte(s))
 }
 
 func getHeader(h http.Header, hdrKey string, mapKey string, m map[string]interface{}) {
@@ -117,29 +117,6 @@ func getRequestInfo(r *http.Request, m map[string]interface{}) {
 	getHeader(hdr, "Sec-CH-Width", "sec_ch_width", m)
 	getHeader(hdr, "Sec-CH-Viewport-Width", "sec_ch_viewport_width", m)
 }
-
-// https://github.com/pirsch-analytics/pirsch-go-sdk/blob/master/pkg/client.go
-/*
-func (client *Client) getPageViewData(r *http.Request, options *PageViewOptions) PageView {
-	return PageView{
-		URL:                    client.selectField(options.URL, r.URL.String()),
-		IP:                     client.selectField(options.IP, r.RemoteAddr),
-		UserAgent:              client.selectField(options.UserAgent, r.Header.Get("User-Agent")),
-		AcceptLanguage:         client.selectField(options.AcceptLanguage, r.Header.Get("Accept-Language")),
-		SecCHUA:                client.selectField(options.SecCHUA, r.Header.Get("Sec-CH-UA")),
-		SecCHUAMobile:          client.selectField(options.SecCHUAMobile, r.Header.Get("Sec-CH-UA-Mobile")),
-		SecCHUAPlatform:        client.selectField(options.SecCHUAPlatform, r.Header.Get("Sec-CH-UA-Platform")),
-		SecCHUAPlatformVersion: client.selectField(options.SecCHUAPlatformVersion, r.Header.Get("Sec-CH-UA-Platform-Version")),
-		SecCHWidth:             client.selectField(options.SecCHWidth, r.Header.Get("Sec-CH-Width")),
-		SecCHViewportWidth:     client.selectField(options.SecCHViewportWidth, r.Header.Get("Sec-CH-Viewport-Width")),
-		Title:                  options.Title,
-		Referrer:               client.selectField(options.Referrer, client.getReferrerFromHeaderOrQuery(r)),
-		ScreenWidth:            options.ScreenWidth,
-		ScreenHeight:           options.ScreenHeight,
-		Tags:                   options.Tags,
-	}
-}
-*/
 
 func logtasticLog(s string) error {
 	return logtasticPOSTPlainTextString("/api/v1/log", s)
