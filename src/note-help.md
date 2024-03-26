@@ -257,11 +257,16 @@ I use Edna daily::
 - I have `investing` note for keeping track of various stock investment ideas
 
 ∞∞∞markdown
-# Code, feedback, more software
+# Open source
 
 Edna is open source: https://github.com/kjk/edna
 
 To report a bug or request a feature: https://github.com/kjk/edna/issues
+
+∞∞∞markdown
+# Contact
+
+You can contact me via https://blog.kowalczyk.info/contactme
 
 You can find more software by [me](https://blog.kowalczyk.info/) on https://arslexis.io
 
