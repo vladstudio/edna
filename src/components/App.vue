@@ -211,7 +211,7 @@ export default {
       this.showingRenameNote = false
       let s = this.getEditor().getContent() || ""
       await renameNote(this.noteName, newName, s)
-      this.getEditor().openNote(newName, true)
+      await this.getEditor().openNote(newName, true)
       console.log("onRename: newName:", newName)
     },
 
@@ -225,10 +225,10 @@ export default {
       if (!dh) {
         return;
       }
-      // TODO: this.getEditor().saveCurrentNote() ?
+      // TODO: await this.getEditor().saveCurrentNote() ?
       await switchToStoringNotesOnDisk(dh);
       let settings = getSettings();
-      this.getEditor().openNote(settings.currentNoteName, true)
+      await this.getEditor().openNote(settings.currentNoteName, true)
       this.getEditor().focus()
     },
 
@@ -527,7 +527,7 @@ export default {
         console.log("cannot delete note:", name)
         return
       }
-      this.getEditor().openNote(kScratchNoteName, true)
+      await this.getEditor().openNote(kScratchNoteName, true)
       await deleteNote(name)
       // TODO: add a way to undo deletion of the note
       this.toast(`Deleted note '${name}'`, toastOptions)
@@ -535,7 +535,7 @@ export default {
 
     async createNewScratchNote() {
       let name = await createNewScratchNote()
-      this.onOpenNote(name)
+      await this.onOpenNote(name)
       // TODO: add a way to undo creation of the note
       this.toast(`Created scratch note '${name}'`, toastOptions)
     },
@@ -602,7 +602,7 @@ export default {
     async onCreateNote(name) {
       this.showingNoteSelector = false
       await createNoteWithName(name)
-      this.onOpenNote(name)
+      await this.onOpenNote(name)
       // TODO: add a way to undo creation of the note
       this.toast(`Created note '${name}'`, toastOptions)
     },
@@ -617,7 +617,7 @@ export default {
       // TODO: maybe switch to the most recently opened
       if (name === settings.currentNoteName) {
         console.log("deleted current note, opening scratch note")
-        this.getEditor().openNote(kScratchNoteName)
+        await this.getEditor().openNote(kScratchNoteName)
       }
       // must delete after openNote() because openNote() saves
       // current note

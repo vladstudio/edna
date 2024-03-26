@@ -270,7 +270,7 @@ export default {
         }
         const selected = this.filteredItems[this.selected]
         if (selected) {
-          this.openNote(selected)
+          this.emitOpenNote(selected)
         } else {
           this.$emit("close")
         }
@@ -295,8 +295,8 @@ export default {
     /**
      * @param {Item} item
      */
-    openNote(item) {
-      console.log("openNote", item)
+    emitOpenNote(item) {
+      console.log("emitOpenNote", item)
       this.$emit("openNote", item.name)
     },
 
@@ -337,7 +337,7 @@ export default {
       <ul class="items overflow-y-auto">
         <li v-for="item, idx in filteredItems" :key="item.name"
           class="flex cursor-pointer py-0.5 px-2 rounded-sm leading-5" :class="idx === selected ? 'selected' : ''"
-          @click="openNote(item)" ref="item">
+          @click="emitOpenNote(item)" ref="item">
           <div :class="this.isSysNote(item) ? 'italic' : ''">
             {{ item.name }}
           </div>

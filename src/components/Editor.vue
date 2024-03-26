@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       syntaxTreeDebugContent: null,
+      diskContent: null,
     }
   },
 
@@ -69,16 +70,18 @@ export default {
 
     // load buffer content and create editor
     loadCurrentNote().then((content) => {
-      let diskContent = content
+      this.diskContent = content
       this.editor = new EdnaEditor({
         element: this.$refs.editor,
         content: content,
         theme: this.theme,
         saveFunction: async (content) => {
-          if (content === diskContent) {
+          if (content === this.diskContent) {
+            console.log("saveFunction: content unchanged, skipping save")
             return
           }
-          diskContent = content
+          console.log("saveFunction: saving content")
+          this.diskContent = content
           await saveCurrentNote(content)
         },
         keymap: this.keymap,
@@ -90,9 +93,9 @@ export default {
         fontSize: this.fontSize,
       })
       let settings = getSettings();
-      let name = settings.currentNoteName;
       rememberEditor(this.editor)
       window.document.addEventListener("currenciesLoaded", this.onCurrenciesLoaded)
+      let name = settings.currentNoteName;
       console.log("loadCurrentNote: triggering docChanged event, name:", name)
       this.$emit("docChanged", name)
 
@@ -257,21 +260,21 @@ export default {
     // TODO: we'll have a spurious save if there was a debounce, because
     // the debounce is still in progress, I think
     async saveCurrentNote() {
-      console.log("saveCurrentNote")
       await this.editor.saveFunction(this.editor.getContent())
     },
 
     /**
      * @param {string} name
      */
-    openNote(name, skipSave = false) {
+    async openNote(name, skipSave = false) {
       console.log("openNote:", name)
       if (!skipSave) {
         // TODO: this is async so let's hope it works
-        this.saveCurrentNote()
+        await this.saveCurrentNote()
       }
       loadNote(name).then((content) => {
         console.log("loadNote: name:", name)
+        this.diskContent = content
         let newState = this.editor.createState(content)
         this.editor.view.setState(newState);
         // TODO: move this logic to App.onDocChanged
