@@ -272,26 +272,25 @@ export default {
         // TODO: this is async so let's hope it works
         await this.saveCurrentNote()
       }
-      loadNote(name).then((content) => {
-        console.log("loadNote: name:", name)
-        this.diskContent = content
-        let newState = this.editor.createState(content)
-        this.editor.view.setState(newState);
-        // TODO: move this logic to App.onDocChanged
-        // a bit magic: sometimes we open at the beginning, sometimes at the end
-        // TODO: remember selection in memory so that we can restore during a session
-        let pos = 0;
-        if (name === kScratchNoteName) {
-          pos = content.length
-        }
-        this.editor.view.dispatch({
-          selection: { anchor: pos, head: pos },
-          scrollIntoView: true,
-        })
-        this.focus()
-        console.log("openNote: triggering docChanged event, name:", name)
-        this.$emit("docChanged", name)
+      let content = await loadNote(name);
+      console.log("Editor.openNote: loaded:", name)
+      this.diskContent = content
+      let newState = this.editor.createState(content)
+      this.editor.view.setState(newState);
+      // TODO: move this logic to App.onDocChanged
+      // a bit magic: sometimes we open at the beginning, sometimes at the end
+      // TODO: remember selection in memory so that we can restore during a session
+      let pos = 0;
+      if (name === kScratchNoteName) {
+        pos = content.length
+      }
+      this.editor.view.dispatch({
+        selection: { anchor: pos, head: pos },
+        scrollIntoView: true,
       })
+      this.focus()
+      console.log("openNote: triggering docChanged event, name:", name)
+      this.$emit("docChanged", name)
     }
   },
 }

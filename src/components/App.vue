@@ -7,9 +7,10 @@ import StatusBar from './StatusBar.vue'
 import TopNav from './TopNav.vue'
 import RenameNote from './RenameNote.vue'
 import ToastUndo from './ToastUndo.vue'
+import Loading from './Loading.vue'
 
 import Settings from './settings/Settings.vue'
-import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes } from '../util'
+import { isAltNumEvent, setURLHashNoReload, stringSizeInUtf8Bytes, sleep } from '../util'
 import { createNewScratchNote, createNoteWithName, dbDelDirHandle, deleteNote, getNotesMetadata, getMetadataForNote, getStorageFS, pickAnotherDirectory, switchToStoringNotesOnDisk, kScratchNoteName, canDeleteNote, renameNote, isSystemNoteName, kDailyJournalNoteName, kHelpSystemNoteName, kReleaseNotesSystemNoteName, preLoadAllNotes } from '../notes'
 import { getModChar, getAltChar } from "../../src/util"
 import ContextMenu from '@imengyu/vue3-context-menu'
@@ -49,7 +50,8 @@ export default {
     Settings,
     StatusBar,
     TopNav,
-    ToastUndo
+    ToastUndo,
+    Loading
   },
 
   setup() {
@@ -82,6 +84,7 @@ export default {
       spellcheckToastID: 0,
       lastEscTime: 0,
       altChar: getAltChar(),
+      loadingNoteName: "",
     }
   },
 
@@ -98,7 +101,21 @@ export default {
     })
     this.getEditor().setSpellChecking(this.isSpellChecking)
     window.addEventListener("keydown", this.onKeyDown)
-    console.log("App.vue mounted: showing toast")
+    if (false) {
+      // testing of loadingNoteName dialog
+      setTimeout(
+        () => {
+          this.loadingNoteName = "foo"
+          setTimeout(
+            () => {
+              this.loadingNoteName = ""
+            },
+            2000
+          )
+        },
+        1000
+      )
+    }
   },
 
   beforeUnmount() {
@@ -138,6 +155,17 @@ export default {
       // }
     },
 
+    async openNote(name, skipSave = false) {
+      console.log("App.openNote:", name)
+      let editor = this.getEditor();
+      editor.editor.setReadOnly(true);
+      this.loadingNoteName = name
+      await editor.openNote(name, skipSave);
+      // await sleep(5000);
+      this.loadingNoteName = ""
+      editor.focus()
+    },
+
     /**
      * @param {KeyboardEvent} e
      */
@@ -152,7 +180,7 @@ export default {
         if (shouldSwitchToPrev && hist.length > 1) {
           let prev = hist[1];
           console.log("Escape: switching to previous note:", prev)
-          this.getEditor().openNote(prev)
+          this.openNote(prev)
         }
         this.lastEscTime = performance.now()
       }
@@ -182,8 +210,7 @@ export default {
           for (let o of meta) {
             if (o.altShortcut == altN && o.name !== this.noteName) {
               // console.log("onKeyDown: opening note: ", o.name, " altN:", altN, " e:", e)
-              this.getEditor().openNote(o.name)
-              this.getEditor().focus()
+              this.openNote(o.name)
               e.preventDefault()
               return
             }
@@ -211,7 +238,7 @@ export default {
       this.showingRenameNote = false
       let s = this.getEditor().getContent() || ""
       await renameNote(this.noteName, newName, s)
-      await this.getEditor().openNote(newName, true)
+      await this.openNote(newName, true)
       console.log("onRename: newName:", newName)
     },
 
@@ -228,8 +255,7 @@ export default {
       // TODO: await this.getEditor().saveCurrentNote() ?
       await switchToStoringNotesOnDisk(dh);
       let settings = getSettings();
-      await this.getEditor().openNote(settings.currentNoteName, true)
-      this.getEditor().focus()
+      await this.openNote(settings.currentNoteName, true)
     },
 
     async pickAnotherDirectory() {
@@ -529,7 +555,7 @@ export default {
         console.log("cannot delete note:", name)
         return
       }
-      await this.getEditor().openNote(kScratchNoteName, true)
+      await this.openNote(kScratchNoteName, true)
       await deleteNote(name)
       // TODO: add a way to undo deletion of the note
       this.toast(`Deleted note '${name}'`, toastOptions)
@@ -571,7 +597,7 @@ export default {
      */
     onOpenNote(name) {
       this.showingNoteSelector = false
-      this.getEditor().openNote(name)
+      this.openNote(name)
     },
 
     toggleHelp(anchor = "") {
@@ -591,11 +617,11 @@ export default {
     },
 
     showHelpAsNote() {
-      this.getEditor().openNote(kHelpSystemNoteName);
+      this.openNote(kHelpSystemNoteName);
     },
 
     showReleaseNotes() {
-      this.getEditor().openNote(kReleaseNotesSystemNoteName);
+      this.openNote(kReleaseNotesSystemNoteName);
     },
 
     /**
@@ -619,7 +645,7 @@ export default {
       // TODO: maybe switch to the most recently opened
       if (name === settings.currentNoteName) {
         console.log("deleted current note, opening scratch note")
-        await this.getEditor().openNote(kScratchNoteName)
+        await this.openNote(kScratchNoteName)
       }
       // must delete after openNote() because openNote() saves
       // current note
@@ -649,6 +675,7 @@ export default {
       this.docSize = stringSizeInUtf8Bytes(c);
 
       if (justOpened) {
+        console.log("onDocChanged: just opened")
         let readOnly = isSystemNoteName(name)
         editorComp.editor.setReadOnly(readOnly)
         if (name === kDailyJournalNoteName) {
@@ -705,5 +732,6 @@ export default {
   </div>
   <Help @close="onCloseHelp" :anchor="helpAnchor" v-if="showingHelp" />
   <RenameNote @close="onCloseRename" @rename="onRename" :oldName="noteName" v-if="showingRenameNote" />
+
+  <Loading :loadingNoteName="loadingNoteName" v-if="loadingNoteName" />
 </template>
-../export../notes-export.js../notes-export

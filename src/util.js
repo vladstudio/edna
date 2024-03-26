@@ -195,3 +195,16 @@ export function setURLHashNoReload(hash) {
   // update browser's URL without reloading the page
   window.history.pushState({}, "", url);
 }
+
+let sleepSetTimeout_ctrl;
+
+/**
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+export function sleep(ms) {
+  clearInterval(sleepSetTimeout_ctrl);
+  return new Promise(
+    (resolve) => (sleepSetTimeout_ctrl = setTimeout(resolve, ms))
+  );
+}

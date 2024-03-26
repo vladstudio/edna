@@ -550,6 +550,10 @@ export async function preLoadAllNotes() {
   if (dh === null) {
     return;
   }
+  if (false) {
+    // when testing delays due to replication
+    return;
+  }
   let noteNames = await loadNoteNames();
   for (let name of noteNames) {
     await loadNote(name, true);
