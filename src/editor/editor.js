@@ -151,8 +151,11 @@ export class EdnaEditor {
     }
 
     document.addEventListener("keydown", (e) => {
+      // console.log(e);
       // prevent the default Save dialog from opening and save if dirty
-      if (e.ctrlKey && e.key === "s") {
+      let isCtrlS = e.ctrlKey && e.key === "s";
+      isCtrlS = isCtrlS || (e.metaKey && e.key === "s");
+      if (isCtrlS) {
         e.preventDefault();
         // TODO: track isDocDirty state here?
         if (isDocDirty.value) {
