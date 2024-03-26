@@ -632,8 +632,7 @@ export default {
           editorComp.gotoNextBlock()
         }
 
-        let title = name + " - Edna"
-        window.document.title = title
+        window.document.title = name;
         setURLHashNoReload(name)
         setSetting("currentNoteName", name);
       }
