@@ -365,63 +365,75 @@ export default {
         })
       }
 
-      if (supportsFileSystem) {
-        /** @type {MenuItem[]} */
-        let children = [];
-        let dh = getStorageFS();
-        if (dh == null) {
-          // if currently storing in browser
-          children = [
-            {
-              label: "Current store: browser (localStorage)",
-              disabled: true,
-            },
+      /** @type {MenuItem[]} */
+      let children = [];
+      let dh = getStorageFS();
+      if (dh == null) {
+        // if currently storing in browser
+        children = [
+          {
+            label: "Current store: browser (localStorage)",
+            disabled: true,
+          }
+        ]
+      } else {
+        children = [
+          {
+            label: `Current store: directory '${dh.name}'`,
+            disabled: true,
+          }
+        ]
+      }
+      if (supportsFileSystem()) {
+        if (dh === null) {
+          children.push(
             {
               label: "Move notes from browser to directory",
               onClick: () => { this.storeNotesOnDisk() },
-            },
+            }
+          )
+          children.push(
+            {
+              label: "Switch to notes in a directory",
+              onClick: async () => { await this.pickAnotherDirectory() },
+            }
+          )
+        } else {
+          children.push(
+            {
+              label: "Switch to browser (localStorage)",
+              onClick: async () => { await this.switchToBrowserStorage() },
+            }
+          )
+          children.push(
             {
               label: "Switch to notes in a different directory",
               onClick: async () => { await this.pickAnotherDirectory() },
             }
-          ]
-        } else {
-          children = [
-            {
-              label: `Current store: directory '${dh.name}'`,
-              disabled: true,
-            },
-            {
-              label: "Switch to browser (localStorage)",
-              onClick: async () => { await this.switchToBrowserStorage() },
-            },
-            {
-              label: "Switch to notes in directory",
-              onClick: async () => { await this.pickAnotherDirectory() },
-            }
-          ]
+          )
         }
-        children.push({
-          label: "Show help",
-          onClick: () => { this.toggleHelp("storing-notes-on-disk") },
-          divided: "up",
-        })
-        items.push({
-          label: "Notes storage",
-          children: children,
-        })
       }
+      children.push({
+        label: "Export notes to .zip file",
+        onClick: () => { this.exportNotesToZipFile() },
+        divided: "up",
+      })
+      children.push({
+        label: "Show help",
+        onClick: () => { this.toggleHelp("storing-notes-on-disk") },
+        divided: "up",
+      })
+      items.push({
+        label: "Notes storage",
+        children: children,
+      })
+
       let s = this.isSpellChecking ? "Disable spell checking" : "Enable spell checking"
       items.push({
         label: s,
         onClick: () => {
           this.toggleSpellCheck();
         },
-      })
-      items.push({
-        label: "Export notes to zip file",
-        onClick: () => { this.exportNotesToZipFile() },
-        divided: "up",
       })
       items.push({
         label: "Help",
