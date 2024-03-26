@@ -20,6 +20,9 @@ export function getHelp(platform = platformName) {
   let keyHelp = keyHelpStr(platform);
   let help = fixUpShortcuts(helpRaw, platform);
   help = help.replace("{{keyHelp}}", keyHelp);
+  // links are for generated html under /help
+  // when showing as note, it's just noise
+  help = help.replaceAll("[Edna](https://edna.arslexis.io)", "Edna");
   return help;
 }
 

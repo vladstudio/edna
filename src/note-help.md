@@ -18,7 +18,7 @@ To see help in HTML, press `?` at the bottom right or visit https://edna.arslexi
 
 ## Speed
 
-Edna is optimized for speed of note taking.
+[Edna](https://edna.arslexis.io) is optimized for speed of note taking.
 
 Use `Mod + K` to show note selector and:
 - switch between notes
@@ -259,7 +259,7 @@ I use Edna daily::
 ∞∞∞markdown
 # Open source
 
-Edna is open source: https://github.com/kjk/edna
+[Edna](https://edna.arslexis.io) is open source: https://github.com/kjk/edna
 
 To report a bug or request a feature: https://github.com/kjk/edna/issues
 

@@ -50,28 +50,28 @@ func loadSecrets() {
 	d := getSecrets()
 	m := u.ParseEnvMust(d)
 	logf("loadSecret: got %d secrets\n", len(m))
-	// getEnv := func(key string, val *string, minLen int, must bool) {
-	// 	v := strings.TrimSpace(m[key])
-	// 	if len(v) < minLen {
-	// 		panicIf(must, "missing %s, len: %d, wanted: %d\n", key, len(v), minLen)
-	// 		logf("missing %s, len: %d, wanted: %d\n", key, len(v), minLen)
-	// 		return
-	// 	}
-	// 	*val = v
-	// 	if isDev() {
-	// 		logf("Got %s='%s'\n", key, v)
-	// 	} else {
-	// 		logf("Got %s\n", key)
-	// 	}
-	// }
+	getEnv := func(key string, val *string, minLen int, must bool) {
+		v := strings.TrimSpace(m[key])
+		if len(v) < minLen {
+			panicIf(must, "missing %s, len: %d, wanted: %d\n", key, len(v), minLen)
+			logf("missing %s, len: %d, wanted: %d\n", key, len(v), minLen)
+			return
+		}
+		*val = v
+		if isDev() {
+			logf("Got %s='%s'\n", key, v)
+		} else {
+			logf("Got %s\n", key)
+		}
+	}
 	// those we need always
-	// must := true
+	must := true
 	// // getEnv("COOKIE_AUTH_KEY", &cookieAuthKeyHex, 64, must)
 	// // getEnv("COOKIE_ENCR_KEY", &cookieEncrKeyHex, 64, must)
 
 	// // those are only required in prod
-	// must = flgRunProd
-	// getEnv("AXIOM_TOKEN", &axiomApiToken, 40, must)
+	must = flgRunProd
+	getEnv("LOGTASTIC_API_KEY", &logtasticApiKey, 40, must)
 	// getEnv("PIRSCH_SECRET", &pirschClientSecret, 64, must)
 	// getEnv("GITHUB_SECRET_ONLINETOOL", &secretGitHubOnlineTool, 40, must)
 	// getEnv("GITHUB_SECRET_TOOLS_ARSLEXIS", &secretGitHubToolsArslexis, 40, must)
@@ -84,6 +84,12 @@ func loadSecrets() {
 	// 	axiomApiToken = ""
 	// 	pirschClientSecret = ""
 	// }
+
+	// when running locally, don't
+	if false && flgRunDev || flgRunProdLocal {
+		logfLocal("loadSecrets: clearing logtasticApiKey\n")
+		logtasticApiKey = ""
+	}
 }
 
 var (

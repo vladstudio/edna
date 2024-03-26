@@ -21,7 +21,7 @@ var (
 	domain            = "edna.arslexis.io"
 	httpPort          = 9325
 	frontEndBuildDir  = filepath.Join("server", "dist")
-	wantedProdSecrets = []string{}
+	wantedProdSecrets = []string{"LOGTASTIC_API_KEY"}
 )
 
 // stuff that is derived from the above
