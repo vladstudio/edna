@@ -63,7 +63,7 @@ export default {
         directory with notes</button>
       <button @click="switchToBrowserStorage()" class="mt-4 px-2 py-1 border border-black hover:bg-gray-100">Switch to
         storing notes in browser</button>
-      <a class="mt-4 self-center underline" target="_blank" href="/help#storage">learn more</a>
+      <a class="mt-4 self-center underline" target="_blank" href="/help#storing-notes-on-disk">learn more</a>
     </div>
   </div>
 </template>
