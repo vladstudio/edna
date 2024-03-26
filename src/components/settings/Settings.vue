@@ -63,7 +63,7 @@ export default {
   methods: {
     onKeyDown(event) {
       if (event.key === "Escape") {
-        this.$emit("closeSettings")
+        this.$emit("close")
       }
     },
 
@@ -193,7 +193,7 @@ export default {
       </div>
 
       <div class="bottom-bar text-right py-[10px] px-[20px] bg-gray-100">
-        <button @click="$emit('closeSettings')" class="close border-gray-500 px-4 border">Close</button>
+        <button @click="$emit('close')" class="close border-gray-500 px-4 border">Close</button>
       </div>
     </div>
     <div class="bg-black opacity-50 absolute inset-0 z-10"></div>

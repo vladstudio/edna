@@ -1,6 +1,5 @@
 <script>
-import { getLatestNoteNames, getMetadataForNote, isSystemNoteName, reassignNoteShortcut } from '../notes'
-import sanitize from "sanitize-filename"
+import { getLatestNoteNames, getMetadataForNote, isSystemNoteName, reassignNoteShortcut, sanitizeNoteName } from '../notes'
 import { getAltChar, isAltNumEvent, len } from '../util'
 
 /**
@@ -82,9 +81,8 @@ export default {
 
   computed: {
     sanitizedFilter() {
-      return sanitize(this.filter).trim()
+      return sanitizeNoteName(this.filter)
     },
-
 
     filteredItems() {
       const nameLC = this.sanitizedFilter.toLowerCase()
@@ -184,18 +182,8 @@ export default {
      * @param {string} name
      * @returns {string}
      */
-    sanitizeNoteName(name) {
-      let res = sanitize(name);
-      // console.log(`sanitizeNoteName: ${name} -> ${res}`);
-      return res;
-    },
-
-    /**
-     * @param {string} name
-     * @returns {string}
-     */
-    cleanNoteName(name) {
-      return `"` + this.sanitizeNoteName(name) + `"`
+    quoteNoteName(name) {
+      return `"` + sanitizeNoteName(name) + `"`
     },
 
     /**
@@ -261,11 +249,11 @@ export default {
         let name = this.sanitizedFilter;
         console.log("selected:", this.selected, "name:", name);
         if (this.canCreateWithEnter) {
-          this.createNote(name);
+          this.emitCreateNote(name);
           return;
         }
         if (event.ctrlKey && this.canCreate) {
-          this.createNote(this.sanitizedFilter)
+          this.emitCreateNote(this.sanitizedFilter)
           return;
         }
         const selected = this.filteredItems[this.selected]
@@ -281,7 +269,7 @@ export default {
         }
         const selected = this.selectedNote;
         if (selected) {
-          this.deleteNote(selected.name)
+          this.emitDeleteNote(selected.name)
         } else {
           this.$emit("close")
         }
@@ -300,7 +288,7 @@ export default {
       this.$emit("openNote", item.name)
     },
 
-    createNote(name) {
+    emitCreateNote(name) {
       console.log("create note", name)
       this.$emit("createNote", name)
     },
@@ -308,7 +296,7 @@ export default {
     /**
      * @param {string} name
      */
-    deleteNote(name) {
+    emitDeleteNote(name) {
       console.log("deleteNote", name)
       this.$emit("deleteNote", name)
     },
@@ -350,22 +338,22 @@ export default {
         class="kbd-grid grid grid-cols-[auto_auto_1fr] gap-x-3 gap-y-3 mt-4 text-gray-700 text-size-[11px] leading-[1em]">
         <div v-if="canOpenSelected"><span class="kbd">Enter</span></div>
         <div v-if="canOpenSelected">open note</div>
-        <div v-if="canOpenSelected" class="font-bold truncate">{{ cleanNoteName(selectedName) }}
+        <div v-if="canOpenSelected" class="font-bold truncate">{{ quoteNoteName(selectedName) }}
         </div>
 
         <div v-if="canCreateWithEnter"><span class="kbd">Enter</span></div>
         <div v-if="canCreate && !canCreateWithEnter"><span class="kbd">Ctrl + Enter</span></div>
         <div v-if="canCreate">create note</div>
-        <div v-if="canCreate" class="font-bold truncate">{{ cleanNoteName(filter) }}</div>
+        <div v-if="canCreate" class="font-bold truncate">{{ quoteNoteName(filter) }}</div>
 
         <div v-if="showDelete"><span class="kbd">Ctrl + Delete</span></div>
         <div v-if="showDelete" class="red">delete note</div>
         <div v-if="showDelete && canDeleteSelected" class="font-bold truncate">{{
-        cleanNoteName(selectedName)
+        quoteNoteName(selectedName)
       }}
         </div>
         <div v-if="showDelete && !canDeleteSelected"><span class="red">can't delete <span class="font-bold truncate">{{
-        cleanNoteName(selectedName) }}</span></span></div>
+        quoteNoteName(selectedName) }}</span></span></div>
 
         <div><span class="kbd">{{ altChar }} + 0...9</span></div>
         <div class="col-span-2">assign quick access shortcut</div>

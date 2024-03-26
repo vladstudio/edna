@@ -1,5 +1,5 @@
 <script>
-import { getLatestNoteNames } from '../notes'
+import { getLatestNoteNames, sanitizeNoteName } from '../notes'
 
 export default {
   props: {
@@ -13,18 +13,29 @@ export default {
   },
 
   computed: {
+    sanitizedNewName() {
+      return sanitizeNoteName(this.newName)
+    },
+
     canRename() {
-      let name = this.newName.trim()
+      let name = this.sanitizedNewName
       if (name === "") {
         return false
       }
       let noteNames = getLatestNoteNames()
-      for (let noteName of noteNames) {
-        if (noteName === name) {
-          return false
-        }
+      return !noteNames.includes(name)
+    },
+
+    renameError() {
+      let name = this.sanitizedNewName
+      if (name === "") {
+        return "name cannot be empty"
       }
-      return true
+      let noteNames = getLatestNoteNames()
+      if (noteNames.includes(name)) {
+        return "name already exists"
+      }
+      return ""
     }
   },
 
@@ -52,9 +63,11 @@ export default {
       class="text-base gray-700 absolute z-20 flex flex-col bg-white max-w-full max-h-full rounded shadow-xl w-[640px] center-with-translate overflow-y-auto no-border-outline px-4 py-4">
       <div>Rename <span class="font-bold">{{ oldName }}</span> to:</div>
       <input ref="input" v-model="newName" class="p-2 border mt-2"></input>
-      <div class="flex justify-end mt-4">
+      <div class="text-sm mt-2">New name: <span class="font-bold">"{{ sanitizedNewName }}"</span> <span
+          v-if="!canRename" class="text-red-500 font-bold">{{ renameError }}</span></div>
+      <div class="flex justify-end mt-2">
         <button @click="$emit('close')" class="mr-4 px-4 py-1 border border-black hover:bg-gray-100">Cancel</button>
-        <button @click="$emit('rename', newName)" :disabled="!canRename"
+        <button @click="$emit('rename', sanitizedNewName)" :disabled="!canRename"
           class="px-4 py-1 border border-black hover:bg-gray-100 disabled:text-gray-200 disabled:border-gray-200 disabled:hover:bg-white">Rename</button>
       </div>
     </div>

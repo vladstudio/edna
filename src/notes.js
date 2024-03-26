@@ -17,6 +17,7 @@ import {
 import { historyPush, removeFromHistory, renameInHistory } from "./history";
 
 import { KV } from "./dbutil";
+import sanitize from "sanitize-filename";
 
 // is set if we store notes on disk, null if in localStorage
 /** @type {FileSystemDirectoryHandle | null} */
@@ -728,4 +729,19 @@ export async function reassignNoteShortcut(name, altShortcut) {
   found.altShortcut = altShortcut;
   m = m.filter((o) => o.altShortcut);
   return await saveNotesMetadata(m);
+}
+
+/**
+ * Sometimes we save the note in the filesystem so we must ensure that
+ * the note name is a valid file name.
+ * note: we could do something more sophisticated, like keeping real name
+ * in metadata and picking a unique, sanitized file name, but not sure
+ * if complications are worth it
+ * @param {string} name
+ * @returns {string}
+ */
+export function sanitizeNoteName(name) {
+  let res = sanitize(name).trim();
+  // console.log(`sanitizeNoteName: ${name} -> ${res}`);
+  return res;
 }
