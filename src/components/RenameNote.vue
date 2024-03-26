@@ -44,22 +44,36 @@ export default {
       if (event.key === "Escape") {
         this.$emit("close")
       }
+      if (this.canRename) {
+        if (event.key === "Enter") {
+          this.emitRename();
+        }
+      }
+    },
+
+    focusInput() {
+      console.log("focusInput")
+      let input = /** @type {HTMLElement} */(this.$refs.input);
+      input.focus();
+    },
+
+    emitRename() {
+      this.$emit("rename", this.sanitizedNewName)
     }
   },
 
   mounted() {
     console.log("RenameNote mounted: oldName:", this.oldName)
     this.newName = this.oldName
-    let input = /** @type {HTMLElement} */(this.$refs.input);
-    input.focus();
-  }
-}
+    this.focusInput()
+  },
 
+}
 </script>
 
 <template>
   <div class="fixed inset-0">
-    <div @keydown="onKeydown"
+    <form @keydown="onKeydown" tabindex="-1"
       class="text-base gray-700 absolute z-20 flex flex-col bg-white max-w-full max-h-full rounded shadow-xl w-[640px] center-with-translate overflow-y-auto no-border-outline px-4 py-4">
       <div>Rename <span class="font-bold">{{ oldName }}</span> to:</div>
       <input ref="input" v-model="newName" class="p-2 border mt-2"></input>
@@ -67,10 +81,12 @@ export default {
           v-if="!canRename" class="text-red-500 font-bold">{{ renameError }}</span></div>
       <div class="flex justify-end mt-2">
         <button @click="$emit('close')" class="mr-4 px-4 py-1 border border-black hover:bg-gray-100">Cancel</button>
-        <button @click="$emit('rename', sanitizedNewName)" :disabled="!canRename"
-          class="px-4 py-1 border border-black hover:bg-gray-100 disabled:text-gray-200 disabled:border-gray-200 disabled:hover:bg-white">Rename</button>
+        <button @click="emitRename" :disabled="!canRename"
+          class="px-4 py-1 border border-black hover:bg-gray-100 disabled:text-gray-200 disabled:border-gray-200 disabled:hover:bg-white default:bg-slate-700"
+          default>Rename</button>
       </div>
+    </form>
+    <div class="bg-black opacity-50 absolute inset-0 z-10">
     </div>
-    <div class="bg-black opacity-50 absolute inset-0 z-10"></div>
   </div>
 </template>
