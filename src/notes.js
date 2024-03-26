@@ -1,4 +1,4 @@
-import { formatDateYYYYMMDDDay, isDev, throwIf } from "./util";
+import { formatDateYYYYMMDDDay, isDev, len, throwIf } from "./util";
 import {
   fsReadTextFile,
   fsWriteTextFile,
@@ -418,7 +418,7 @@ function loadNoteLS(name) {
  * @param {string} name
  * @returns {Promise<string>}
  */
-export async function loadNote(name) {
+export async function loadNote(name, preLoad = false) {
   console.log("loadNote:", name);
   let content;
   if (isSystemNoteName(name)) {
@@ -431,6 +431,9 @@ export async function loadNote(name) {
       let path = notePathFromNameFS(name);
       content = await fsReadTextFile(dh, path);
     }
+  }
+  if (preLoad) {
+    return content;
   }
   historyPush(name);
   // TODO: this should happen in App.vue:onDocChange(); this was easier to write
@@ -532,6 +535,25 @@ async function migrateNote(noteName, diskNoteNames, dh) {
     "because of different content with",
     name
   );
+}
+
+// when notes are stored on disk, they can be stored on replicated online
+// storage like OneDrive
+// just in case we pre-load them to force downloading them to local drive
+// to make future access faster
+/**
+ * @returns {Promise<number>}
+ */
+export async function preLoadAllNotes() {
+  let dh = getStorageFS();
+  if (dh === null) {
+    return;
+  }
+  let noteNames = await loadNoteNames();
+  for (let name of noteNames) {
+    await loadNote(name, true);
+  }
+  return len(noteNames);
 }
 
 /**

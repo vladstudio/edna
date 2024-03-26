@@ -1,5 +1,5 @@
 <script>
-import { dbGetDirHandle, dbDelDirHandle, pickAnotherDirectory, setStorageFS } from '../notes';
+import { dbGetDirHandle, dbDelDirHandle, pickAnotherDirectory, setStorageFS, preLoadAllNotes } from '../notes';
 import App from "./App.vue";
 import { requestHandlePermission } from '../fileutil';
 import { boot } from '../webapp-boot';
@@ -32,9 +32,11 @@ export default {
 
     async pickAnotherDirectory() {
       let ok = await pickAnotherDirectory();
-      if (ok) {
-        await boot()
+      if (!ok) {
+        return;
       }
+      await boot()
+      await preLoadAllNotes();
     },
 
     async switchToBrowserStorage() {

@@ -8,6 +8,7 @@ import {
   kScratchNoteName,
   loadNoteNames,
   loadNotesMetadata,
+  preLoadAllNotes,
   setStorageFS,
 } from "./notes";
 import { getSettings, loadInitialSettings } from "./settings";
@@ -102,6 +103,9 @@ export async function boot() {
 
 boot().then(() => {
   console.log("finished booting");
+  preLoadAllNotes().then((n) => {
+    console.log(`finished pre-loading ${n} notes`);
+  });
 });
 
 if (isDev) {
