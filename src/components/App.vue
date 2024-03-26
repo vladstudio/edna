@@ -368,26 +368,35 @@ export default {
       if (supportsFileSystem) {
         /** @type {MenuItem[]} */
         let children = [];
-        if (getStorageFS() == null) {
+        let dh = getStorageFS();
+        if (dh == null) {
           // if currently storing in browser
           children = [
+            {
+              label: "Current store: browser (localStorage)",
+              disabled: true,
+            },
             {
               label: "Move notes from browser to directory",
               onClick: () => { this.storeNotesOnDisk() },
             },
             {
-              label: "Open notes in directory",
+              label: "Switch to notes in a different directory",
               onClick: async () => { await this.pickAnotherDirectory() },
             }
           ]
         } else {
           children = [
             {
-              label: "Open notes in browser (localStorage)",
+              label: `Current store: directory '${dh.name}'`,
+              disabled: true,
+            },
+            {
+              label: "Switch to browser (localStorage)",
               onClick: async () => { await this.switchToBrowserStorage() },
             },
             {
-              label: "Open notes in directory",
+              label: "Switch to notes in directory",
               onClick: async () => { await this.pickAnotherDirectory() },
             }
           ]
