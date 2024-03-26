@@ -161,7 +161,7 @@ export default {
       editor.editor.setReadOnly(true);
       this.loadingNoteName = name
       await editor.openNote(name, skipSave);
-      // await sleep(5000);
+      // await sleep(400);
       this.loadingNoteName = ""
       editor.focus()
     },
