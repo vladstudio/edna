@@ -45,7 +45,7 @@ func logtasticPOST(uriPath string, d []byte, mime string) error {
 		BodyBytes(d).
 		ContentType(mime)
 	if logtasticApiKey != "" {
-		r = r.Header("X-Logtastic-Api-Key", logtasticApiKey)
+		r = r.Header("X-Api-Key", logtasticApiKey)
 	}
 	err := r.ToString(&s).
 		Fetch(ctx())

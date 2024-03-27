@@ -71,7 +71,7 @@ func loadSecrets() {
 
 	// // those are only required in prod
 	must = flgRunProd
-	getEnv("LOGTASTIC_API_KEY", &logtasticApiKey, 40, must)
+	getEnv("LOGTASTIC_API_KEY", &logtasticApiKey, 30, must)
 	// getEnv("PIRSCH_SECRET", &pirschClientSecret, 64, must)
 	// getEnv("GITHUB_SECRET_ONLINETOOL", &secretGitHubOnlineTool, 40, must)
 	// getEnv("GITHUB_SECRET_TOOLS_ARSLEXIS", &secretGitHubToolsArslexis, 40, must)
