@@ -39,7 +39,7 @@ var (
 func logtasticWorker() {
 	logfLocal("logtasticWorker started\n")
 	for op := range logtasticCh {
-		logfLocal("logtasticPOST %s\n", op.uri)
+		// logfLocal("logtasticPOST %s\n", op.uri)
 		uri := op.uri
 		d := op.d
 		mime := op.mime
