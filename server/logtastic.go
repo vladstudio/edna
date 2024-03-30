@@ -28,9 +28,9 @@ var (
 	logtasticApiKey        = ""
 	logtasticLogDir        = ""
 	logtasticLoggerLogs    *filerotate.File
-	logtasticLoggerErrors  *siserlogger.Logger
-	logtasticLoggerEvents  *siserlogger.Logger
-	logtasticLoggerHits    *siserlogger.Logger
+	logtasticLoggerErrors  *siserlogger.File
+	logtasticLoggerEvents  *siserlogger.File
+	logtasticLoggerHits    *siserlogger.File
 	logtasticThrottleUntil time.Time
 	logtasticCh            = make(chan logtasticOp, 1000)
 	startLogWorker         sync.Once
@@ -97,13 +97,29 @@ func writeLog(d []byte) {
 	}
 	if logtasticLoggerLogs == nil {
 		var err error
-		logtasticLoggerLogs, err = filerotate.NewDaily(logtasticLogDir, "logs", nil)
+		logtasticLoggerLogs, err = filerotate.NewDaily(logtasticLogDir, "log", nil)
 		if err != nil {
 			logfLocal("failed to open log file logs: %v\n", err)
 			return
 		}
 	}
 	logtasticLoggerLogs.Write(d)
+}
+
+func writeSiserLog(name string, lPtr **siserlogger.File, d []byte) {
+	if logtasticLogDir == "" {
+		return
+	}
+	if *lPtr == nil {
+		l, err := siserlogger.NewDaily(logtasticLogDir, name, nil)
+		if err != nil {
+			logfLocal("failed to open log file %s: %v\n", name, err)
+			return
+		}
+		*lPtr = l
+	}
+	logfLocal("writeSiserLog %s: %s\n", name, limitString(string(d), 100))
+	(*lPtr).Write(d)
 }
 
 func logtasticLog(s string) {
@@ -162,30 +178,6 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logtasticEvent(r, m)
-}
-
-func maybeOpenLogFile(name string, lPtr **siserlogger.Logger) *siserlogger.Logger {
-	if *lPtr != nil {
-		return *lPtr
-	}
-	if logtasticLogDir == "" {
-		return nil
-	}
-
-	l, err := siserlogger.NewDaily(logtasticLogDir, name, nil)
-	if err != nil {
-		logfLocal("failed to open log file %s: %v\n", name, err)
-		return nil
-	}
-	*lPtr = l
-	return l
-}
-
-func writeSiserLog(name string, lPtr **siserlogger.Logger, d []byte) {
-	l := maybeOpenLogFile(name, lPtr)
-	if l != nil {
-		l.Write(d)
-	}
 }
 
 // TODO: send callstack as a separate field

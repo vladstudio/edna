@@ -21,7 +21,7 @@ import { getLanguage, langSupportsFormat, langSupportsRun } from '../editor/lang
 import { useToast, POSITION } from "vue-toastification";
 import { getHistory } from '../history';
 import { exportNotesToZip } from '../notes-export'
-import { logAppExit, logNoteOp } from '../log'
+import { logAppExit, logAppOpen, logNoteOp } from '../log'
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
@@ -107,6 +107,7 @@ export default {
       logAppExit(); // TODO: not sure if this async func will complete
       await this.getEditor().saveCurrentNote();
     });
+    logAppOpen();
 
     if (false) {
       // testing of loadingNoteName dialog

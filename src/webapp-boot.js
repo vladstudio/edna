@@ -105,8 +105,6 @@ export async function boot() {
 
 boot().then(() => {
   console.log("finished booting");
-  logAppOpen();
-
   preLoadAllNotes().then((n) => {
     console.log(`finished pre-loading ${n} notes`);
   });
