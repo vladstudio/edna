@@ -143,13 +143,6 @@ export class EdnaEditor {
     };
     const state = this.createState(content);
 
-    // make sure saveFunction is called when page is unloaded
-    if (saveFunction) {
-      window.addEventListener("beforeunload", () => {
-        this.saveForce();
-      });
-    }
-
     document.addEventListener("keydown", (e) => {
       // console.log(e);
       // prevent the default Save dialog from opening and save if dirty

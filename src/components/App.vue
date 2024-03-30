@@ -21,6 +21,7 @@ import { getLanguage, langSupportsFormat, langSupportsRun } from '../editor/lang
 import { useToast, POSITION } from "vue-toastification";
 import { getHistory } from '../history';
 import { exportNotesToZip } from '../notes-export'
+import { logAppExit, logNoteCreate, logNoteOp } from '../log'
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
@@ -101,6 +102,12 @@ export default {
     })
     this.getEditor().setSpellChecking(this.isSpellChecking)
     window.addEventListener("keydown", this.onKeyDown)
+
+    window.addEventListener("beforeunload", () => {
+      this.getEditor().saveForce();
+      logAppExit();
+    });
+
     if (false) {
       // testing of loadingNoteName dialog
       setTimeout(
@@ -559,6 +566,7 @@ export default {
       await deleteNote(name)
       // TODO: add a way to undo deletion of the note
       this.toast(`Deleted note '${name}'`, toastOptions)
+      logNoteOp("noteDelete")
     },
 
     async createNewScratchNote() {
@@ -566,6 +574,7 @@ export default {
       await this.onOpenNote(name)
       // TODO: add a way to undo creation of the note
       this.toast(`Created scratch note '${name}'`, toastOptions)
+      logNoteOp("noteCreate")
     },
 
     openLanguageSelector() {
@@ -633,6 +642,7 @@ export default {
       await this.onOpenNote(name)
       // TODO: add a way to undo creation of the note
       this.toast(`Created note '${name}'`, toastOptions)
+      logNoteOp("noteCreate")
     },
 
     /**
@@ -654,6 +664,7 @@ export default {
       console.log("deleted note", name)
       // TODO: add a way to undo deletion of the note
       this.toast(`Deleted note '${name}'`, toastOptions)
+      logNoteOp("noteDelete")
     },
 
     /**
@@ -691,10 +702,12 @@ export default {
 
     formatCurrentBlock() {
       this.getEditor().formatCurrentBlock()
+      logNoteOp("noteFormatBlock")
     },
 
     runCurrentBlock() {
       this.getEditor().runCurrentBlock()
+      logNoteOp("noteRunBlock")
     },
   },
 }

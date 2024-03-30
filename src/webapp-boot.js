@@ -4,6 +4,7 @@ import "./css/application.sass";
 import {
   createDefaultNotes,
   dbGetDirHandle,
+  getLatestNoteNames,
   isSystemNoteName,
   kScratchNoteName,
   loadNoteNames,
@@ -13,6 +14,7 @@ import {
 } from "./notes";
 import { getSettings, loadInitialSettings } from "./settings";
 import { isDev, len } from "./util";
+import { logAppOpen, logEvent } from "./log";
 
 import App from "./components/App.vue";
 import AskFSPermissions from "./components/AskFSPermissions.vue";
@@ -103,6 +105,8 @@ export async function boot() {
 
 boot().then(() => {
   console.log("finished booting");
+  logAppOpen();
+
   preLoadAllNotes().then((n) => {
     console.log(`finished pre-loading ${n} notes`);
   });

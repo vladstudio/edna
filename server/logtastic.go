@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -154,4 +155,33 @@ func logtasticError(r *http.Request, s string) {
 	}
 	m["msg"] = s
 	logtasticPOSTJson("/api/v1/error", m)
+}
+
+func handleEvent(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	d, err := io.ReadAll(r.Body)
+	if logIfErrf(err, "reading body") {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+	// we validate it's json and agument it with ip of the user's browser
+	var m map[string]interface{}
+	err = json.Unmarshal(d, &m)
+	if logIfErrf(err, "unmarshalling body\n%s\n", limitString(string(d), 1000)) {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+	logtasticEvent(r, m)
+}
+
+func limitString(s string, n int) string {
+	if len(s) > n {
+		return s[:n]
+	}
+	return s
 }
