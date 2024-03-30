@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/felixge/httpsnoop v1.0.4
-	github.com/kjk/common v0.0.0-20240301235650-a0b932e9adc0
+	github.com/kjk/common v0.0.0-20240330211221-20dc480eadc8
 	github.com/kjk/minioutil v0.0.0-20230422073834-96945ac7e481
 	github.com/melbahja/goph v1.4.0
 	github.com/pkg/sftp v1.13.6

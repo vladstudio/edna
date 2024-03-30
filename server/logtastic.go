@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/carlmjohnson/requests"
+	"github.com/kjk/common/httputil"
 )
 
 type logtasticOp struct {
@@ -57,7 +58,7 @@ func logtasticWorker() {
 		if logtasticApiKey != "" {
 			r = r.Header("X-Api-Key", logtasticApiKey)
 		}
-		ctx, cancel := context.WithTimeout(ctx(), time.Second*3)
+		ctx, cancel := context.WithTimeout(ctx(), time.Second*10)
 		err := r.Fetch(ctx)
 		cancel()
 		if err != nil {
@@ -110,57 +111,13 @@ func logtasticPOSTPlainTextString(uriPath string, s string) {
 	logtasticPOSTPlainText(uriPath, []byte(s))
 }
 
-func getHeader(h http.Header, hdrKey string, mapKey string, m map[string]interface{}) {
-	val := h.Get(hdrKey)
-	if len(val) > 0 {
-		m[mapKey] = val
-	}
-}
-
-var referrerQueryParams = []string{
-	"ref",
-	"referer",
-	"referrer",
-	"source",
-	"utm_source",
-}
-
-func getReferrerFromHeaderOrQuery(r *http.Request) string {
-	referrer := r.Header.Get("Referer")
-	if referrer == "" {
-		for _, param := range referrerQueryParams {
-			referrer = r.URL.Query().Get(param)
-			if referrer != "" {
-				return referrer
-			}
-		}
-	}
-	return referrer
-}
-
-func getRequestInfo(r *http.Request, m map[string]interface{}) {
-	m["method"] = r.Method
-	m["url"] = r.URL.String()
-	m["ip"] = getBestRemoteAddress(r)
-	m["user_agent"] = r.UserAgent()
-	m["referrer"] = getReferrerFromHeaderOrQuery(r)
-	hdr := r.Header
-	getHeader(hdr, "Accept-Language", "accept_accept_language", m)
-	getHeader(hdr, "Sec-CH-UA", "sec_ch_ua", m)
-	getHeader(hdr, "Sec-CH-UA-Mobile", "sec_ch_ua_mobile", m)
-	getHeader(hdr, "Sec-CH-UA-Platform", "sec_ch_ua_platform", m)
-	getHeader(hdr, "Sec-CH-UA-Platform-Version", "sec_ch_ua_platform_version", m)
-	getHeader(hdr, "Sec-CH-Width", "sec_ch_width", m)
-	getHeader(hdr, "Sec-CH-Viewport-Width", "sec_ch_viewport_width", m)
-}
-
 func logtasticLog(s string) {
 	logtasticPOSTPlainTextString("/api/v1/log", s)
 }
 
 func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
 	m := map[string]interface{}{}
-	getRequestInfo(r, m)
+	httputil.GetRequestInfo(r, m)
 	if dur > 0 {
 		m["dur_ms"] = float64(dur) / float64(time.Millisecond)
 	}
@@ -175,7 +132,7 @@ func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
 
 func logtasticEvent(r *http.Request, m map[string]interface{}) {
 	if r != nil {
-		getRequestInfo(r, m)
+		httputil.GetRequestInfo(r, m)
 	}
 	logtasticPOSTJson("/api/v1/event", m)
 }
@@ -186,7 +143,7 @@ func logtasticEvent(r *http.Request, m map[string]interface{}) {
 func logtasticError(r *http.Request, s string) {
 	m := map[string]interface{}{}
 	if r != nil {
-		getRequestInfo(r, m)
+		httputil.GetRequestInfo(r, m)
 	}
 	m["msg"] = s
 	logtasticPOSTJson("/api/v1/error", m)
