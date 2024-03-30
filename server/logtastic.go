@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/carlmjohnson/requests"
+	"github.com/kjk/common/filerotate"
 	"github.com/kjk/common/httputil"
+	"github.com/kjk/common/siserlogger"
 )
 
 type logtasticOp struct {
@@ -19,30 +20,21 @@ type logtasticOp struct {
 	d    []byte
 }
 
-const logtasticThrottleTimeout = time.Second * 2
+const logtasticThrottleTimeout = time.Second * 15
 
 var (
 	logtasticServer = "127.0.0.1:9327"
 	// logtasticServer = "l.arslexis.io"
 	logtasticApiKey        = ""
+	logtasticLogDir        = ""
+	logtasticLoggerLogs    *filerotate.File
+	logtasticLoggerErrors  *siserlogger.Logger
+	logtasticLoggerEvents  *siserlogger.Logger
+	logtasticLoggerHits    *siserlogger.Logger
 	logtasticThrottleUntil time.Time
 	logtasticCh            = make(chan logtasticOp, 1000)
 	startLogWorker         sync.Once
 )
-
-func getBestRemoteAddress(r *http.Request) string {
-	h := r.Header
-	potentials := []string{h.Get("CF-Connecting-IP"), h.Get("X-Real-Ip"), h.Get("X-Forwarded-For"), r.RemoteAddr}
-	for _, v := range potentials {
-		// sometimes they are stored as "ip1, ip2, ip3" with ip1 being the best
-		parts := strings.Split(v, ",")
-		res := strings.TrimSpace(parts[0])
-		if res != "" {
-			return res
-		}
-	}
-	return ""
-}
 
 func logtasticWorker() {
 	logfLocal("logtasticWorker started\n")
@@ -94,25 +86,30 @@ func logtasticPOST(uriPath string, d []byte, mime string) {
 	}
 }
 
-func logtasticPOSTJsonData(uriPath string, d []byte) {
-	logtasticPOST(uriPath, d, "application/json")
-}
+const (
+	mimeJSON      = "application/json"
+	mimePlainText = "text/plain"
+)
 
-func logtasticPOSTJson(uriPath string, v interface{}) {
-	d, _ := json.Marshal(v)
-	logtasticPOSTJsonData(uriPath, d)
-}
-
-func logtasticPOSTPlainText(uriPath string, d []byte) {
-	logtasticPOST(uriPath, d, "text/plain")
-}
-
-func logtasticPOSTPlainTextString(uriPath string, s string) {
-	logtasticPOSTPlainText(uriPath, []byte(s))
+func writeLog(d []byte) {
+	if logtasticLogDir == "" {
+		return
+	}
+	if logtasticLoggerLogs == nil {
+		var err error
+		logtasticLoggerLogs, err = filerotate.NewDaily(logtasticLogDir, "logs", nil)
+		if err != nil {
+			logfLocal("failed to open log file logs: %v\n", err)
+			return
+		}
+	}
+	logtasticLoggerLogs.Write(d)
 }
 
 func logtasticLog(s string) {
-	logtasticPOSTPlainTextString("/api/v1/log", s)
+	d := []byte(s)
+	writeLog(d)
+	logtasticPOST("/api/v1/log", d, mimePlainText)
 }
 
 func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
@@ -127,26 +124,22 @@ func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
 	if size > 0 {
 		m["size"] = size
 	}
-	logtasticPOSTJson("/api/v1/hit", m)
+
+	d, _ := json.Marshal(m)
+	writeSiserLog("hit", &logtasticLoggerHits, d)
+
+	logtasticPOST("/api/v1/hit", d, mimeJSON)
 }
 
 func logtasticEvent(r *http.Request, m map[string]interface{}) {
 	if r != nil {
 		httputil.GetRequestInfo(r, m)
 	}
-	logtasticPOSTJson("/api/v1/event", m)
-}
 
-// TODO: send callstack as a separate field
-// TODO: send server build hash so we can auto-link callstack lines
-// to	source code on github
-func logtasticError(r *http.Request, s string) {
-	m := map[string]interface{}{}
-	if r != nil {
-		httputil.GetRequestInfo(r, m)
-	}
-	m["msg"] = s
-	logtasticPOSTJson("/api/v1/error", m)
+	d, _ := json.Marshal(m)
+	writeSiserLog("event", &logtasticLoggerEvents, d)
+
+	logtasticPOST("/api/v1/event", d, mimeJSON)
 }
 
 func handleEvent(w http.ResponseWriter, r *http.Request) {
@@ -169,6 +162,45 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logtasticEvent(r, m)
+}
+
+func maybeOpenLogFile(name string, lPtr **siserlogger.Logger) *siserlogger.Logger {
+	if *lPtr != nil {
+		return *lPtr
+	}
+	if logtasticLogDir == "" {
+		return nil
+	}
+
+	l, err := siserlogger.NewDaily(logtasticLogDir, name, nil)
+	if err != nil {
+		logfLocal("failed to open log file %s: %v\n", name, err)
+		return nil
+	}
+	*lPtr = l
+	return l
+}
+
+func writeSiserLog(name string, lPtr **siserlogger.Logger, d []byte) {
+	l := maybeOpenLogFile(name, lPtr)
+	if l != nil {
+		l.Write(d)
+	}
+}
+
+// TODO: send callstack as a separate field
+// TODO: send server build hash so we can auto-link callstack lines
+// to	source code on github
+func logtasticError(r *http.Request, s string) {
+	writeSiserLog("errors", &logtasticLoggerErrors, []byte(s))
+
+	m := map[string]interface{}{}
+	if r != nil {
+		httputil.GetRequestInfo(r, m)
+	}
+	m["msg"] = s
+	d, _ := json.Marshal(m)
+	logtasticPOST("/api/v1/error", d, mimeJSON)
 }
 
 func limitString(s string, n int) string {

@@ -16,6 +16,32 @@ import (
 	"github.com/kjk/common/u"
 )
 
+var (
+	dataDirCached = ""
+)
+
+func getDataDirMust() string {
+	if dataDirCached != "" {
+		return dataDirCached
+	}
+
+	dataDirCached = "data"
+	if flgRunProd && u.IsLinux() {
+		dataDirCached = "/home/data/" + projectName
+	}
+	err := os.MkdirAll(dataDirCached, 0755)
+	must(err)
+
+	return dataDirCached
+}
+
+func getLogsDirMust() string {
+	res := filepath.Join(getDataDirMust(), "logs")
+	err := os.MkdirAll(res, 0755)
+	must(err)
+	return res
+}
+
 // minimum amount of secrets that allows for running in dev mode
 // if some secrets are missing, the related functionality will be disabled
 // (e.g. sending mails or github loging)
@@ -149,6 +175,8 @@ func main() {
 		uriBase := "https://github.com/kjk/edna/commit/"
 		logf("edna.arslexis.io, build: %s (%s)\n", GitCommitHash, uriBase+GitCommitHash)
 	}
+
+	logtasticLogDir = getLogsDirMust()
 
 	if flgUpdateGoDeps {
 		defer measureDuration()()
