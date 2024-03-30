@@ -21,7 +21,7 @@ import { getLanguage, langSupportsFormat, langSupportsRun } from '../editor/lang
 import { useToast, POSITION } from "vue-toastification";
 import { getHistory } from '../history';
 import { exportNotesToZip } from '../notes-export'
-import { logAppExit, logNoteCreate, logNoteOp } from '../log'
+import { logAppExit, logNoteOp } from '../log'
 
 /** @typedef {import("@imengyu/vue3-context-menu/lib/ContextMenuDefine").MenuItem} MenuItem */
 
@@ -103,9 +103,9 @@ export default {
     this.getEditor().setSpellChecking(this.isSpellChecking)
     window.addEventListener("keydown", this.onKeyDown)
 
-    window.addEventListener("beforeunload", () => {
-      this.getEditor().saveForce();
-      logAppExit();
+    window.addEventListener("beforeunload", async () => {
+      logAppExit(); // TODO: not sure if this async func will complete
+      await this.getEditor().saveCurrentNote();
     });
 
     if (false) {

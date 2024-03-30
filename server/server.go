@@ -239,7 +239,7 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 			handleGoPlayground(w, r)
 			return
 		}
-		if strings.HasPrefix(uri, "/event/") {
+		if strings.HasPrefix(uri, "/event") {
 			handleEvent(w, r)
 			return
 		}
