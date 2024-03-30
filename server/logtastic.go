@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -48,13 +49,18 @@ func logtasticPOST(uriPath string, d []byte, mime string) error {
 	if logtasticApiKey != "" {
 		r = r.Header("X-Api-Key", logtasticApiKey)
 	}
-	err := r.ToString(&s).
-		Fetch(ctx())
-	if err != nil {
-		logfLocal("logtasticPOST %s failed: %v, will throttle for 5 mins\n", uri, err)
-		logtasticThrottleUntil = time.Now().Add(time.Minute * 5)
-		return err
-	}
+
+	go func() {
+		ctx, _ := context.WithTimeout(ctx(), time.Second*1)
+		err := r.ToString(&s).
+			Fetch(ctx)
+		if err != nil {
+			logfLocal("logtasticPOST %s failed: %v, will throttle for 5 mins\n", uri, err)
+			logtasticThrottleUntil = time.Now().Add(time.Minute * 5)
+			// return err
+		}
+	}()
+
 	return nil
 }
 

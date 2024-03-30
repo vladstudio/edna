@@ -390,7 +390,7 @@ func mkServeFileOptions(fsys fs.FS) *hutil.ServeFileOptions {
 func runServerDev() {
 	// must be same as vite.config.js
 	proxyURLStr := "http://localhost:3035"
-
+	logf("runServerDev\n")
 	if hasBun() {
 		u.RunLoggedInDir("frontend", "bun", "install")
 		closeDev, err := startLoggedInDir(".", "bun", "run", "dev")
@@ -402,6 +402,8 @@ func runServerDev() {
 		must(err)
 		defer closeDev()
 	}
+
+	logf("after yarn\n")
 
 	proxyURL, err := url.Parse(proxyURLStr)
 	must(err)
