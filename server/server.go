@@ -403,8 +403,6 @@ func runServerDev() {
 		defer closeDev()
 	}
 
-	logf("after yarn\n")
-
 	proxyURL, err := url.Parse(proxyURLStr)
 	must(err)
 	proxyHandler := httputil.NewSingleHostReverseProxy(proxyURL)

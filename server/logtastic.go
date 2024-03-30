@@ -6,16 +6,27 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/carlmjohnson/requests"
 )
+
+type logtasticOp struct {
+	uri  string
+	mime string
+	d    []byte
+}
+
+const logtasticThrottleTimeout = time.Second * 2
 
 var (
 	logtasticServer = "127.0.0.1:9327"
 	// logtasticServer = "l.arslexis.io"
 	logtasticApiKey        = ""
 	logtasticThrottleUntil time.Time
+	logtasticCh            = make(chan logtasticOp, 1000)
+	startLogWorker         sync.Once
 )
 
 func getBestRemoteAddress(r *http.Request) string {
@@ -32,53 +43,71 @@ func getBestRemoteAddress(r *http.Request) string {
 	return ""
 }
 
-func logtasticPOST(uriPath string, d []byte, mime string) error {
-	uri := "http://" + logtasticServer + uriPath
+func logtasticWorker() {
+	logfLocal("logtasticWorker started\n")
+	for op := range logtasticCh {
+		logfLocal("logtasticPOST %s\n", op.uri)
+		uri := op.uri
+		d := op.d
+		mime := op.mime
+		r := requests.
+			URL(uri).
+			BodyBytes(d).
+			ContentType(mime)
+		if logtasticApiKey != "" {
+			r = r.Header("X-Api-Key", logtasticApiKey)
+		}
+		ctx, cancel := context.WithTimeout(ctx(), time.Second*3)
+		err := r.Fetch(ctx)
+		cancel()
+		if err != nil {
+			logfLocal("logtasticPOST %s failed: %v, will throttle for %s\n", uri, err, logtasticThrottleTimeout)
+			logtasticThrottleUntil = time.Now().Add(logtasticThrottleTimeout)
+		}
+	}
+}
+
+func logtasticPOST(uriPath string, d []byte, mime string) {
+	startLogWorker.Do(func() {
+		go logtasticWorker()
+	})
 
 	throttleLeft := time.Until(logtasticThrottleUntil)
 	if throttleLeft > 0 {
 		logfLocal(" skipping because throttling for %s\n", throttleLeft)
-		return nil
+		return
 	}
+
+	uri := "http://" + logtasticServer + uriPath
 	// logfLocal("logtasticPOST %s\n", uri)
-	var s string
-	r := requests.
-		URL(uri).
-		BodyBytes(d).
-		ContentType(mime)
-	if logtasticApiKey != "" {
-		r = r.Header("X-Api-Key", logtasticApiKey)
+	op := logtasticOp{
+		uri:  uri,
+		mime: mime,
+		d:    d,
 	}
 
-	go func() {
-		ctx, _ := context.WithTimeout(ctx(), time.Second*1)
-		err := r.ToString(&s).
-			Fetch(ctx)
-		if err != nil {
-			logfLocal("logtasticPOST %s failed: %v, will throttle for 5 mins\n", uri, err)
-			logtasticThrottleUntil = time.Now().Add(time.Minute * 5)
-			// return err
-		}
-	}()
-
-	return nil
+	select {
+	case logtasticCh <- op:
+	default:
+		logfLocal("logtasticPOST %s failed: channel full\n", uri)
+	}
 }
 
-func logtasticPOSTJsonData(uriPath string, d []byte) error {
-	return logtasticPOST(uriPath, d, "application/json")
+func logtasticPOSTJsonData(uriPath string, d []byte) {
+	logtasticPOST(uriPath, d, "application/json")
 }
 
-func logtasticPOSTJson(uriPath string, v interface{}) error {
+func logtasticPOSTJson(uriPath string, v interface{}) {
 	d, _ := json.Marshal(v)
-	return logtasticPOSTJsonData(uriPath, d)
+	logtasticPOSTJsonData(uriPath, d)
 }
 
-func logtasticPOSTPlainText(uriPath string, d []byte) error {
-	return logtasticPOST(uriPath, d, "text/plain")
+func logtasticPOSTPlainText(uriPath string, d []byte) {
+	logtasticPOST(uriPath, d, "text/plain")
 }
 
-func logtasticPOSTPlainTextString(uriPath string, s string) error {
-	return logtasticPOSTPlainText(uriPath, []byte(s))
+func logtasticPOSTPlainTextString(uriPath string, s string) {
+	logtasticPOSTPlainText(uriPath, []byte(s))
 }
 
 func getHeader(h http.Header, hdrKey string, mapKey string, m map[string]interface{}) {
@@ -125,8 +154,8 @@ func getRequestInfo(r *http.Request, m map[string]interface{}) {
 	getHeader(hdr, "Sec-CH-Viewport-Width", "sec_ch_viewport_width", m)
 }
 
-func logtasticLog(s string) error {
-	return logtasticPOSTPlainTextString("/api/v1/log", s)
+func logtasticLog(s string) {
+	logtasticPOSTPlainTextString("/api/v1/log", s)
 }
 
 func logtasticHit(r *http.Request, code int, size int64, dur time.Duration) {
@@ -178,7 +207,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	// we validate it's json and agument it with ip of the user's browser
 	var m map[string]interface{}
 	err = json.Unmarshal(d, &m)
-	if logIfErrf(err, "unmarshalling body\n%s\n", limitString(string(d), 1000)) {
+	if logIfErrf(err, "unmarshalling body\n%s\n", limitString(string(d), 100)) {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
