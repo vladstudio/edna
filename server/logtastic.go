@@ -16,7 +16,7 @@ var (
 	logtasticThrottleUntil time.Time
 )
 
-func getBestIPAddress(r *http.Request) string {
+func getBestRemoteAddress(r *http.Request) string {
 	h := r.Header
 	potentials := []string{h.Get("CF-Connecting-IP"), h.Get("X-Real-Ip"), h.Get("X-Forwarded-For"), r.RemoteAddr}
 	for _, v := range potentials {
@@ -105,7 +105,7 @@ func getReferrerFromHeaderOrQuery(r *http.Request) string {
 func getRequestInfo(r *http.Request, m map[string]interface{}) {
 	m["method"] = r.Method
 	m["url"] = r.URL.String()
-	m["ip"] = getBestIPAddress(r)
+	m["ip"] = getBestRemoteAddress(r)
 	m["user_agent"] = r.UserAgent()
 	m["referrer"] = getReferrerFromHeaderOrQuery(r)
 	hdr := r.Header
