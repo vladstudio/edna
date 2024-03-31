@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -261,6 +262,15 @@ func benchFileCompress(path string) {
 		return buf.Bytes()
 	}
 
+	zstdCompressNoConcurrency := func(d []byte, level zstd.EncoderLevel) []byte {
+		var buf bytes.Buffer
+		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level), zstd.WithEncoderConcurrency(1))
+		panicIfErr(err)
+		_, err = w.Write(d)
+		panicIfErr(err)
+		return buf.Bytes()
+	}
+
 	zstdCompress := func(d []byte, level zstd.EncoderLevel) []byte {
 		var buf bytes.Buffer
 		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level))
@@ -270,18 +280,14 @@ func benchFileCompress(path string) {
 		return buf.Bytes()
 	}
 
-	brCompress := func(d []byte, level int) ([]byte, error) {
+	brCompress := func(d []byte, level int) []byte {
 		var dst bytes.Buffer
 		w := brotli.NewWriterLevel(&dst, level)
 		_, err := w.Write(d)
+		panicIfErr(err)
 		err2 := w.Close()
-		if err != nil || err2 != nil {
-			if err != nil {
-				return nil, err
-			}
-			return nil, err2
-		}
-		return dst.Bytes(), nil
+		panicIfErr(err2)
+		return dst.Bytes()
 	}
 
 	var cd []byte
@@ -292,22 +298,32 @@ func benchFileCompress(path string) {
 
 	logf("compressing with brotli: default (level 6)\n")
 	t = time.Now()
-	cd, _ = brCompress(d, brotli.DefaultCompression)
+	cd = brCompress(d, brotli.DefaultCompression)
 	push(&results, benchResult{"brotli default", cd, time.Since(t)})
 
 	logf("compressing with brotli: best (level 11)\n")
 	t = time.Now()
-	cd, _ = brCompress(d, brotli.BestCompression)
+	cd = brCompress(d, brotli.BestCompression)
 	push(&results, benchResult{"brotli best", cd, time.Since(t)})
 
-	logf("compressing with zstd level: better (3)\n")
+	logf("compressing with zstd level: better (3), conc: %d\n", runtime.GOMAXPROCS(0))
 	t = time.Now()
 	cd = zstdCompress(d, zstd.SpeedBetterCompression)
 	push(&results, benchResult{"zstd better", cd, time.Since(t)})
 
-	logf("compressing with zstd level: best (4)\n")
+	logf("compressing with zstd level: better (3), no concurrency\n")
+	t = time.Now()
+	cd = zstdCompressNoConcurrency(d, zstd.SpeedBetterCompression)
+	push(&results, benchResult{"zstd better nc", cd, time.Since(t)})
+
+	logf("compressing with zstd level: best (4), conc: %d\n", runtime.GOMAXPROCS(0))
 	t = time.Now()
 	cd = zstdCompress(d, zstd.SpeedBestCompression)
+	push(&results, benchResult{"zstd best", cd, time.Since(t)})
+
+	logf("compressing with zstd level: best (4), no concurrency\n")
+	t = time.Now()
+	cd = zstdCompressNoConcurrency(d, zstd.SpeedBestCompression)
 	push(&results, benchResult{"zstd best", cd, time.Since(t)})
 
 	for _, r := range results {
