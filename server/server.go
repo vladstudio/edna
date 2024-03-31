@@ -21,8 +21,8 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	hutil "github.com/kjk/common/httputil"
+	"github.com/kjk/common/logtastic"
 	"github.com/kjk/common/u"
-	"github.com/kjk/edna/server/logtastic"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"

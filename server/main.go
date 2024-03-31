@@ -12,7 +12,7 @@ import (
 
 	"github.com/andybalholm/brotli"
 	"github.com/dustin/go-humanize"
-	"github.com/kjk/edna/server/logtastic"
+	"github.com/kjk/common/logtastic"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zstd"
 
@@ -325,7 +325,7 @@ func benchFileCompress(path string) {
 	logf("compressing with zstd level: best (4), no concurrency\n")
 	t = time.Now()
 	cd = zstdCompressNoConcurrency(d, zstd.SpeedBestCompression)
-	push(&results, benchResult{"zstd best", cd, time.Since(t)})
+	push(&results, benchResult{"zstd best nc", cd, time.Since(t)})
 
 	for _, r := range results {
 		logf("%14s: %6d (%s) in %s\n", r.name, len(r.data), humanSize(len(r.data)), r.dur)

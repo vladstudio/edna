@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/kjk/edna/server/logtastic"
+	"github.com/kjk/common/logtastic"
 )
 
 // only logs locally so no need to worry about recursive logging calls
