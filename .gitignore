@@ -13,3 +13,4 @@ bun.lockb
 package-lock.json
 secrets.env
 edna-*
+data/

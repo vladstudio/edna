@@ -61,6 +61,9 @@ func logtasticWorker() {
 }
 
 func logtasticPOST(uriPath string, d []byte, mime string) {
+	if logtasticServer == "" {
+		return
+	}
 	startLogWorker.Do(func() {
 		go logtasticWorker()
 	})

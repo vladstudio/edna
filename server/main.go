@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/andybalholm/brotli"
 	"github.com/dustin/go-humanize"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zstd"
@@ -240,10 +241,17 @@ func main() {
 
 }
 
+type benchResult struct {
+	name string
+	data []byte
+	dur  time.Duration
+}
+
 func benchFileCompress(path string) {
 	d, err := os.ReadFile(path)
 	panicIfErr(err)
 
+	var results []benchResult
 	gzipCompress := func(d []byte) []byte {
 		var buf bytes.Buffer
 		w, err := gzip.NewWriterLevel(&buf, gzip.BestCompression)
@@ -262,24 +270,49 @@ func benchFileCompress(path string) {
 		return buf.Bytes()
 	}
 
+	brCompress := func(d []byte, level int) ([]byte, error) {
+		var dst bytes.Buffer
+		w := brotli.NewWriterLevel(&dst, level)
+		_, err := w.Write(d)
+		err2 := w.Close()
+		if err != nil || err2 != nil {
+			if err != nil {
+				return nil, err
+			}
+			return nil, err2
+		}
+		return dst.Bytes(), nil
+	}
+
+	var cd []byte
 	logf("compressing with gzip\n")
 	t := time.Now()
-	gzData := gzipCompress(d)
-	gzDur := time.Since(t)
+	cd = gzipCompress(d)
+	push(&results, benchResult{"gzip", cd, time.Since(t)})
 
-	logf("compressing with zstd level: better\n")
+	logf("compressing with brotli: default (level 6)\n")
 	t = time.Now()
-	zstdBetter := zstdCompress(d, zstd.SpeedBetterCompression)
-	zstdBetterDur := time.Since(t)
+	cd, _ = brCompress(d, brotli.DefaultCompression)
+	push(&results, benchResult{"brotli default", cd, time.Since(t)})
 
-	logf("compressing with zstd level: best\n")
+	logf("compressing with brotli: best (level 11)\n")
 	t = time.Now()
-	zstdBest := zstdCompress(d, zstd.SpeedBestCompression)
-	zstdBestDur := time.Since(t)
+	cd, _ = brCompress(d, brotli.BestCompression)
+	push(&results, benchResult{"brotli best", cd, time.Since(t)})
 
-	logf("gzip       : %d (%s) in %s\n", len(gzData), humanSize(len(gzData)), gzDur)
-	logf("zstd better: %d (%s) in %s\n", len(zstdBetter), humanSize(len(zstdBetter)), zstdBetterDur)
-	logf("zstd best  : %d (%s) in %s\n", len(zstdBest), humanSize(len(zstdBest)), zstdBestDur)
+	logf("compressing with zstd level: better (3)\n")
+	t = time.Now()
+	cd = zstdCompress(d, zstd.SpeedBetterCompression)
+	push(&results, benchResult{"zstd better", cd, time.Since(t)})
+
+	logf("compressing with zstd level: best (4)\n")
+	t = time.Now()
+	cd = zstdCompress(d, zstd.SpeedBestCompression)
+	push(&results, benchResult{"zstd best", cd, time.Since(t)})
+
+	for _, r := range results {
+		logf("%14s: %6d (%s) in %s\n", r.name, len(r.data), humanSize(len(r.data)), r.dur)
+	}
 }
 
 func humanSize(n int) string {
@@ -288,6 +321,8 @@ func humanSize(n int) string {
 }
 
 func testCompress() {
+	logtasticServer = ""
+	logf("testCompress()\n")
 	emptyFrontEndBuildDir()
 	u.RunLoggedInDirMust(".", "yarn")
 	u.RunLoggedInDirMust(".", "yarn", "build")
