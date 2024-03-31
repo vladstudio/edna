@@ -351,6 +351,8 @@ func serverListenAndWait(httpSrv *http.Server) func() {
 			// timeout
 			logf("timed out trying to shut down http server")
 		}
+		logf("stopping logtastic\n")
+		logtastic.Stop()
 	}
 }
 
