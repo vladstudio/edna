@@ -4,11 +4,10 @@ go 1.22.0
 
 require (
 	github.com/andybalholm/brotli v1.1.0
-	github.com/carlmjohnson/requests v0.23.5
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/kjk/common v0.0.0-20240331151427-f8a9ed9708a7
+	github.com/kjk/common v0.0.0-20240331180010-8202445e7416
 	github.com/kjk/minioutil v0.0.0-20230422073834-96945ac7e481
 	github.com/klauspost/compress v1.17.7
 	github.com/melbahja/goph v1.4.0
@@ -17,6 +16,7 @@ require (
 )
 
 require (
+	github.com/carlmjohnson/requests v0.23.5 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect

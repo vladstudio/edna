@@ -221,7 +221,8 @@ func main() {
 	panicIf(n > 1, "can only use one of: -run-dev, -run-prod, -run-prod-local")
 
 	logtastic.LogDir = getLogsDirMust()
-	logtastic.LoggingEnabled = true
+	logtastic.Server = "127.0.0.1:9327"
+	// logtastic.Server = "l.arslexis.io"
 
 	loadSecrets()
 
