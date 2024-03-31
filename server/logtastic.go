@@ -103,7 +103,7 @@ func writeLog(d []byte) {
 			return
 		}
 	}
-	logtasticLoggerLogs.Write(d)
+	logtasticLoggerLogs.Write2(d, true)
 }
 
 func writeSiserLog(name string, lPtr **siserlogger.File, d []byte) {
@@ -118,7 +118,7 @@ func writeSiserLog(name string, lPtr **siserlogger.File, d []byte) {
 		}
 		*lPtr = l
 	}
-	logfLocal("writeSiserLog %s: %s\n", name, limitString(string(d), 100))
+	// logfLocal("writeSiserLog %s: %s\n", name, limitString(string(d), 100))
 	(*lPtr).Write(d)
 }
 
