@@ -22,6 +22,7 @@ import (
 	"github.com/felixge/httpsnoop"
 	hutil "github.com/kjk/common/httputil"
 	"github.com/kjk/common/u"
+	"github.com/kjk/edna/server/logtastic"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -240,7 +241,7 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 			return
 		}
 		if strings.HasPrefix(uri, "/event") {
-			handleEvent(w, r)
+			logtastic.HandleEvent(w, r)
 			return
 		}
 
@@ -300,7 +301,7 @@ func makeHTTPServer(serveOpts *hutil.ServeFileOptions, proxyHandler *httputil.Re
 				return
 			}
 			logHTTPReq(r, m.Code, m.Written, m.Duration)
-			logtasticHit(r, m.Code, m.Written, m.Duration)
+			logtastic.LogHit(r, m.Code, m.Written, m.Duration)
 			// axiomLogHTTPReq(ctx(), r, m.Code, int(m.Written), m.Duration)
 		}()
 	})

@@ -1,8 +1,9 @@
-module edna
+module github.com/kjk/edna/server
 
 go 1.22.0
 
 require (
+	github.com/andybalholm/brotli v1.1.0
 	github.com/carlmjohnson/requests v0.23.5
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.0.4
@@ -16,7 +17,6 @@ require (
 )
 
 require (
-	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect

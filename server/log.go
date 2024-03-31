@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/kjk/edna/server/logtastic"
 )
 
 // only logs locally so no need to worry about recursive logging calls
@@ -18,7 +20,7 @@ func logf(s string, args ...interface{}) {
 	}
 	fmt.Print(s)
 	// note: take care to not use logf() in logtastic.go
-	logtasticLog(s)
+	logtastic.Log(s)
 }
 
 func logErrorf(format string, args ...interface{}) {
@@ -29,7 +31,7 @@ func logErrorf(format string, args ...interface{}) {
 	cs := getCallstack(1)
 	s = fmt.Sprintf("Error: %s\n%s\n", s, cs)
 	fmt.Print(s)
-	logtasticError(nil, s)
+	logtastic.LogError(nil, s)
 }
 
 // return true if there was an error
@@ -54,6 +56,6 @@ func logIfErrf(err error, msgAndArgs ...interface{}) bool {
 		s = fmt.Sprintf("Error: %s\n%s\n", err, cs)
 	}
 	fmt.Print(s)
-	logtasticError(nil, s)
+	logtastic.LogError(nil, s)
 	return true
 }

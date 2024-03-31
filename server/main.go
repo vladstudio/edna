@@ -12,6 +12,7 @@ import (
 
 	"github.com/andybalholm/brotli"
 	"github.com/dustin/go-humanize"
+	"github.com/kjk/edna/server/logtastic"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zstd"
 
@@ -99,7 +100,7 @@ func loadSecrets() {
 
 	// // those are only required in prod
 	must = flgRunProd
-	getEnv("LOGTASTIC_API_KEY", &logtasticApiKey, 30, must)
+	getEnv("LOGTASTIC_API_KEY", &logtastic.ApiKey, 30, must)
 	// getEnv("PIRSCH_SECRET", &pirschClientSecret, 64, must)
 	// getEnv("GITHUB_SECRET_ONLINETOOL", &secretGitHubOnlineTool, 40, must)
 	// getEnv("GITHUB_SECRET_TOOLS_ARSLEXIS", &secretGitHubToolsArslexis, 40, must)
@@ -116,7 +117,7 @@ func loadSecrets() {
 	// when running locally, don't
 	if false && flgRunDev || flgRunProdLocal {
 		logfLocal("loadSecrets: clearing logtasticApiKey\n")
-		logtasticApiKey = ""
+		logtastic.ApiKey = ""
 	}
 }
 
@@ -178,8 +179,6 @@ func main() {
 		logf("edna.arslexis.io, build: %s (%s)\n", GitCommitHash, uriBase+GitCommitHash)
 	}
 
-	logtasticLogDir = getLogsDirMust()
-
 	if flgUpdateGoDeps {
 		defer measureDuration()()
 		updateGoDeps(true)
@@ -221,6 +220,9 @@ func main() {
 	}
 	panicIf(n > 1, "can only use one of: -run-dev, -run-prod, -run-prod-local")
 
+	logtastic.LogDir = getLogsDirMust()
+	logtastic.LoggingEnabled = true
+
 	loadSecrets()
 
 	if flgRunDev {
@@ -239,7 +241,6 @@ func main() {
 	}
 
 	flag.Usage()
-
 }
 
 type benchResult struct {
@@ -337,7 +338,6 @@ func humanSize(n int) string {
 }
 
 func testCompress() {
-	logtasticServer = ""
 	logf("testCompress()\n")
 	emptyFrontEndBuildDir()
 	u.RunLoggedInDirMust(".", "yarn")
