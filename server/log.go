@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kjk/common/logtastic"
+	"github.com/kjk/common/u"
 )
 
 // only logs locally so no need to worry about recursive logging calls
@@ -28,7 +29,7 @@ func logErrorf(format string, args ...interface{}) {
 	if len(args) > 0 {
 		s = fmt.Sprintf(format, args...)
 	}
-	cs := getCallstack(1)
+	cs := u.GetCallstack(1)
 	s = fmt.Sprintf("Error: %s\n%s\n", s, cs)
 	fmt.Print(s)
 	logtastic.LogError(nil, s)
@@ -48,7 +49,7 @@ func logIfErrf(err error, msgAndArgs ...interface{}) bool {
 		}
 	}
 
-	cs := getCallstack(1)
+	cs := u.GetCallstack(1)
 	var s string
 	if msg != "" {
 		s = fmt.Sprintf("Error: %s\n%s\n%s\n", err, msg, cs)

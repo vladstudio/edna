@@ -7,7 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/kjk/common v0.0.0-20240331195355-a865f8690ed9
+	github.com/kjk/common v0.0.0-20240331212157-bad3062f8ba2
 	github.com/kjk/minioutil v0.0.0-20230422073834-96945ac7e481
 	github.com/klauspost/compress v1.17.7
 	github.com/melbahja/goph v1.4.0

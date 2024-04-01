@@ -8,9 +8,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
-	"runtime"
-	"strconv"
-	"strings"
 	"syscall"
 
 	"github.com/kjk/common/u"
@@ -31,27 +28,9 @@ func ctx() context.Context {
 	return context.Background()
 }
 
-func getCallstackFrames(skip int) []string {
-	var callers [32]uintptr
-	n := runtime.Callers(skip+1, callers[:])
-	frames := runtime.CallersFrames(callers[:n])
-	var cs []string
-	for {
-		frame, more := frames.Next()
-		if !more {
-			break
-		}
-		s := frame.File + ":" + strconv.Itoa(frame.Line)
-		cs = append(cs, s)
-	}
-	return cs
+func push[S ~[]E, E any](s *S, els ...E) {
+	*s = append(*s, els...)
 }
-
-func getCallstack(skip int) string {
-	frames := getCallstackFrames(skip + 1)
-	return strings.Join(frames, "\n")
-}
-
 func copyFilesRecurMust(srcDir, dstDir string) {
 	logf("copyFilesRecurMust('%s', '%s')\n", srcDir, dstDir)
 	srcDirLen := len(srcDir)
@@ -80,17 +59,6 @@ func startLoggedInDir(dir string, exe string, args ...string) (func(), error) {
 	return func() {
 		cmd.Process.Kill()
 	}, nil
-}
-
-func push[S ~[]E, E any](s *S, els ...E) {
-	*s = append(*s, els...)
-}
-
-func sliceLimit[S ~[]E, E any](s S, max int) S {
-	if len(s) > max {
-		return s[:max]
-	}
-	return s
 }
 
 func waitForSigIntOrKill() {

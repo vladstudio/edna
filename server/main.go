@@ -220,6 +220,7 @@ func main() {
 	}
 	panicIf(n > 1, "can only use one of: -run-dev, -run-prod, -run-prod-local")
 
+	logtastic.BuildHash = GitCommitHash
 	logtastic.LogDir = getLogsDirMust()
 	logtastic.Server = "127.0.0.1:9327"
 	// logtastic.Server = "l.arslexis.io"
@@ -261,6 +262,8 @@ func benchFileCompress(path string) {
 		panicIfErr(err)
 		_, err = w.Write(d)
 		panicIfErr(err)
+		err = w.Close()
+		panicIfErr(err)
 		return buf.Bytes()
 	}
 
@@ -269,6 +272,8 @@ func benchFileCompress(path string) {
 		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level), zstd.WithEncoderConcurrency(1))
 		panicIfErr(err)
 		_, err = w.Write(d)
+		panicIfErr(err)
+		err = w.Close()
 		panicIfErr(err)
 		return buf.Bytes()
 	}
@@ -279,6 +284,8 @@ func benchFileCompress(path string) {
 		panicIfErr(err)
 		_, err = w.Write(d)
 		panicIfErr(err)
+		err = w.Close()
+		panicIfErr(err)
 		return buf.Bytes()
 	}
 
@@ -287,8 +294,8 @@ func benchFileCompress(path string) {
 		w := brotli.NewWriterLevel(&dst, level)
 		_, err := w.Write(d)
 		panicIfErr(err)
-		err2 := w.Close()
-		panicIfErr(err2)
+		err = w.Close()
+		panicIfErr(err)
 		return dst.Bytes()
 	}
 
