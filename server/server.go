@@ -390,12 +390,12 @@ func runServerDev() {
 	proxyURLStr := "http://localhost:3035"
 	logf("runServerDev\n")
 	if hasBun() {
-		runLoggedInDir("frontend", "bun", "install")
+		runLoggedInDir(".", "bun", "install")
 		closeDev, err := startLoggedInDir(".", "bun", "run", "dev")
 		must(err)
 		defer closeDev()
 	} else {
-		runLoggedInDir("frontend", "yarn")
+		runLoggedInDir(".", "yarn")
 		closeDev, err := startLoggedInDir(".", "yarn", "dev")
 		must(err)
 		defer closeDev()
