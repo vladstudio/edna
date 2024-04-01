@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -267,20 +266,9 @@ func benchFileCompress(path string) {
 		return buf.Bytes()
 	}
 
-	zstdCompressNoConcurrency := func(d []byte, level zstd.EncoderLevel) []byte {
-		var buf bytes.Buffer
-		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level), zstd.WithEncoderConcurrency(1))
-		panicIfErr(err)
-		_, err = w.Write(d)
-		panicIfErr(err)
-		err = w.Close()
-		panicIfErr(err)
-		return buf.Bytes()
-	}
-
 	zstdCompress := func(d []byte, level zstd.EncoderLevel) []byte {
 		var buf bytes.Buffer
-		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level))
+		w, err := zstd.NewWriter(&buf, zstd.WithEncoderLevel(level), zstd.WithEncoderConcurrency(1))
 		panicIfErr(err)
 		_, err = w.Write(d)
 		panicIfErr(err)
@@ -315,25 +303,15 @@ func benchFileCompress(path string) {
 	cd = brCompress(d, brotli.BestCompression)
 	push(&results, benchResult{"brotli best", cd, time.Since(t)})
 
-	logf("compressing with zstd level: better (3), conc: %d\n", runtime.GOMAXPROCS(0))
+	logf("compressing with zstd level: better (3)\n")
 	t = time.Now()
 	cd = zstdCompress(d, zstd.SpeedBetterCompression)
 	push(&results, benchResult{"zstd better", cd, time.Since(t)})
 
-	logf("compressing with zstd level: better (3), no concurrency\n")
-	t = time.Now()
-	cd = zstdCompressNoConcurrency(d, zstd.SpeedBetterCompression)
-	push(&results, benchResult{"zstd better nc", cd, time.Since(t)})
-
-	logf("compressing with zstd level: best (4), conc: %d\n", runtime.GOMAXPROCS(0))
+	logf("compressing with zstd level: best (4)\n")
 	t = time.Now()
 	cd = zstdCompress(d, zstd.SpeedBestCompression)
 	push(&results, benchResult{"zstd best", cd, time.Since(t)})
-
-	logf("compressing with zstd level: best (4), no concurrency\n")
-	t = time.Now()
-	cd = zstdCompressNoConcurrency(d, zstd.SpeedBestCompression)
-	push(&results, benchResult{"zstd best nc", cd, time.Since(t)})
 
 	for _, r := range results {
 		logf("%14s: %6d (%s) in %s\n", r.name, len(r.data), humanSize(len(r.data)), r.dur)
