@@ -52,6 +52,7 @@ func startLoggedInDir(dir string, exe string, args ...string) (func(), error) {
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	logf("running: %s in dir '%s'\n", cmd.String(), cmd.Dir)
 	err := cmd.Start()
 	if err != nil {
 		return nil, err
@@ -102,4 +103,14 @@ func updateGoDeps(noProxy bool) {
 		err := cmd.Run()
 		panicIf(err != nil, "go get failed with '%s'", err)
 	}
+}
+
+func runLoggedInDir(dir string, exe string, args ...string) error {
+	cmd := exec.Command(exe, args...)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	logf("running: %s in dir '%s'\n", cmd.String(), cmd.Dir)
+	err := cmd.Run()
+	return err
 }

@@ -169,7 +169,12 @@ func main() {
 	}
 
 	if flgGen {
-		u.RunLoggedInDir(".", "yarn", "run", "gen")
+		if hasBun() {
+			path := filepath.Join("src", "gen.msj")
+			u.RunLoggedInDirMust(".", "bun", "run", path)
+		} else {
+			runLoggedInDir(".", "yarn", "run", "gen")
+		}
 		return
 	}
 
@@ -326,8 +331,13 @@ func humanSize(n int) string {
 func testCompress() {
 	logf("testCompress()\n")
 	emptyFrontEndBuildDir()
-	u.RunLoggedInDirMust(".", "yarn")
-	u.RunLoggedInDirMust(".", "yarn", "build")
+	if hasBun() {
+		u.RunLoggedInDirMust(".", "bun", "install")
+		u.RunLoggedInDirMust(".", "bun", "run", "build")
+	} else if u.IsWindows() {
+		u.RunLoggedInDirMust(".", "yarn")
+		u.RunLoggedInDirMust(".", "yarn", "build")
+	}
 
 	dir := filepath.Join("webapp", "dist", "assets")
 	files, err := os.ReadDir(dir)

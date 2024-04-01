@@ -11,12 +11,10 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/felixge/httpsnoop"
@@ -337,10 +335,7 @@ func serverListenAndWait(httpSrv *http.Server) func() {
 	}()
 
 	return func() {
-		// Ctrl-C sends SIGINT
-		sctx, stop := signal.NotifyContext(ctx(), os.Interrupt /*SIGINT*/, os.Kill /* SIGKILL */, syscall.SIGTERM)
-		defer stop()
-		<-sctx.Done()
+		waitForSigIntOrKill()
 
 		logf("Got one of the signals. Shutting down http server\n")
 		_ = httpSrv.Shutdown(ctx())
@@ -395,12 +390,12 @@ func runServerDev() {
 	proxyURLStr := "http://localhost:3035"
 	logf("runServerDev\n")
 	if hasBun() {
-		u.RunLoggedInDir("frontend", "bun", "install")
+		runLoggedInDir("frontend", "bun", "install")
 		closeDev, err := startLoggedInDir(".", "bun", "run", "dev")
 		must(err)
 		defer closeDev()
 	} else {
-		u.RunLoggedInDir("frontend", "yarn")
+		runLoggedInDir("frontend", "yarn")
 		closeDev, err := startLoggedInDir(".", "yarn", "dev")
 		must(err)
 		defer closeDev()
