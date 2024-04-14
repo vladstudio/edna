@@ -226,8 +226,12 @@ func main() {
 
 	logtastic.BuildHash = GitCommitHash
 	logtastic.LogDir = getLogsDirMust()
-	logtastic.Server = "127.0.0.1:9327"
-	// logtastic.Server = "l.arslexis.io"
+	if flgRunProd {
+		logtastic.Server = "l.arslexis.io"
+	} else {
+		logtastic.Server = "127.0.0.1:9327"
+	}
+	logf("logtatistic server: %s\n", logtastic.Server)
 
 	loadSecrets()
 
