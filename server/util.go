@@ -31,6 +31,7 @@ func ctx() context.Context {
 func push[S ~[]E, E any](s *S, els ...E) {
 	*s = append(*s, els...)
 }
+
 func copyFilesRecurMust(srcDir, dstDir string) {
 	logf("copyFilesRecurMust('%s', '%s')\n", srcDir, dstDir)
 	srcDirLen := len(srcDir)
