@@ -1,6 +1,6 @@
 Welcome to Edna - a scratchpad and note taker for developers and power users.
 
-To learn more right-click for context menu and use `Show help` menu.
+To learn more right-click for context menu and use `Help` / `Show help` menu.
 
 Keyboard shortcuts:
 
