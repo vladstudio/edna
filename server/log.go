@@ -20,7 +20,6 @@ func logf(s string, args ...interface{}) {
 		s = fmt.Sprintf(s, args...)
 	}
 	fmt.Print(s)
-	// note: take care to not use logf() in logtastic.go
 	logtastic.Log(s)
 }
 

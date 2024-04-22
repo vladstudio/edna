@@ -1,8 +1,8 @@
-import { EditorView, Decoration } from "@codemirror/view"
-import { syntaxTree, ensureSyntaxTree } from "@codemirror/language"
-import { WidgetType } from "@codemirror/view"
-import { ViewUpdate, ViewPlugin, DecorationSet } from "@codemirror/view"
+import { Decoration, EditorView } from "@codemirror/view"
+import { DecorationSet, ViewPlugin, ViewUpdate } from "@codemirror/view"
+import { ensureSyntaxTree, syntaxTree } from "@codemirror/language"
 
+import { WidgetType } from "@codemirror/view"
 
 class CheckboxWidget extends WidgetType {
     constructor(readonly checked: boolean) { super() }
@@ -20,7 +20,8 @@ class CheckboxWidget extends WidgetType {
         box.type = "checkbox"
         box.checked = this.checked
         box.style.position = "absolute"
-        box.style.top = "-3px"
+        // box.style.top = "-3px"
+        box.style.top = "0"
         box.style.left = "0"
         return wrap
     }
