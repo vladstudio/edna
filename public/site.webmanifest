@@ -4,7 +4,7 @@
   "description": "A scratchpad and note taker for developers",
   "icons": [
     {
-      "src": "/icon.png",
+      "src": "/favicon.svg",
       "sizes": "512x512"
     }
   ],
@@ -12,12 +12,12 @@
   "start_url": "/",
   "screenshots": [
     {
-      "src": "https://edna.arslexis.io/pwa-shot-800x600.png",
+      "src": "https://edna.vlad.studio/pwa-shot-800x600.png",
       "type": "image/png",
       "sizes": "800x600"
     },
     {
-      "src": "https://edna.arslexis.io/pwa-shot-1200x900.png",
+      "src": "https://edna.vlad.studio/pwa-shot-1200x900.png",
       "type": "image/png",
       "sizes": "1200x900"
     }

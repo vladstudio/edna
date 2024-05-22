@@ -1,10 +1,10 @@
 # Edna
 
-[Edna](https://edna.arslexis.io) is a scratchpad for developers. It's a large persistent text buffer where you can write down anything you like. Works great for that Slack message you don't want to accidentally send, a JSON response from an API you're working with, notes from a meeting, daily to-do list, etc.
+[Edna](https://edna.vlad.studio) is a scratchpad for developers. It's a large persistent text buffer where you can write down anything you like. Works great for that Slack message you don't want to accidentally send, a JSON response from an API you're working with, notes from a meeting, daily to-do list, etc.
 
 The Edna buffer is divided into blocks, and each block can have its own Language set (e.g. JavaScript, JSON, Markdown, etc.). This gives you syntax highlighting and lets you auto-format that JSON response.
 
-Available on the web under https://edna.arslexis.io
+Available on the web under https://edna.vlad.studio
 
 ## Features
 

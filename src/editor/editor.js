@@ -32,7 +32,7 @@ import { heynoteCopyCut } from "./copy-paste";
 import { heynoteDark } from "./theme/dark.js";
 import { heynoteKeymap } from "./keymap.js";
 import { heynoteLang } from "./lang-heynote/heynote.js";
-import { heynoteLight } from "./theme/light.js";
+import { heynoteLight } from "./theme/tiniri-light.js";
 import { isDocDirty } from "../state.js";
 import { languageDetection } from "./language-detection/autodetect.js";
 import { links } from "./links.js";

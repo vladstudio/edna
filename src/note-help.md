@@ -2,11 +2,11 @@
 ∞∞∞markdown
 # Welcome to Edna
 
-[Edna](https://edna.arslexis.io) is a scratchpad and note taker for developers and power users.
+[Edna](https://edna.vlad.studio) is a scratchpad and note taker for developers and power users.
 
 This is a help note. To switch to a different note, press `Mod + K`.
 
-To see help in HTML, press `?` at the bottom right or visit https://edna.arslexis.io/help
+To see help in HTML, press `?` at the bottom right or visit https://edna.vlad.studio/help
 
 ∞∞∞markdown
 # Keyboard shortcuts
@@ -18,7 +18,7 @@ To see help in HTML, press `?` at the bottom right or visit https://edna.arslexi
 
 ## Speed
 
-[Edna](https://edna.arslexis.io) is optimized for speed of note taking.
+[Edna](https://edna.vlad.studio) is optimized for speed of note taking.
 
 Use `Mod + K` to show note selector and:
 - switch between notes
@@ -259,7 +259,7 @@ I use Edna daily::
 ∞∞∞markdown
 # Open source
 
-[Edna](https://edna.arslexis.io) is open source: https://github.com/kjk/edna
+[Edna](https://edna.vlad.studio) is open source: https://github.com/kjk/edna
 
 To report a bug or request a feature: https://github.com/kjk/edna/issues
 

@@ -59,11 +59,11 @@ func getGithubConfig(r *http.Request) *oauth2.Config {
 			githubConfig.ClientID = "77ba1cbe7c0eff7c462b"
 			// githubConfig.ClientSecret = secretGitHubLocal
 			logf("getGithubConfig: using localhost config\n")
-		} else if strings.Contains(host, "edna.arslexis.io") {
+		} else if strings.Contains(host, "edna.vlad.studio") {
 			// https://github.com/settings/applications/2495749 : tools.arslexis.io
 			githubConfig.ClientID = "ff6bcecdb5df037a208d"
 			// githubConfig.ClientSecret = secretGitHubToolsArslexis
-			logf("getGithubConfig: using edna.arslexis.io config\n")
+			logf("getGithubConfig: using edna.vlad.studio config\n")
 		} else {
 			panicIf(true, "unsupported host: %s", host)
 		}

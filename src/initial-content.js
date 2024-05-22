@@ -22,7 +22,7 @@ export function getHelp(platform = platformName) {
   help = help.replace("{{keyHelp}}", keyHelp);
   // links are for generated html under /help
   // when showing as note, it's just noise
-  help = help.replaceAll("[Edna](https://edna.arslexis.io)", "Edna");
+  help = help.replaceAll("[Edna](https://edna.vlad.studio)", "Edna");
   return help;
 }
 

@@ -18,7 +18,7 @@ import (
 // variables to customize
 var (
 	projectName       = "edna"
-	domain            = "edna.arslexis.io"
+	domain            = "edna.vlad.studio"
 	httpPort          = 9325
 	frontEndBuildDir  = filepath.Join("server", "dist")
 	wantedProdSecrets = []string{"LOGTASTIC_API_KEY"}

@@ -108,7 +108,7 @@ function getHelp(platform) {
   let help = fixUpShortcuts(helpRaw, platform);
   help = help.replace("{{keyHelp}}", keyHelp);
   // link Edna to website
-  // help = help.replace(/Edna/g, "[Edna](https://edna.arslexis.io)");
+  // help = help.replace(/Edna/g, "[Edna](https://edna.vlad.studio)");
 
   return help;
 }
@@ -125,7 +125,7 @@ let htmlStart = `
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <meta name="color-scheme" content="light dark">
